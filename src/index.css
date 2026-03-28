@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-vibe-primary: #0F172A; /* Slate 900 */
+  --color-vibe-accent: #38BDF8;  /* Sky 400 */
+  --color-vibe-glow: #818CF8;    /* Indigo 400 */
+  --color-vibe-surface: #F8FAFC; /* Slate 50 */
+}
+
+body {
+  @apply antialiased bg-vibe-surface text-vibe-primary;
+}
+
+.vibe-gradient {
+  background: linear-gradient(
+    135deg,
+    #0F172A 0%,
+    #1E293B 50%,
+    #334155 100%
+  );
+}
+
+.vibe-glow-text {
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.vibe-shadow {
+  box-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.12);
+}
+
+.vibe-card-shadow {
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+}
+
+.vibe-border {
+  @apply border border-slate-200/60;
+}
