@@ -477,7 +477,7 @@ const Home = ({ onStart, onViewPricing, onMarketplaceClick, onViewMore, isLogged
       >
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-vibe-primary text-white mb-8 border border-slate-700 shadow-xl shadow-vibe-primary/10">
           <Zap className="w-3.5 h-3.5 text-vibe-accent fill-current" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Professional Technical Rescue</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em]">专业 Vibe Coding 上线救援</span>
         </div>
         <h1 className="text-6xl md:text-8xl font-black text-vibe-primary mb-10 leading-[0.9] tracking-tighter uppercase">
           VIBE<br />
@@ -738,7 +738,7 @@ const Home = ({ onStart, onViewPricing, onMarketplaceClick, onViewMore, isLogged
           },
           {
             q: "如果专家无法解决我的问题怎么办？",
-            a: "如果专家在诊断阶段确认无法解决，基础服务费将全额退还。如果进入正式服务阶段，资金由平台托管，直到您确认交付，确保您的资金安全。"
+            a: "如果专家在诊断阶段确认无法解决，专家服务费将全额退还。如果进入正式服务阶段，资金由平台托管，直到您确认交付，确保您的资金安全。"
           },
           {
             q: "我如何成为 VibeFello 的专家？",
@@ -2307,7 +2307,7 @@ export default function App() {
             <a href="#" className="hover:text-indigo-600 transition-colors">联系我们</a>
           </div>
           <div className="text-sm text-slate-400 font-medium">
-            © 2024 VibeFello. 保留所有权利。
+            © 2026 VibeFello. 保留所有权利。
           </div>
         </div>
       </footer>
