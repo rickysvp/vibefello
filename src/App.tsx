@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   LayoutDashboard, 
@@ -42,8 +42,9 @@ import {
   FileCode,
   Layers
 } from 'lucide-react';
-import { Request, Expert, MOCK_EXPERTS, MOCK_REQUESTS, MOCK_MARKETPLACE, OrderStatus, USER_TIER_CONFIG, UserTier } from './types';
+import { Request, Expert, MOCK_EXPERTS, MOCK_REQUESTS, MOCK_MARKETPLACE, OrderStatus, USER_TIER_CONFIG, UserTier, ExpertApplication, ExpertVerificationStatus } from './types';
 import { PostRequestFlow } from './PostRequestFlow';
+import { ExpertOnboardingFlow } from './components/onboarding';
 
 // --- Components ---
 
@@ -80,14 +81,11 @@ const VibeLogo = ({ className = "w-9 h-9", iconOnly = false }: { className?: str
   </div>
 );
 
-const LoginModal = ({ isOpen, onClose, onLogin }: { isOpen: boolean, onClose: () => void, onLogin: (role: 'user' | 'expert') => void }) => {
-  const [step, setStep] = useState<1 | 2>(1);
-  
+const LoginModal = ({ isOpen, onClose, onLogin, role = 'user' }: { isOpen: boolean, onClose: () => void, onLogin: (role: 'user' | 'expert') => void, role?: 'user' | 'expert' }) => {
   if (!isOpen) return null;
 
-  const handleSocialLogin = () => {
-    setStep(2);
-  };
+  const isExpert = role === 'expert';
+  const subtitle = isExpert ? '技术专家工作台，接单赚钱' : '发布需求，获取专业技术支持';
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
@@ -107,78 +105,32 @@ const LoginModal = ({ isOpen, onClose, onLogin }: { isOpen: boolean, onClose: ()
           <X className="w-6 h-6" />
         </button>
         
-        <AnimatePresence mode="wait">
-          {step === 1 ? (
-            <motion.div 
-              key="step1"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <div className="text-center mb-10">
-                <div className="flex justify-center mb-6">
-                  <VibeLogo className="w-16 h-16" iconOnly />
-                </div>
-                <h2 className="text-2xl font-black text-vibe-primary mb-2 tracking-tight uppercase">登录 VIBE<span className="text-vibe-accent">FELLO</span></h2>
-                <p className="text-slate-500 font-medium">专业技术救援，让 Vibe Coding 落地</p>
-              </div>
+        <div className="text-center mb-10">
+          <div className="flex justify-center mb-6">
+            <VibeLogo className="w-16 h-16" iconOnly />
+          </div>
+          <h2 className="text-2xl font-black text-vibe-primary mb-2 tracking-tight uppercase">
+            {isExpert ? '专家登录' : '用户登录'}
+          </h2>
+          <p className="text-slate-500 font-medium">{subtitle}</p>
+        </div>
 
-              <div className="space-y-3 mb-8">
-                <button 
-                  onClick={handleSocialLogin}
-                  className="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20"
-                >
-                  <Github className="w-5 h-5" />
-                  使用 GitHub 登录
-                </button>
-                <button 
-                  onClick={handleSocialLogin}
-                  className="w-full py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
-                >
-                  <Mail className="w-5 h-5 text-red-500" />
-                  使用 Google 账号登录
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-            >
-              <div className="text-center mb-10">
-                <div className="w-16 h-16 bg-vibe-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <User className="w-8 h-8 text-vibe-accent" />
-                </div>
-                <h2 className="text-2xl font-black text-vibe-primary mb-2 tracking-tight uppercase">选择您的身份</h2>
-                <p className="text-slate-500 font-medium">根据您的需求选择进入方式</p>
-              </div>
-
-              <div className="space-y-3">
-                <button 
-                  onClick={() => onLogin('user')}
-                  className="w-full py-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold hover:border-vibe-accent hover:bg-white transition-all flex items-center justify-center gap-3 group"
-                >
-                  我是普通用户 (发布需求)
-                </button>
-                <button 
-                  onClick={() => onLogin('expert')}
-                  className="w-full py-4 rounded-xl bg-vibe-accent/10 border border-vibe-accent/20 text-vibe-primary font-bold hover:bg-vibe-accent/20 transition-all flex items-center justify-center gap-3"
-                >
-                  我是技术专家 (接单赚钱)
-                </button>
-              </div>
-              
-              <button 
-                onClick={() => setStep(1)}
-                className="w-full mt-6 text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-vibe-primary transition-colors"
-              >
-                返回登录方式
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="space-y-3 mb-8">
+          <button 
+            onClick={() => onLogin(role)}
+            className="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20"
+          >
+            <Github className="w-5 h-5" />
+            使用 GitHub 登录
+          </button>
+          <button 
+            onClick={() => onLogin(role)}
+            className="w-full py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
+          >
+            <Mail className="w-5 h-5 text-red-500" />
+            使用 Google 账号登录
+          </button>
+        </div>
 
         <p className="mt-10 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
           登录即表示您同意我们的 <span className="text-vibe-accent hover:underline cursor-pointer">服务条款</span>
@@ -495,7 +447,7 @@ const ClaimSuccessModal = ({ isOpen, onClose, onGoToDashboard }: { isOpen: boole
 
 // --- Components ---
 
-const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, userTier, onLoginClick, onLogout }: { activeTab: string, onTabChange: (t: string) => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null, userTier: 'free' | 'pro' | 'max', onLoginClick: () => void, onLogout: () => void }) => {
+const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, userTier, onLoginClick, onLogout }: { activeTab: string, onTabChange: (t: string) => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null, userTier: 'free' | 'pro' | 'max', onLoginClick: (role?: 'user' | 'expert') => void, onLogout: () => void }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
@@ -614,12 +566,20 @@ const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, userTier, onLogi
             )}
           </>
         ) : (
-          <button 
-            onClick={onLoginClick}
-            className="bg-vibe-primary text-white px-8 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/10"
-          >
-            登录 / 注册
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => onLoginClick('expert')}
+              className="text-slate-600 hover:text-vibe-primary px-4 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+            >
+              专家登录
+            </button>
+            <button 
+              onClick={() => onLoginClick('user')}
+              className="bg-vibe-primary text-white px-8 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/10"
+            >
+              登录 / 注册
+            </button>
+          </div>
         )}
       </div>
     </nav>
@@ -655,7 +615,7 @@ const FAQItem: React.FC<{ faq: { q: string, a: string } }> = ({ faq }) => {
   );
 };
 
-const Home = ({ onStart, onViewPricing, onMarketplaceClick, onViewMore, isLoggedIn, userRole }: { onStart: () => void, onViewPricing: () => void, onMarketplaceClick: (req: any) => void, onViewMore: () => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null }) => (
+const Home = ({ onStart, onViewPricing, onMarketplaceClick, onViewMore, onExpertApply, isLoggedIn, userRole, expertVerificationStatus }: { onStart: () => void, onViewPricing: () => void, onMarketplaceClick: (req: any) => void, onViewMore: () => void, onExpertApply: () => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null, expertVerificationStatus?: ExpertVerificationStatus }) => (
   <div className="pt-40 pb-20 px-6 max-w-7xl mx-auto">
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-40">
       <motion.div
@@ -686,14 +646,20 @@ const Home = ({ onStart, onViewPricing, onMarketplaceClick, onViewMore, isLogged
             </button>
           )}
           <button 
-            onClick={onViewPricing}
+            onClick={onExpertApply}
             className={`w-full sm:w-auto px-12 py-6 rounded-2xl text-lg font-black uppercase tracking-widest transition-all ${
               userRole === 'expert' 
                 ? 'bg-vibe-primary text-white hover:bg-slate-800 vibe-shadow' 
                 : 'bg-white text-vibe-primary border-2 border-vibe-primary hover:bg-slate-50'
             }`}
           >
-            {!isLoggedIn ? '专家入驻' : (userRole === 'expert' ? '订阅计划' : '升级计划')}
+            {!isLoggedIn 
+              ? '专家入驻' 
+              : (userRole === 'expert' 
+                ? (expertVerificationStatus === 'approved' ? '专家控制台' : '查看审核状态')
+                : '升级计划'
+              )
+            }
           </button>
         </div>
         <div className="flex items-center gap-12 pt-10 border-t border-slate-100">
@@ -1434,33 +1400,175 @@ const MatchingScreen = ({ onFinish }: { onFinish: () => void }) => {
 };
 
 const Marketplace = ({ onSelect, isExpert, userTier }: { onSelect: (r: any) => void, isExpert: boolean, userTier: UserTier }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<'latest' | 'budget' | 'urgent'>('latest');
+
+  // 提取所有唯一标签
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    MOCK_MARKETPLACE.forEach(req => req.tags.forEach(tag => tags.add(tag)));
+    return Array.from(tags).sort();
+  }, []);
+
   // 模拟抢单数据
-  const requestStats = MOCK_MARKETPLACE.map(req => ({
+  const requestStats = useMemo(() => MOCK_MARKETPLACE.map(req => ({
     ...req,
-    claimCount: Math.floor(Math.random() * 8) + 1, // 1-8人抢单
+    claimCount: Math.floor(Math.random() * 8) + 1,
     maxClaims: 10,
     aiDiagnosis: req.id === 'm1' || req.id === 'm3' ? {
       summary: '检测到代码中存在潜在的性能问题和安全漏洞',
       severity: 'medium',
       issues: ['内存泄漏', 'XSS风险', '未优化查询']
     } : null
-  }));
+  })), []);
+
+  // 筛选和排序逻辑
+  const filteredRequests = useMemo(() => {
+    let filtered = requestStats;
+
+    // 关键词搜索
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(req =>
+        req.title.toLowerCase().includes(query) ||
+        req.description.toLowerCase().includes(query) ||
+        req.tags.some(tag => tag.toLowerCase().includes(query))
+      );
+    }
+
+    // 标签筛选
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(req =>
+        selectedTags.some(tag => req.tags.includes(tag))
+      );
+    }
+
+    // 排序
+    const sorted = [...filtered];
+    switch (sortBy) {
+      case 'budget':
+        sorted.sort((a, b) => {
+          const aBudget = parseInt(a.budget.replace(/[^0-9]/g, ''));
+          const bBudget = parseInt(b.budget.replace(/[^0-9]/g, ''));
+          return bBudget - aBudget;
+        });
+        break;
+      case 'latest':
+      default:
+        // 保持原有顺序（假设MOCK_MARKETPLACE已按时间排序）
+        break;
+    }
+
+    return sorted;
+  }, [requestStats, searchQuery, selectedTags, sortBy]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev =>
+      prev.includes(tag)
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedTags([]);
+    setSortBy('latest');
+  };
 
   return (
     <div className="pt-32 pb-20 px-6 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-12">
-        <div>
-          <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Vibe Request 大厅</h2>
-          <p className="text-slate-500 font-medium">
-            {isExpert 
-              ? '浏览最新技术救援需求，最多10位专家可同时抢单，提供分析和报价。'
-              : '您的请求发布后，最多10位专家将抢单并为您提供解决方案。'}
-          </p>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+          <div>
+            <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Vibe Request 大厅</h2>
+            <p className="text-slate-500 font-medium">
+              {isExpert
+                ? '浏览最新技术救援需求，最多10位专家可同时抢单，提供分析和报价。'
+                : '您的请求发布后，最多10位专家将抢单并为您提供解决方案。'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-400">共 {filteredRequests.length} 个需求</span>
+          </div>
         </div>
-        <div className="flex gap-2">
-          {['全部', '高优', '最新', '高额'].map(f => (
-            <button key={f} className="px-4 py-2 rounded-xl bg-slate-100 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:bg-slate-200 transition-all border border-slate-200/60">{f}</button>
-          ))}
+
+        {/* Search and Filter Bar */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="搜索需求标题、描述或技术标签..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-vibe-accent focus:ring-2 focus:ring-vibe-accent/20 outline-none transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-slate-400" />
+              </button>
+            )}
+          </div>
+
+          {/* Tags Filter */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">技术标签:</span>
+            {allTags.slice(0, 12).map(tag => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  selectedTags.includes(tag)
+                    ? 'bg-vibe-primary text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+            {allTags.length > 12 && (
+              <span className="text-xs text-slate-400">+{allTags.length - 12} 更多</span>
+            )}
+          </div>
+
+          {/* Sort and Clear */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">排序:</span>
+              {[
+                { key: 'latest', label: '最新发布' },
+                { key: 'budget', label: '预算最高' }
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setSortBy(key as any)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    sortBy === key
+                      ? 'bg-vibe-accent/10 text-vibe-primary border border-vibe-accent/20'
+                      : 'text-slate-500 hover:bg-slate-100'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {(searchQuery || selectedTags.length > 0 || sortBy !== 'latest') && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-red-500 transition-colors"
+              >
+                <X className="w-3 h-3" />
+                清除筛选
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -1478,90 +1586,106 @@ const Marketplace = ({ onSelect, isExpert, userTier }: { onSelect: (r: any) => v
       )}
 
       <div className="grid grid-cols-1 gap-4">
-        {requestStats.map((req) => (
-          <div 
-            key={req.id}
-            onClick={() => onSelect(req)}
-            className="bg-white p-6 rounded-2xl border border-slate-200 vibe-card-shadow hover:border-vibe-accent transition-all cursor-pointer group"
-          >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-wider border border-indigo-100">新需求</span>
-                  <span className="text-xs text-slate-400 font-medium">{req.time}</span>
-                  {req.aiDiagnosis && (
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-black border border-emerald-100 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> 已AI诊断
-                    </span>
-                  )}
-                </div>
-                <h4 className="text-xl font-black text-vibe-primary group-hover:text-vibe-accent transition-colors tracking-tight mb-3">{req.title}</h4>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {req.tags.map(s => <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{s}</span>)}
-                </div>
-                {/* 抢单进度 */}
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 max-w-[200px]">
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-vibe-accent rounded-full transition-all"
-                        style={{ width: `${(req.claimCount / req.maxClaims) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                  <span className="text-xs text-slate-500">
-                    <span className="font-bold text-vibe-primary">{req.claimCount}</span> / {req.maxClaims} 位专家抢单
-                  </span>
-                  {req.claimCount >= 8 && (
-                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
-                      即将满员
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="text-right">
-                  <div className="text-2xl font-black text-slate-900">{req.budget}</div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">预估报酬</div>
-                </div>
-                <button className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg ${
-                  req.claimCount >= 10 
-                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
-                    : 'bg-vibe-primary text-white hover:bg-slate-800 shadow-vibe-primary/10'
-                }`}>
-                  {req.claimCount >= 10 ? '已满员' : '立即抢单'}
-                </button>
-              </div>
+        {filteredRequests.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-slate-400" />
             </div>
-
-            {/* AI诊断摘要（仅专家可见） */}
-            {isExpert && req.aiDiagnosis && (
-              <div className="mt-4 pt-4 border-t border-slate-100">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center shrink-0">
-                    <Sparkles className="w-4 h-4 text-emerald-500" />
+            <h3 className="text-lg font-bold text-slate-900 mb-2">未找到匹配的需求</h3>
+            <p className="text-slate-500 mb-4">尝试调整搜索关键词或筛选条件</p>
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 bg-vibe-primary text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all"
+            >
+              清除筛选条件
+            </button>
+          </div>
+        ) : (
+          filteredRequests.map((req) => (
+            <div
+              key={req.id}
+              onClick={() => onSelect(req)}
+              className="bg-white p-6 rounded-2xl border border-slate-200 vibe-card-shadow hover:border-vibe-accent transition-all cursor-pointer group"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-wider border border-indigo-100">新需求</span>
+                    <span className="text-xs text-slate-400 font-medium">{req.time}</span>
+                    {req.aiDiagnosis && (
+                      <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-black border border-emerald-100 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" /> 已AI诊断
+                      </span>
+                    )}
                   </div>
-                  <div className="flex-1">
-                    <div className="text-xs font-bold text-slate-900 mb-1">AI 诊断摘要</div>
-                    <p className="text-sm text-slate-600 mb-2">{req.aiDiagnosis.summary}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {req.aiDiagnosis.issues.map((issue: string, idx: number) => (
-                        <span key={idx} className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded">{issue}</span>
-                      ))}
+                  <h4 className="text-xl font-black text-vibe-primary group-hover:text-vibe-accent transition-colors tracking-tight mb-3">{req.title}</h4>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {req.tags.map(s => <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{s}</span>)}
+                  </div>
+                  {/* 抢单进度 */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 max-w-[200px]">
+                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-vibe-accent rounded-full transition-all"
+                          style={{ width: `${(req.claimCount / req.maxClaims) * 100}%` }}
+                        />
+                      </div>
                     </div>
+                    <span className="text-xs text-slate-500">
+                      <span className="font-bold text-vibe-primary">{req.claimCount}</span> / {req.maxClaims} 位专家抢单
+                    </span>
+                    {req.claimCount >= 8 && (
+                      <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
+                        即将满员
+                      </span>
+                    )}
                   </div>
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${
-                    req.aiDiagnosis.severity === 'high' ? 'bg-red-100 text-red-600' :
-                    req.aiDiagnosis.severity === 'medium' ? 'bg-amber-100 text-amber-600' :
-                    'bg-emerald-100 text-emerald-600'
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="text-right">
+                    <div className="text-2xl font-black text-slate-900">{req.budget}</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">预估报酬</div>
+                  </div>
+                  <button className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg ${
+                    req.claimCount >= 10 
+                      ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                      : 'bg-vibe-primary text-white hover:bg-slate-800 shadow-vibe-primary/10'
                   }`}>
-                    {req.aiDiagnosis.severity === 'high' ? '高' : req.aiDiagnosis.severity === 'medium' ? '中' : '低'}风险
-                  </span>
+                    {req.claimCount >= 10 ? '已满员' : '立即抢单'}
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* AI诊断摘要（仅专家可见） */}
+              {isExpert && req.aiDiagnosis && (
+                <div className="mt-4 pt-4 border-t border-slate-100">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4 text-emerald-500" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xs font-bold text-slate-900 mb-1">AI 诊断摘要</div>
+                      <p className="text-sm text-slate-600 mb-2">{req.aiDiagnosis.summary}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {req.aiDiagnosis.issues.map((issue: string, idx: number) => (
+                          <span key={idx} className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded">{issue}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <span className={`text-xs font-bold px-2 py-1 rounded ${
+                      req.aiDiagnosis.severity === 'high' ? 'bg-red-100 text-red-600' :
+                      req.aiDiagnosis.severity === 'medium' ? 'bg-amber-100 text-amber-600' :
+                      'bg-emerald-100 text-emerald-600'
+                    }`}>
+                      {req.aiDiagnosis.severity === 'high' ? '高' : req.aiDiagnosis.severity === 'medium' ? '中' : '低'}风险
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -1856,8 +1980,103 @@ const Workspace = ({ request, onBack }: { request: Request, onBack: () => void }
   );
 };
 
-const ExpertDashboard = ({ requests, onSelect, onEnterWorkspace, onTabChange }: { requests: Request[], onSelect: (r: Request) => void, onEnterWorkspace: (r: Request) => void, onTabChange: (tab: string) => void }) => {
+const ExpertDashboard = ({ 
+  requests, 
+  onSelect, 
+  onEnterWorkspace, 
+  onTabChange,
+  verificationStatus,
+  onStartApplication
+}: { 
+  requests: Request[], 
+  onSelect: (r: Request) => void, 
+  onEnterWorkspace: (r: Request) => void, 
+  onTabChange: (tab: string) => void,
+  verificationStatus: ExpertVerificationStatus,
+  onStartApplication: () => void
+}) => {
   const [activeSubTab, setActiveSubTab] = useState<'overview' | 'ongoing' | 'completed' | 'subscription' | 'earnings'>('overview');
+
+  // Show pending approval page
+  if (verificationStatus === 'submitted') {
+    return (
+      <div className="pt-32 pb-20 px-6 max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-10 h-10 text-amber-500" />
+          </div>
+          <h2 className="text-2xl font-black text-slate-900 mb-4">入驻申请审核中</h2>
+          <p className="text-slate-500 mb-8 leading-relaxed">
+            您的专家入驻申请已提交成功，我们正在审核您的资料。<br/>
+            审核通常需要 1-2 个工作日，请耐心等待。
+          </p>
+          <div className="bg-slate-50 rounded-xl p-6 text-left mb-8">
+            <h3 className="font-bold text-slate-900 mb-3">审核进度</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <span className="text-sm text-slate-600">提交申请资料</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-amber-500 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-amber-500" />
+                </div>
+                <span className="text-sm text-slate-900 font-medium">平台审核中</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-slate-200" />
+                <span className="text-sm text-slate-400">开始接单赚钱</span>
+              </div>
+            </div>
+          </div>
+          <p className="text-sm text-slate-400">
+            审核结果将通过邮件通知您，如有疑问请联系客服
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show application required page
+  if (verificationStatus === 'pending') {
+    return (
+      <div className="pt-32 pb-20 px-6 max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+          <div className="w-20 h-20 bg-vibe-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Shield className="w-10 h-10 text-vibe-accent" />
+          </div>
+          <h2 className="text-2xl font-black text-slate-900 mb-4">成为 VibeFello 专家</h2>
+          <p className="text-slate-500 mb-8 leading-relaxed">
+            加入我们的专家网络，帮助全球开发者解决 AI 生成代码的部署难题，<br/>
+            同时获得丰厚的报酬和职业成长机会。
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="text-2xl font-black text-vibe-accent mb-1">$50+</div>
+              <div className="text-xs text-slate-500">平均时薪</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="text-2xl font-black text-vibe-accent mb-1">1000+</div>
+              <div className="text-xs text-slate-500">月活订单</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="text-2xl font-black text-vibe-accent mb-1">4.9</div>
+              <div className="text-xs text-slate-500">专家评分</div>
+            </div>
+          </div>
+          <button
+            onClick={onStartApplication}
+            className="w-full sm:w-auto px-8 py-3 bg-vibe-primary text-white rounded-xl font-bold hover:bg-slate-800 transition-all"
+          >
+            立即申请入驻
+          </button>
+          <p className="mt-4 text-sm text-slate-400">
+            申请审核通过后，即可开始接单
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const expertStats = [
     { label: '本月收入', value: '¥8,240.00', icon: Wallet, color: 'text-emerald-600', bg: 'bg-emerald-50' },
@@ -3071,12 +3290,18 @@ export default function App() {
   const [remainingAiDiagnosis, setRemainingAiDiagnosis] = useState(1); // 剩余AI诊断次数
   const [remainingConsults, setRemainingConsults] = useState(1); // 剩余专家咨询次数
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [defaultLoginRole, setDefaultLoginRole] = useState<'user' | 'expert'>('user');
   const [showMarketplaceModal, setShowMarketplaceModal] = useState(false);
   const [selectedMarketplaceReq, setSelectedMarketplaceReq] = useState<any>(null);
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimSuccess, setClaimSuccess] = useState(false);
 
   const [workspaceRequest, setWorkspaceRequest] = useState<Request | null>(null);
+
+  // Expert Onboarding States
+  const [expertApplication, setExpertApplication] = useState<Partial<ExpertApplication> | null>(null);
+  const [expertVerificationStatus, setExpertVerificationStatus] = useState<ExpertVerificationStatus>('pending');
+  const [showExpertOnboarding, setShowExpertOnboarding] = useState(false);
 
   const handlePostComplete = (data: Partial<Request>) => {
     setMatching(true);
@@ -3112,6 +3337,38 @@ export default function App() {
     setIsLoggedIn(true);
     setUserRole(role);
     setShowLoginModal(false);
+    
+    // Check expert application status
+    if (role === 'expert') {
+      const savedApplication = localStorage.getItem('expert_application');
+      if (savedApplication) {
+        const parsed = JSON.parse(savedApplication);
+        setExpertApplication(parsed);
+        setExpertVerificationStatus(parsed.status || 'pending');
+        
+        // If approved, go to dashboard
+        if (parsed.status === 'approved') {
+          setActiveTab('dashboard');
+          return;
+        }
+        // If submitted but not approved, go to dashboard (will show pending status)
+        if (parsed.status === 'submitted') {
+          setActiveTab('dashboard');
+          return;
+        }
+        // If rejected, show onboarding to resubmit
+        if (parsed.status === 'rejected') {
+          setShowExpertOnboarding(true);
+          return;
+        }
+      } else {
+        // New expert, go to dashboard first, they can apply from there
+        setExpertVerificationStatus('pending');
+        setActiveTab('dashboard');
+        return;
+      }
+    }
+    
     setActiveTab('dashboard');
   };
 
@@ -3173,7 +3430,10 @@ export default function App() {
         isLoggedIn={isLoggedIn}
         userRole={userRole}
         userTier={userTier}
-        onLoginClick={() => setShowLoginModal(true)}
+        onLoginClick={(role) => {
+          if (role) setDefaultLoginRole(role);
+          setShowLoginModal(true);
+        }}
         onLogout={handleLogout}
       />
       
@@ -3191,8 +3451,22 @@ export default function App() {
                   handleTabChange('dashboard');
                 }
               }}
+              onExpertApply={() => {
+                if (!isLoggedIn) {
+                  // Not logged in: show expert login modal
+                  setDefaultLoginRole('expert');
+                  setShowLoginModal(true);
+                } else if (userRole === 'expert') {
+                  // Expert logged in: go to dashboard
+                  handleTabChange('dashboard');
+                } else {
+                  // User logged in: show pricing for upgrade
+                  handleTabChange('pricing');
+                }
+              }}
               isLoggedIn={isLoggedIn}
               userRole={userRole}
+              expertVerificationStatus={expertVerificationStatus}
             />
           </motion.div>
         )}
@@ -3242,6 +3516,8 @@ export default function App() {
                 onSelect={handleMarketplaceClick} 
                 onEnterWorkspace={(r) => setWorkspaceRequest(r)}
                 onTabChange={setActiveTab}
+                verificationStatus={expertVerificationStatus}
+                onStartApplication={() => setShowExpertOnboarding(true)}
               />
             ) : (
               <Dashboard
@@ -3287,10 +3563,11 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <LoginModal 
-        isOpen={showLoginModal} 
-        onClose={() => setShowLoginModal(false)} 
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
         onLogin={handleLogin}
+        role={defaultLoginRole}
       />
 
       <MarketplaceDetailModal 
@@ -3317,6 +3594,35 @@ export default function App() {
           setActiveTab('dashboard');
           // 自动选中第一个（刚刚抢到的）订单
           setSelectedRequest(requests[0]);
+        }}
+      />
+
+      {/* Expert Onboarding Flow */}
+      <ExpertOnboardingFlow
+        isOpen={showExpertOnboarding}
+        onClose={() => setShowExpertOnboarding(false)}
+        onComplete={(application) => {
+          // Save application with pending status
+          const fullApplication: Partial<ExpertApplication> = {
+            ...application,
+            id: `app-${Date.now()}`,
+            userId: 'current-user',
+            status: 'submitted',
+            submittedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          
+          setExpertApplication(fullApplication);
+          setExpertVerificationStatus('submitted');
+          localStorage.setItem('expert_application', JSON.stringify(fullApplication));
+          
+          // Close onboarding and go to dashboard
+          setShowExpertOnboarding(false);
+          setActiveTab('dashboard');
+          
+          // Show success message (you can add a toast here)
+          alert('入驻申请已提交！我们将在1-2个工作日内完成审核。');
         }}
       />
 

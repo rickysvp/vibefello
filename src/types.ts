@@ -5,12 +5,337 @@ export type MembershipTier = 'Basic' | 'Pro' | 'Elite';
 
 export type UserTier = 'free' | 'pro' | 'max';
 
+// ===== 专家 Onboarding 类型 =====
+
+// 技术领域分类
+export type TechDomain = 
+  | 'web'           // Web开发
+  | 'mobile'        // 移动开发
+  | 'ai_ml'         // AI/机器学习
+  | 'devops'        // DevOps/云原生
+  | 'blockchain'    // 区块链/Web3
+  | 'data'          // 数据工程
+  | 'game'          // 游戏开发
+  | 'desktop'       // 桌面应用
+  | 'embedded'      // 嵌入式/IoT
+  | 'security';     // 安全
+
+// 开发语言
+export type ProgrammingLanguage =
+  | 'typescript' | 'javascript' | 'python' | 'go'
+  | 'rust' | 'java' | 'kotlin' | 'swift'
+  | 'cpp' | 'c' | 'csharp' | 'php'
+  | 'ruby' | 'scala' | 'solidity';
+
+// Vibe Coding 经验等级
+export type VibeCodingLevel =
+  | 'beginner'      // 刚接触，了解基本概念
+  | 'intermediate'  // 有项目经验，能独立使用AI工具
+  | 'advanced'      // 深度使用，擅长Prompt工程
+  | 'expert';       // 专家级，能处理复杂AI生成代码问题
+
+// 专家认证状态
+export type ExpertVerificationStatus = 
+  | 'pending'      // 待提交资料
+  | 'submitted'    // 已提交待审核
+  | 'approved'     // 审核通过
+  | 'rejected';    // 审核拒绝
+
+// 专家入驻申请
+export interface ExpertApplication {
+  id: string;
+  userId: string;
+  
+  // Step 1: 专业信息
+  realName: string;
+  primaryDomains: TechDomain[];      // 技术领域（多选，最多3个）
+  techStack: string[];               // 技术栈
+  languages: ProgrammingLanguage[];  // 开发语言
+  vibeCodingLevel: VibeCodingLevel;  // Vibe Coding 经验
+  vibeCodingExperience: string;      // 经验描述
+  bio: string;                       // 个人简介
+  portfolioUrl?: string;             // GitHub/作品集
+  
+  // Step 2: 身份验证
+  idDocumentType: 'id_card' | 'passport';
+  idDocumentFrontUrl: string;
+  idDocumentBackUrl?: string;
+  
+  // Step 3: 协议同意
+  agreementAccepted: boolean;
+  agreementAcceptedAt: string;
+  
+  // Step 4: 订阅选择
+  selectedTier: MembershipTier;
+  
+  // 状态
+  status: ExpertVerificationStatus;
+  submittedAt?: string;
+  reviewedAt?: string;
+  reviewNotes?: string;
+  
+  createdAt: string;
+  updatedAt: string;
+}
+
 // 用户会员配置
 export const USER_TIER_CONFIG: Record<UserTier, { aiDiagnosisLimit: number; expertConsultLimit: number; name: string }> = {
   free: { aiDiagnosisLimit: 1, expertConsultLimit: 1, name: '按次付费' },
   pro: { aiDiagnosisLimit: 10, expertConsultLimit: 10, name: 'Pro' },
   max: { aiDiagnosisLimit: 69, expertConsultLimit: Infinity, name: 'Max' },
 };
+
+// ===== 专家 Onboarding 常量配置 =====
+
+// 技术领域与技能映射
+export const DOMAIN_SKILL_MAP: Record<TechDomain, {
+  name: string;
+  icon: string;
+  skills: string[];
+}> = {
+  web: {
+    name: 'Web 开发',
+    icon: 'Globe',
+    skills: [
+      'React', 'Vue', 'Next.js', 'Nuxt.js', 'Angular', 'Svelte',
+      'Node.js', 'Django', 'FastAPI', 'Laravel', 'Ruby on Rails',
+      'Tailwind CSS', 'Styled Components', 'Framer Motion',
+      'Webpack', 'Vite', 'Turbopack', 'esbuild'
+    ]
+  },
+  mobile: {
+    name: '移动开发',
+    icon: 'Smartphone',
+    skills: [
+      'React Native', 'Flutter', 'Swift', 'Kotlin',
+      'iOS Native', 'Android Native', 'Expo',
+      'Firebase Mobile', 'Push Notifications', 'Mobile Analytics'
+    ]
+  },
+  ai_ml: {
+    name: 'AI / 机器学习',
+    icon: 'Brain',
+    skills: [
+      'OpenAI API', 'LangChain', 'LlamaIndex', 'Hugging Face',
+      'PyTorch', 'TensorFlow', 'Scikit-learn',
+      'Vector DB', 'RAG', 'Fine-tuning', 'Prompt Engineering',
+      'Computer Vision', 'NLP', 'Stable Diffusion'
+    ]
+  },
+  devops: {
+    name: 'DevOps / 云原生',
+    icon: 'Cloud',
+    skills: [
+      'Docker', 'Kubernetes', 'Terraform', 'Ansible',
+      'AWS', 'GCP', 'Azure', 'Vercel', 'Netlify',
+      'CI/CD', 'GitHub Actions', 'GitLab CI', 'Jenkins',
+      'Prometheus', 'Grafana', 'ELK Stack', 'Datadog'
+    ]
+  },
+  blockchain: {
+    name: '区块链 / Web3',
+    icon: 'Hexagon',
+    skills: [
+      'Solidity', 'Rust (Solana)', 'Move (Aptos/Sui)',
+      'Hardhat', 'Foundry', 'Truffle',
+      'Web3.js', 'Ethers.js', 'Viem',
+      'Smart Contract Audit', 'DeFi Protocols', 'NFT Standards'
+    ]
+  },
+  data: {
+    name: '数据工程',
+    icon: 'Database',
+    skills: [
+      'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'ClickHouse',
+      'Apache Kafka', 'Apache Spark', 'Airflow',
+      'dbt', 'Snowflake', 'BigQuery', 'Data Warehousing',
+      'ETL Pipelines', 'Real-time Analytics'
+    ]
+  },
+  game: {
+    name: '游戏开发',
+    icon: 'Gamepad',
+    skills: [
+      'Unity', 'Unreal Engine', 'Godot', 'Cocos2d',
+      'Game AI', 'Physics Engine', 'Shader Programming',
+      'Multiplayer Networking', 'Game Optimization'
+    ]
+  },
+  desktop: {
+    name: '桌面应用',
+    icon: 'Monitor',
+    skills: [
+      'Electron', 'Tauri', 'WPF', 'Qt',
+      'Cross-platform Desktop', 'System Integration'
+    ]
+  },
+  embedded: {
+    name: '嵌入式 / IoT',
+    icon: 'Cpu',
+    skills: [
+      'Arduino', 'Raspberry Pi', 'ESP32', 'STM32',
+      'RTOS', 'Firmware Development', 'IoT Protocols'
+    ]
+  },
+  security: {
+    name: '安全审计',
+    icon: 'Shield',
+    skills: [
+      'Penetration Testing', 'Smart Contract Audit',
+      'Security Review', 'Vulnerability Assessment',
+      'Code Audit', 'Compliance (SOC2, ISO27001)'
+    ]
+  }
+};
+
+// 开发语言选项
+export const LANGUAGE_OPTIONS: { value: ProgrammingLanguage; label: string; color: string }[] = [
+  { value: 'typescript', label: 'TypeScript', color: '#3178C6' },
+  { value: 'javascript', label: 'JavaScript', color: '#F7DF1E' },
+  { value: 'python', label: 'Python', color: '#3776AB' },
+  { value: 'go', label: 'Go', color: '#00ADD8' },
+  { value: 'rust', label: 'Rust', color: '#DEA584' },
+  { value: 'java', label: 'Java', color: '#007396' },
+  { value: 'kotlin', label: 'Kotlin', color: '#7F52FF' },
+  { value: 'swift', label: 'Swift', color: '#F05138' },
+  { value: 'cpp', label: 'C++', color: '#00599C' },
+  { value: 'c', label: 'C', color: '#A8B9CC' },
+  { value: 'csharp', label: 'C#', color: '#239120' },
+  { value: 'php', label: 'PHP', color: '#777BB4' },
+  { value: 'ruby', label: 'Ruby', color: '#CC342D' },
+  { value: 'scala', label: 'Scala', color: '#DC322F' },
+  { value: 'solidity', label: 'Solidity', color: '#363636' }
+];
+
+// Vibe Coding 经验等级
+export const VIBE_CODING_LEVELS: { value: VibeCodingLevel; label: string; description: string }[] = [
+  { 
+    value: 'beginner', 
+    label: '入门', 
+    description: '刚接触 Vibe Coding，了解 Cursor、Windsurf 等基本工具' 
+  },
+  { 
+    value: 'intermediate', 
+    label: '进阶', 
+    description: '有实际项目经验，能独立使用 AI 工具完成开发任务' 
+  },
+  { 
+    value: 'advanced', 
+    label: '熟练', 
+    description: '深度使用 AI 开发工具，擅长 Prompt 工程和代码审查' 
+  },
+  { 
+    value: 'expert', 
+    label: '专家', 
+    description: 'Vibe Coding 专家，擅长处理复杂 AI 生成代码的调试和优化' 
+  }
+];
+
+// 专家订阅计划
+export const EXPERT_SUBSCRIPTION_PLANS = [
+  {
+    tier: 'Starter' as MembershipTier,
+    price: 39,
+    period: '月',
+    orderLimit: 4,
+    features: [
+      { text: '每月 4 单接单额度', highlight: true },
+      { text: '基础专家标识', highlight: false },
+      { text: '结算周期 15天', highlight: false },
+      { text: '社区支持', highlight: false },
+      { text: '平台服务费 20%', highlight: false }
+    ],
+    cta: '选择 Starter',
+    popular: false,
+    badge: null
+  },
+  {
+    tier: 'Pro' as MembershipTier,
+    price: 99,
+    period: '月',
+    orderLimit: 20,
+    features: [
+      { text: '每月 20 单接单额度', highlight: true },
+      { text: 'Pro 专家认证勋章', highlight: true },
+      { text: '优先推荐展示', highlight: true },
+      { text: '结算周期 7天', highlight: false },
+      { text: '专属客服支持', highlight: false },
+      { text: '平台服务费 15%', highlight: false }
+    ],
+    cta: '选择 Pro',
+    popular: true,
+    badge: '推荐'
+  },
+  {
+    tier: 'Elite' as MembershipTier,
+    price: 299,
+    period: '月',
+    orderLimit: 100,
+    features: [
+      { text: '每月 100 单接单额度', highlight: true },
+      { text: 'Master 顶级勋章', highlight: true },
+      { text: '首页推荐位展示', highlight: true },
+      { text: '结算周期 7天', highlight: true },
+      { text: 'VIP 专属服务', highlight: false },
+      { text: '平台服务费 10%', highlight: false }
+    ],
+    cta: '选择 Master',
+    popular: false,
+    badge: '顶级'
+  }
+];
+
+// 专家服务协议
+export const EXPERT_AGREEMENT_TEXT = `
+VibeFello 专家服务协议
+
+1. 独立承包商关系
+   1.1 您（以下简称"专家"）作为独立承包商（Independent Contractor）与 VibeFello 平台（以下简称"平台"）合作。
+   1.2 双方明确确认：本协议不构成任何形式的雇佣关系、劳动关系、代理关系或合伙关系。
+   1.3 您不是平台的员工、代理人或代表，不享有任何员工福利、社会保险、医疗保险、退休金计划或其他雇员待遇。
+   1.4 您应自行负责所有与工作相关的开支，包括但不限于设备、软件、网络等费用。
+
+2. 服务撮合性质
+   2.1 平台仅作为技术专家与客户之间的信息撮合中介，提供订单匹配、支付托管、争议协调等基础服务。
+   2.2 您与客户之间的技术服务合同关系由双方自行建立，平台不是该合同的当事方。
+   2.3 平台不保证订单数量、质量或客户满意度，不对您的服务交付承担任何责任。
+   2.4 您应独立承担服务交付的全部责任，包括但不限于代码质量、交付时效、售后支持等。
+
+3. 收入与税费
+   3.1 您通过平台获得的收入为独立承包服务报酬，平台将按约定比例收取服务费。
+   3.2 您应自行负责申报和缴纳所有适用的个人所得税、增值税、营业税及其他相关税费。
+   3.3 平台将根据适用法律要求，向税务机关报告您的收入信息。
+   3.4 您应确保提供的税务信息真实、准确、完整。
+
+4. 责任限制
+   4.1 在法律允许的最大范围内，平台不对任何间接、附带、特殊、惩罚性或后果性损害承担责任。
+   4.2 平台对您的最大赔偿责任不超过您在该争议事项上实际支付的平台服务费金额。
+   4.3 您应自行购买职业责任保险，以覆盖因服务交付可能产生的法律责任。
+
+5. 知识产权
+   5.1 您向客户交付的工作成果的知识产权归属由您与客户自行约定。
+   5.2 您保证交付的成果不侵犯任何第三方的知识产权或其他合法权益。
+   5.3 因知识产权侵权产生的法律责任由您独立承担。
+
+6. 保密义务
+   6.1 您应对在服务过程中获取的客户信息、代码、商业机密等保密信息承担保密义务。
+   6.2 保密义务在本协议终止后继续有效。
+
+7. 协议期限与终止
+   7.1 本协议自您完成入驻流程并支付订阅费用之日起生效。
+   7.2 任何一方可提前 30 天书面通知对方终止本协议。
+   7.3 如违反本协议，平台有权立即终止您的专家资格。
+
+8. 争议解决
+   8.1 因本协议产生的争议，双方应首先友好协商解决。
+   8.2 协商不成的，任何一方可将争议提交平台所在地有管辖权的人民法院诉讼解决。
+   8.3 本协议适用中华人民共和国法律（不包括冲突法规则）。
+
+9. 其他
+   9.1 本协议构成双方就专家服务的完整协议，取代之前的所有口头或书面约定。
+   9.2 平台有权不时修订本协议，修订后的协议将在平台公示后生效。
+   9.3 如您不同意修订后的协议，应停止使用平台服务。
+`;
 
 export interface Expert {
   id: string;
