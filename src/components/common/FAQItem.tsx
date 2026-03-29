@@ -8,15 +8,14 @@ interface FAQItemProps {
 
 export const FAQItem: React.FC<FAQItemProps> = ({ faq }) => {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
-      <button
+    <div className="bg-white rounded-2xl border border-slate-200 vibe-card-shadow overflow-hidden">
+      <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-6 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
+        className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
       >
-        <span className="font-bold text-slate-900 pr-4">{faq.q}</span>
-        <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="font-black text-vibe-primary uppercase tracking-tight">{faq.q}</span>
+        <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -24,9 +23,9 @@ export const FAQItem: React.FC<FAQItemProps> = ({ faq }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+            transition={{ duration: 0.3 }}
           >
-            <div className="px-6 pb-6 text-slate-600 leading-relaxed">
+            <div className="px-8 pb-6 text-slate-500 font-medium leading-relaxed border-t border-slate-50 pt-4">
               {faq.a}
             </div>
           </motion.div>
@@ -35,5 +34,3 @@ export const FAQItem: React.FC<FAQItemProps> = ({ faq }) => {
     </div>
   );
 };
-
-export default FAQItem;
