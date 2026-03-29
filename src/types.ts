@@ -3,6 +3,15 @@ export type OrderStatus = 'pending_consultation' | 'pending_quote' | 'quoted' | 
 
 export type MembershipTier = 'Basic' | 'Pro' | 'Elite';
 
+export type UserTier = 'free' | 'pro' | 'max';
+
+// 用户会员配置
+export const USER_TIER_CONFIG: Record<UserTier, { aiDiagnosisLimit: number; expertConsultLimit: number; name: string }> = {
+  free: { aiDiagnosisLimit: 1, expertConsultLimit: 1, name: '按次付费' },
+  pro: { aiDiagnosisLimit: 10, expertConsultLimit: 10, name: 'Pro' },
+  max: { aiDiagnosisLimit: 69, expertConsultLimit: Infinity, name: 'Max' },
+};
+
 export interface Expert {
   id: string;
   name: string;
@@ -18,6 +27,14 @@ export interface Expert {
   feeDiscount: number;
 }
 
+export interface CodeAnalysisResult {
+  summary: string;
+  issues: string[];
+  severity: 'high' | 'medium' | 'low';
+  recommendations: string[];
+  codeSnippets?: string[];
+}
+
 export interface Request {
   id: string;
   title: string;
@@ -30,6 +47,14 @@ export interface Request {
   expertId?: string;
   price?: number;
   consultationFeePaid: boolean;
+  category?: string;
+  subCategory?: string;
+  urgency?: 'normal' | 'urgent';
+  aiDiagnosis?: CodeAnalysisResult;
+  expectedOutcome?: string;
+  gitUrl?: string;
+  branch?: string;
+  filePath?: string;
 }
 
 export const MOCK_EXPERTS: Expert[] = [
@@ -81,39 +106,69 @@ export const MOCK_REQUESTS: Request[] = [
   {
     id: 'r1',
     title: '修复 Next.js 水合错误',
-    description: '我的 AI 生成的代码一直显示水合不匹配。需要帮助修复 SSR 逻辑。',
+    description: '我的 AI 生成的代码一直显示水合不匹配。页面加载时出现闪烁，控制台报错 "Hydration failed because the initial UI does not match what was rendered on the server"。',
+    expectedOutcome: '修复水合错误，确保 SSR 和客户端渲染一致，消除控制台报错和页面闪烁。',
     budget: '¥300 - ¥600',
-    techStack: ['Next.js', 'React'],
+    techStack: ['Next.js', 'React', 'TypeScript'],
     deliveryTime: '24 小时内',
     status: 'in_service',
     createdAt: '2024-03-25',
     expertId: 'e1',
-    price: 500,
     consultationFeePaid: true,
+    category: 'Web',
+    subCategory: '前端开发',
+    urgency: 'urgent',
+    gitUrl: 'https://github.com/example/my-nextjs-app',
+    branch: 'main',
+    filePath: 'src/components/Header.tsx',
+    aiDiagnosis: {
+      summary: '检测到 SSR 组件中使用了 window 对象导致水合不匹配。Header 组件在渲染时直接访问了 window.innerWidth，这在服务端渲染时不存在。',
+      issues: ['水合不匹配', 'SSR 错误', '浏览器 API 访问'],
+      severity: 'high',
+      recommendations: ['使用 useEffect 包裹浏览器 API 调用', '使用 dynamic import 禁用 SSR', '添加 typeof window 检查'],
+    },
   },
   {
     id: 'r2',
     title: '将 Python 脚本部署到 AWS',
-    description: '我有一个爬虫脚本，但不知道如何设置 EC2 实例或 Lambda。',
+    description: '我有一个爬虫脚本，可以正常运行，但不知道如何设置 EC2 实例或 Lambda。需要配置定时触发和日志监控。',
+    expectedOutcome: '成功部署到 AWS Lambda，配置 CloudWatch 定时触发（每天凌晨2点），设置日志告警。',
     budget: '¥600 - ¥1200',
-    techStack: ['Python', 'AWS'],
+    techStack: ['Python', 'AWS', 'Lambda'],
     deliveryTime: '3 天内',
     status: 'pending_quote',
     createdAt: '2024-03-27',
+    expertId: 'e2',
     consultationFeePaid: true,
+    category: 'DevOps',
+    subCategory: '云部署',
+    urgency: 'normal',
+    gitUrl: 'https://github.com/example/python-scraper',
+    branch: 'main',
   },
   {
     id: 'r3',
     title: 'React 状态管理混乱',
-    description: '应用变得越来越慢，Props 传递到处都是。需要一个干净的 Redux 或 Zustand 设置。',
+    description: '应用变得越来越慢，Props 传递到处都是。组件层级超过 10 层，状态更新导致整个应用重新渲染。',
+    expectedOutcome: '重构状态管理，使用 Zustand 替代 Props drilling，优化渲染性能，减少不必要的重渲染。',
     budget: '¥1000 - ¥2000',
-    techStack: ['React', 'Zustand'],
+    techStack: ['React', 'Zustand', 'TypeScript'],
     deliveryTime: '2 天内',
     status: 'completed',
     createdAt: '2024-03-10',
     expertId: 'e3',
-    price: 1500,
     consultationFeePaid: true,
+    category: 'Web',
+    subCategory: '前端开发',
+    urgency: 'normal',
+    gitUrl: 'https://github.com/example/react-state-refactor',
+    branch: 'develop',
+    aiDiagnosis: {
+      summary: '检测到组件层级过深，Props drilling 严重。建议引入全局状态管理，优化组件渲染性能。',
+      issues: ['Props Drilling', '状态管理混乱', '性能问题'],
+      severity: 'medium',
+      recommendations: ['引入 Zustand 状态管理', '重构组件层级', '使用 React.memo 优化渲染'],
+    },
   },
 ];
 

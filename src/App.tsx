@@ -15,6 +15,7 @@ import {
   Clock, 
   ArrowRight, 
   ShieldCheck, 
+  Shield,
   ArrowLeft,
   Zap,
   Star,
@@ -29,18 +30,47 @@ import {
   Github,
   Mail,
   User,
-  Settings
+  Users,
+  Settings,
+  FileText,
+  Sparkles,
+  Terminal,
+  Code2,
+  Cpu,
+  Globe,
+  Lock,
+  FileCode,
+  Layers
 } from 'lucide-react';
-import { Request, Expert, MOCK_EXPERTS, MOCK_REQUESTS, MOCK_MARKETPLACE, OrderStatus } from './types';
+import { Request, Expert, MOCK_EXPERTS, MOCK_REQUESTS, MOCK_MARKETPLACE, OrderStatus, USER_TIER_CONFIG, UserTier } from './types';
+import { PostRequestFlow } from './PostRequestFlow';
 
 // --- Components ---
 
 const VibeLogo = ({ className = "w-9 h-9", iconOnly = false }: { className?: string, iconOnly?: boolean }) => (
   <div className={`flex items-center gap-3 ${!iconOnly ? 'group cursor-pointer' : ''}`}>
-    <div className={`${className} bg-vibe-primary rounded-lg flex items-center justify-center relative overflow-hidden shadow-lg shadow-vibe-primary/20 border border-slate-800`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-vibe-accent/20 to-transparent opacity-50" />
-      <Zap className="text-vibe-accent w-1/2 h-1/2 fill-current relative z-10" />
-      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-vibe-accent/20 blur-sm rounded-full" />
+    <div className={`${className} bg-vibe-primary rounded-lg flex items-center justify-center relative overflow-hidden shadow-lg shadow-vibe-primary/20 border border-slate-800 group-hover:shadow-vibe-accent/20 transition-shadow duration-300`}>
+      {/* Subtle gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-vibe-accent/10 to-transparent" />
+      
+      {/* Clean Geometric V */}
+      <svg 
+        viewBox="0 0 40 40" 
+        className="w-1/2 h-1/2 relative z-10"
+        fill="none"
+      >
+        {/* Main V - sharp geometric */}
+        <path 
+          d="M10 10 L20 30 L30 10"
+          stroke="#38BDF8"
+          strokeWidth="2.5"
+          strokeLinecap="square"
+          strokeLinejoin="miter"
+        />
+        {/* Top horizontal bar */}
+        <line x1="8" y1="10" x2="14" y2="10" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="square" />
+        <line x1="26" y1="10" x2="32" y2="10" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="square" />
+      </svg>
     </div>
     {!iconOnly && (
       <span className="font-black text-xl tracking-tighter text-vibe-primary vibe-glow-text">
@@ -158,25 +188,40 @@ const LoginModal = ({ isOpen, onClose, onLogin }: { isOpen: boolean, onClose: ()
   );
 };
 
-const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, onUpgrade }: { isOpen: boolean, onClose: () => void, request: any, isExpert: boolean, onClaim: (r: any) => void, onUpgrade: () => void }) => {
+const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, onUpgrade }: { isOpen: boolean, onClose: () => void, request: any, isExpert: boolean, onClaim: (r: any, bidData: any) => void, onUpgrade: () => void }) => {
+  const [showBidForm, setShowBidForm] = useState(false);
+  const [bidData, setBidData] = useState({
+    analysis: '',
+    solution: '',
+    price: '',
+    deliveryTime: '24'
+  });
+
   if (!isOpen || !request) return null;
+
+  const handleSubmitBid = () => {
+    onClaim(request, bidData);
+    setShowBidForm(false);
+    setBidData({ analysis: '', solution: '', price: '', deliveryTime: '24' });
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         onClick={onClose}
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
       />
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative bg-white w-full max-w-2xl rounded-2xl p-10 vibe-shadow border border-slate-100 overflow-hidden"
+        className="relative bg-white w-full max-w-2xl rounded-2xl p-10 vibe-shadow border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto"
       >
         <button onClick={onClose} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 transition-colors">
           <X className="w-6 h-6" />
         </button>
-        
+
         {!isExpert ? (
           <div className="py-4">
             <div className="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center mb-8 shadow-sm border border-sky-100">
@@ -186,7 +231,7 @@ const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, o
             <p className="text-slate-600 mb-8 max-w-md font-medium leading-relaxed">
               Vibe Request 的详细需求和抢单功能仅对 **VibeFello 认证专家** 开放。订阅专家计划后，您可以：
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
               {[
                 { title: '查看完整需求', desc: '解锁所有项目的技术细节和附件' },
@@ -207,13 +252,13 @@ const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, o
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button 
+              <button
                 onClick={onUpgrade}
                 className="flex-1 bg-vibe-primary text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/20 flex items-center justify-center gap-2"
               >
                 查看专家订阅计划 <ArrowRight className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={onClose}
                 className="flex-1 border border-slate-200 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-50 transition-all"
               >
@@ -221,7 +266,109 @@ const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, o
               </button>
             </div>
           </div>
+        ) : showBidForm ? (
+          // 抢单表单
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <button
+                onClick={() => setShowBidForm(false)}
+                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-slate-400" />
+              </button>
+              <div>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">提交抢单方案</h2>
+                <p className="text-sm text-slate-500">提供您的分析和报价，让用户选择您</p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* 问题分析 */}
+              <div>
+                <label className="block text-sm font-bold text-slate-900 mb-2">
+                  问题分析 <span className="text-slate-400 font-normal">（简要说明您对问题的理解）</span>
+                </label>
+                <textarea
+                  value={bidData.analysis}
+                  onChange={(e) => setBidData({ ...bidData, analysis: e.target.value })}
+                  placeholder="例如：这是一个典型的 Next.js 水合错误，原因是组件在服务端和客户端渲染结果不一致..."
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-vibe-accent focus:border-transparent outline-none transition-all min-h-[100px] resize-none"
+                />
+              </div>
+
+              {/* 解决思路 */}
+              <div>
+                <label className="block text-sm font-bold text-slate-900 mb-2">
+                  解决思路 <span className="text-slate-400 font-normal">（描述您的解决方案）</span>
+                </label>
+                <textarea
+                  value={bidData.solution}
+                  onChange={(e) => setBidData({ ...bidData, solution: e.target.value })}
+                  placeholder="例如：1. 检查 SSR 组件中的浏览器 API 使用 2. 添加 useEffect 钩子包裹客户端逻辑 3. 使用 dynamic import 禁用特定组件的 SSR..."
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-vibe-accent focus:border-transparent outline-none transition-all min-h-[120px] resize-none"
+                />
+              </div>
+
+              {/* 报价和交付时间 */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold text-slate-900 mb-2">报价 (¥)</label>
+                  <input
+                    type="number"
+                    value={bidData.price}
+                    onChange={(e) => setBidData({ ...bidData, price: e.target.value })}
+                    placeholder="例如：500"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-vibe-accent focus:border-transparent outline-none transition-all"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">用户预算：{request.budget}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-900 mb-2">预计交付时间</label>
+                  <select
+                    value={bidData.deliveryTime}
+                    onChange={(e) => setBidData({ ...bidData, deliveryTime: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-vibe-accent focus:border-transparent outline-none transition-all bg-white"
+                  >
+                    <option value="6">6 小时内</option>
+                    <option value="12">12 小时内</option>
+                    <option value="24">24 小时内</option>
+                    <option value="48">48 小时内</option>
+                    <option value="72">3 天内</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* 提示 */}
+              <div className="p-4 bg-amber-50 rounded-xl border border-amber-100">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="text-sm text-amber-800">
+                    <p className="font-bold mb-1">抢单提示</p>
+                    <p className="text-amber-700">详细的分析和合理的报价更容易获得用户青睐。最多10位专家可同时抢单，用户会选择最合适的方案。</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 提交按钮 */}
+              <div className="flex gap-4">
+                <button
+                  onClick={handleSubmitBid}
+                  disabled={!bidData.analysis || !bidData.solution || !bidData.price}
+                  className="flex-1 bg-vibe-primary text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md disabled:bg-slate-200 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <Zap className="w-5 h-5 fill-vibe-accent text-vibe-accent" /> 确认抢单
+                </button>
+                <button
+                  onClick={() => setShowBidForm(false)}
+                  className="px-6 py-4 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          </div>
         ) : (
+          // 需求详情
           <div>
             <div className="flex items-center gap-3 mb-6">
               <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-sky-50 text-vibe-accent border border-sky-100">
@@ -230,6 +377,11 @@ const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, o
               <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
                 <Clock className="w-3 h-3" /> {request.time}
               </span>
+              {request.claimCount !== undefined && (
+                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">
+                  {request.claimCount}/10 位专家抢单中
+                </span>
+              )}
             </div>
             <h2 className="text-3xl font-black text-vibe-primary mb-4 tracking-tight">{request.title}</h2>
             <div className="flex flex-wrap gap-2 mb-8">
@@ -237,12 +389,28 @@ const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, o
                 <span key={tag} className="text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-100">#{tag}</span>
               ))}
             </div>
-            
+
+            {/* AI诊断摘要 */}
+            {request.aiDiagnosis && (
+              <div className="bg-emerald-50 p-6 rounded-xl mb-8 border border-emerald-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-5 h-5 text-emerald-500" />
+                  <h3 className="font-bold text-emerald-900">AI 诊断摘要</h3>
+                </div>
+                <p className="text-emerald-800 text-sm mb-3">{request.aiDiagnosis.summary}</p>
+                <div className="flex flex-wrap gap-2">
+                  {request.aiDiagnosis.issues.map((issue: string, idx: number) => (
+                    <span key={idx} className="text-xs px-2 py-1 bg-white text-emerald-700 rounded border border-emerald-200">{issue}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-slate-50 p-6 rounded-lg mb-8 border border-slate-100">
               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 text-[10px]">详细描述</h3>
               <p className="text-slate-700 leading-relaxed font-medium">{request.description}</p>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4 mb-10">
               <div className="bg-white p-4 rounded-lg border border-slate-200">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">预算范围</div>
@@ -253,13 +421,15 @@ const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, o
                 <div className="text-xl font-black text-emerald-500">已支付 (¥49.00)</div>
               </div>
             </div>
-            
+
             <div className="flex gap-4">
-              <button 
-                onClick={() => onClaim(request)}
-                className="flex-1 bg-vibe-primary text-white py-4 rounded-lg font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2"
+              <button
+                onClick={() => setShowBidForm(true)}
+                disabled={request.claimCount >= 10}
+                className="flex-1 bg-vibe-primary text-white py-4 rounded-lg font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md flex items-center justify-center gap-2 disabled:bg-slate-200 disabled:cursor-not-allowed"
               >
-                <Zap className="w-5 h-5 fill-vibe-accent text-vibe-accent" /> 立即抢单
+                <Zap className="w-5 h-5 fill-vibe-accent text-vibe-accent" />
+                {request.claimCount >= 10 ? '已满员' : '立即抢单'}
               </button>
               <button className="flex-1 border border-slate-200 text-slate-600 py-4 rounded-lg font-bold hover:bg-slate-50 transition-all">
                 咨询详情
@@ -325,7 +495,7 @@ const ClaimSuccessModal = ({ isOpen, onClose, onGoToDashboard }: { isOpen: boole
 
 // --- Components ---
 
-const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, onLoginClick, onLogout }: { activeTab: string, onTabChange: (t: string) => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null, onLoginClick: () => void, onLogout: () => void }) => {
+const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, userTier, onLoginClick, onLogout }: { activeTab: string, onTabChange: (t: string) => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null, userTier: 'free' | 'pro' | 'max', onLoginClick: () => void, onLogout: () => void }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
@@ -369,16 +539,34 @@ const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, onLoginClick, on
       <div className="flex items-center gap-6">
         {isLoggedIn ? (
           <>
+            {/* 会员标识 - 仅普通用户显示 */}
+            {userRole === 'user' && userTier !== 'free' && (
+              <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                userTier === 'max' 
+                  ? 'bg-slate-900 text-white' 
+                  : 'bg-vibe-accent/10 text-vibe-primary border border-vibe-accent/20'
+              }`}>
+                {userTier === 'max' ? 'Max' : 'Pro'}
+              </div>
+            )}
             <div className="relative">
               <button 
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center gap-3 px-4 py-2 rounded-full bg-slate-50 border border-slate-200/60 hover:bg-slate-100 transition-all"
               >
-                <div className="w-6 h-6 bg-vibe-primary text-vibe-accent rounded-full flex items-center justify-center font-black text-[10px] border border-slate-800 shadow-sm">
-                  {userRole === 'expert' ? 'E' : 'U'}
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] border shadow-sm ${
+                  userRole === 'expert' 
+                    ? 'bg-vibe-primary text-vibe-accent border-slate-800' 
+                    : userTier === 'max'
+                      ? 'bg-slate-900 text-white border-slate-700'
+                      : userTier === 'pro'
+                        ? 'bg-vibe-accent text-vibe-primary border-vibe-primary'
+                        : 'bg-slate-200 text-slate-600 border-slate-300'
+                }`}>
+                  {userRole === 'expert' ? 'E' : userTier === 'max' ? 'M' : userTier === 'pro' ? 'P' : 'U'}
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 hidden sm:inline">
-                  {userRole === 'expert' ? 'Expert' : 'Member'}
+                  {userRole === 'expert' ? 'Expert' : userTier === 'max' ? 'Max' : userTier === 'pro' ? 'Pro' : 'Member'}
                 </span>
                 <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
               </button>
@@ -775,301 +963,417 @@ const Home = ({ onStart, onViewPricing, onMarketplaceClick, onViewMore, isLogged
   </div>
 );
 
-const Pricing = ({ userRole }: { userRole: 'user' | 'expert' | null }) => {
-  const expertPlans = [
-    { tier: "NOOB", price: "$19/月", limit: "4 单/月", features: ["基础专家标识", "标准结算周期", "社区支持"] },
-    { tier: "PRO", price: "$69/月", limit: "20 单/月", features: ["PRO 专家勋章", "优先推荐", "快速结算周期"], active: true },
-    { tier: "MASTER", price: "$299/月", limit: "无限接单", features: ["MASTER 顶级勋章", "专属客服", "即时结算", "首页推荐"] }
-  ];
-
-  const userPlans = [
-    { tier: "Free", price: "$9.9/次", limit: "按次支付", features: ["基础咨询服务", "标准响应速度", "社区支持"] },
-    { tier: "Dev", price: "$39/月", limit: "10 次/月", features: ["优先响应", "技术文档支持", "专属咨询通道"], active: true },
-    { tier: "Premium", price: "$199/月", limit: "无限次咨询", features: ["即时响应", "架构设计建议", "代码深度审查", "1对1专属专家"] }
-  ];
-
+const Pricing = ({ userRole, userTier, onUpgrade }: { userRole: 'user' | 'expert' | null, userTier: 'free' | 'pro' | 'max', onUpgrade?: (tier: 'pro' | 'max') => void }) => {
   const isExpertView = userRole === 'expert';
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  // 用户会员计划 - 重新设计，更有吸引力
+  const userPlans = [
+    {
+      tier: "按次咨询",
+      subtitle: "灵活付费",
+      price: "$9.9",
+      period: "每次咨询",
+      description: "适合偶尔需要帮助的用户",
+      features: [
+        { text: "1 次 AI 代码诊断", highlight: false },
+        { text: "1 次专家咨询机会", highlight: false },
+        { text: "标准响应速度（24h）", highlight: false },
+        { text: "社区支持", highlight: false },
+      ],
+      notIncluded: [],
+      cta: "按次支付",
+      popular: false,
+      badge: null,
+      savings: null
+    },
+    {
+      tier: "Pro",
+      subtitle: "最受欢迎",
+      price: "$39",
+      period: "每月",
+      description: "Vibe Coding 新手的最佳选择",
+      features: [
+        { text: "每月 10 次 AI 代码诊断", highlight: true },
+        { text: "每月 10 次专家咨询", highlight: true },
+        { text: "优先专家匹配（2h内）", highlight: true },
+        { text: "完整诊断报告下载", highlight: false },
+        { text: "技术文档支持", highlight: false },
+        { text: "专属咨询通道", highlight: false },
+      ],
+      notIncluded: [],
+      cta: "立即升级",
+      popular: true,
+      badge: "省 $12/月",
+      savings: "比单次省 $4.2/次"
+    },
+    {
+      tier: "Max",
+      subtitle: "无限权益",
+      price: "$199",
+      period: "每月",
+      description: "适合重度 Vibe Coding 开发者",
+      features: [
+        { text: "每月 69 次 AI 代码诊断", highlight: true },
+        { text: "无限次专家咨询", highlight: true },
+        { text: "即时专家响应（30min）", highlight: true },
+        { text: "1对1 专属专家", highlight: true },
+        { text: "架构设计建议", highlight: true },
+        { text: "代码深度审查", highlight: false },
+        { text: "VIP 专属客服", highlight: false },
+        { text: "优先处理紧急需求", highlight: false },
+      ],
+      notIncluded: [],
+      cta: "立即升级",
+      popular: false,
+      badge: "省 $60/月",
+      savings: "重度用户首选，无后顾之忧"
+    }
+  ];
+
+  // 专家订阅计划
+  const expertPlans = [
+    {
+      tier: "Starter",
+      subtitle: "入门",
+      price: "$19",
+      period: "每月",
+      description: "开始您的专家变现之旅",
+      features: [
+        { text: "每月 4 单接单额度", highlight: false },
+        { text: "基础专家标识", highlight: false },
+        { text: "标准结算周期", highlight: false },
+        { text: "社区支持", highlight: false },
+      ],
+      cta: "立即订阅",
+      popular: false,
+      badge: null
+    },
+    {
+      tier: "Pro 专家",
+      subtitle: "专业",
+      price: "$69",
+      period: "每月",
+      description: "提升接单能力，增加收入",
+      features: [
+        { text: "每月 20 单接单额度", highlight: true },
+        { text: "Pro 专家勋章", highlight: true },
+        { text: "优先推荐展示", highlight: true },
+        { text: "快速结算周期", highlight: false },
+        { text: "专属客服支持", highlight: false },
+      ],
+      cta: "立即订阅",
+      popular: true,
+      badge: "最受欢迎"
+    },
+    {
+      tier: "Master",
+      subtitle: "大师",
+      price: "$299",
+      period: "每月",
+      description: "顶级专家的专属特权",
+      features: [
+        { text: "无限接单额度", highlight: true },
+        { text: "Master 顶级勋章", highlight: true },
+        { text: "首页推荐位", highlight: true },
+        { text: "即时结算", highlight: true },
+        { text: "VIP 专属活动", highlight: false },
+      ],
+      cta: "立即订阅",
+      popular: false,
+      badge: "顶级"
+    }
+  ];
+
   const plans = isExpertView ? expertPlans : userPlans;
 
-  return (
-    <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-      <div className="text-center mb-20">
-        <h2 className="text-4xl font-black text-slate-900 mb-6 tracking-tight">
-          {isExpertView ? "专家订阅计划" : "用户咨询计划"}
-        </h2>
-        <p className="text-slate-500 max-w-xl mx-auto">
-          {isExpertView 
-            ? "选择适合您的接单等级，开启专业变现之旅。" 
-            : "选择最适合您的咨询方案，让技术难题迎刃而解。"}
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {plans.map((p, i) => (
-          <div key={i} className={`p-10 rounded-2xl border ${p.active ? 'border-vibe-accent ring-4 ring-vibe-accent/10 vibe-shadow' : 'border-slate-200 vibe-card-shadow'} bg-white relative overflow-hidden`}>
-            {p.active && <div className="absolute top-0 right-0 bg-vibe-accent text-vibe-primary text-[10px] font-black px-4 py-1 rounded-bl-xl uppercase tracking-widest">最受欢迎</div>}
-            <div className="text-[10px] font-black text-vibe-accent uppercase tracking-[0.2em] mb-4">{p.tier}</div>
-            <div className="text-4xl font-black text-vibe-primary mb-2">{p.price}</div>
-            <div className="text-sm font-bold text-slate-400 mb-8">{p.limit}</div>
-            <ul className="space-y-4 mb-10">
-              {p.features.map(f => (
-                <li key={f} className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {f}
-                </li>
-              ))}
-            </ul>
-            <button className={`w-full py-4 rounded-xl font-black uppercase tracking-widest transition-all ${p.active ? 'bg-vibe-primary text-white hover:bg-slate-800 shadow-lg shadow-vibe-primary/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-              {isExpertView ? "立即订阅" : "立即升级"}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-20 p-12 bg-slate-900 rounded-3xl text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-vibe-accent/10 blur-3xl rounded-full" />
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-          <div className="max-w-xl">
-            <h3 className="text-3xl font-black mb-6 tracking-tight">平台资金担保服务</h3>
-            <p className="text-slate-400 font-medium leading-relaxed mb-8">
-              VibeFello 提供全方位的资金担保。用户支付的费用将先由平台托管，只有在您确认满意并点击“确认支付”后，资金才会结算给专家。
-              <br /><br />
-              <span className="text-vibe-accent">最终由用户决定是否付费，确保每一分钱都花在刀刃上。</span>
-            </p>
-            <div className="flex flex-wrap gap-6">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
-                <span className="text-sm font-bold">资金托管</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
-                <span className="text-sm font-bold">满意后支付</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
-                <span className="text-sm font-bold">争议仲裁</span>
-              </div>
-            </div>
-          </div>
-          <div className="w-full md:w-auto">
-            <div className="bg-white/5 backdrop-blur-xl p-8 rounded-2xl border border-white/10">
-              <div className="text-[10px] font-black text-vibe-accent uppercase tracking-widest mb-4">服务流程</div>
-              <div className="space-y-4">
-                {[
-                  "发布需求并托管资金",
-                  "专家接单并开始工作",
-                  "用户验收交付成果",
-                  "用户确认并释放资金"
-                ].map((step, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="w-6 h-6 rounded-full bg-vibe-accent text-vibe-primary flex items-center justify-center text-[10px] font-black">{i+1}</div>
-                    <span className="text-sm font-bold">{step}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const PostRequestFlow = ({ onComplete }: { onComplete: (req: Partial<Request>) => void }) => {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    budget: '¥300 - ¥600',
-    techStack: [] as string[],
-    deliveryTime: '24 小时内'
-  });
-
-  const techOptions = ['React', 'Next.js', 'Python', 'Node.js', 'TypeScript', 'AWS', 'Docker', 'Firebase'];
-
-  const nextStep = () => setStep(s => s + 1);
-  const prevStep = () => setStep(s => s - 1);
-
-  const toggleTech = (tech: string) => {
-    setFormData(prev => ({
-      ...prev,
-      techStack: prev.techStack.includes(tech) 
-        ? prev.techStack.filter(t => t !== tech)
-        : [...prev.techStack, tech]
-    }));
+  // 社会证明数据
+  const socialProof = isExpertView ? {
+    users: "2,400+",
+    label: "活跃专家",
+    testimonial: "加入 Pro 计划后，我的月收入增长了 3 倍",
+    author: "Alex Chen, 全栈工程师",
+    metric: "平均月收入",
+    metricValue: "$3,200"
+  } : {
+    users: "15,000+",
+    label: "问题已解决",
+    testimonial: "Pro 会员帮我节省了数周的调试时间",
+    author: "Sarah Li, 独立开发者",
+    metric: "平均节省",
+    metricValue: "40 小时/月"
   };
 
   return (
-    <div className="pt-32 pb-20 px-6 max-w-2xl mx-auto">
-      <div className="mb-12">
-        <div className="flex items-center justify-between mb-4">
-          {[1, 2, 3, 4, 5].map((s) => (
-            <div key={s} className="flex items-center flex-1 last:flex-none">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
-                step >= s ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'
-              }`}>
-                {step > s ? <CheckCircle2 className="w-6 h-6" /> : s}
+    <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+      {/* 核心价值主张 */}
+      {!isExpertView && (
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-vibe-accent/10 rounded-full border border-vibe-accent/20 mb-6">
+            <Sparkles className="w-4 h-4 text-vibe-accent" />
+            <span className="text-sm font-bold text-vibe-primary">
+              选择适合您的计划
+            </span>
+          </div>
+          <h3 className="text-3xl font-black mb-4 text-slate-900">解决 Vibe Coding 最后 10% 的上线难题</h3>
+          <p className="text-lg text-slate-500 mb-6">
+            AI 帮你写代码，我们帮你解决 AI 解决不了的问题。部署失败、性能瓶颈、安全漏洞，专家 2 小时内介入。
+          </p>
+          <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="font-bold text-slate-700">部署问题</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="font-bold text-slate-700">性能优化</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="font-bold text-slate-700">安全漏洞</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="font-bold text-slate-700">架构设计</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 价格卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        {plans.map((plan, i) => (
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className={`relative rounded-3xl overflow-hidden ${
+              plan.popular 
+                ? 'bg-vibe-primary text-white ring-4 ring-vibe-accent/30 scale-105 z-10' 
+                : 'bg-white border border-slate-200'
+            }`}
+          >
+            {/* 徽章 */}
+            {plan.badge && (
+              <div className="absolute top-0 right-0 bg-vibe-accent text-vibe-primary px-4 py-1 text-xs font-black rounded-bl-2xl">
+                {plan.badge}
               </div>
-              {s < 5 && <div className={`h-1 flex-1 mx-2 rounded-full ${step > s ? 'bg-indigo-600' : 'bg-slate-100'}`}></div>}
+            )}
+
+            <div className="p-8 flex flex-col h-full">
+              {/* 计划名称 */}
+              <div className="mb-6">
+                <div className={`text-xs font-bold uppercase tracking-wider mb-1 ${plan.popular ? 'text-vibe-accent' : 'text-slate-400'}`}>
+                  {plan.subtitle}
+                </div>
+                <h3 className={`text-2xl font-black ${plan.popular ? 'text-white' : 'text-slate-900'}`}>
+                  {plan.tier}
+                </h3>
+                <p className={`text-sm mt-1 ${plan.popular ? 'text-slate-300' : 'text-slate-500'}`}>
+                  {plan.description}
+                </p>
+              </div>
+
+              {/* 价格 */}
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-5xl font-black ${plan.popular ? 'text-white' : 'text-slate-900'}`}>
+                    {plan.price}
+                  </span>
+                  <span className={`text-sm font-bold ${plan.popular ? 'text-slate-400' : 'text-slate-400'}`}>
+                    /{plan.period}
+                  </span>
+                </div>
+                {!isExpertView && 'savings' in plan && plan.savings && (
+                  <p className={`text-sm mt-2 ${plan.popular ? 'text-vibe-accent' : 'text-emerald-600'}`}>
+                    ✓ {plan.savings}
+                  </p>
+                )}
+              </div>
+
+              {/* 功能列表 */}
+              <ul className="space-y-3 mb-6 flex-1">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                      plan.popular ? 'bg-vibe-accent' : 'bg-emerald-100'
+                    }`}>
+                      <CheckCircle2 className={`w-3 h-3 ${plan.popular ? 'text-vibe-primary' : 'text-emerald-600'}`} />
+                    </div>
+                    <span className={`text-sm ${
+                      feature.highlight 
+                        ? (plan.popular ? 'text-white font-bold' : 'text-slate-900 font-bold')
+                        : (plan.popular ? 'text-slate-300' : 'text-slate-600')
+                    }`}>
+                      {feature.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA 按钮 */}
+              <button 
+                onClick={() => {
+                  setSelectedPlan(plan.tier);
+                  setShowPaymentModal(true);
+                }}
+                className={`w-full py-4 rounded-xl font-black uppercase tracking-widest transition-all mt-auto ${
+                  plan.popular 
+                    ? 'bg-vibe-accent text-vibe-primary hover:bg-vibe-accent/90 shadow-lg shadow-vibe-accent/20' 
+                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
+              >
+                {plan.cta}
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* 信任保障 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="p-8 bg-slate-900 rounded-3xl text-white">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-vibe-accent/20 rounded-xl flex items-center justify-center">
+              <ShieldCheck className="w-6 h-6 text-vibe-accent" />
+            </div>
+            <h3 className="text-xl font-black">7 天无理由退款</h3>
+          </div>
+          <p className="text-slate-400 leading-relaxed">
+            购买后 7 天内，如未使用任何专家咨询服务，可申请全额退款。让您零风险体验。
+          </p>
+        </div>
+
+        <div className="p-8 bg-slate-50 rounded-3xl border border-slate-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-vibe-accent/10 rounded-xl flex items-center justify-center">
+              <Clock className="w-6 h-6 text-vibe-accent" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900">随时取消订阅</h3>
+          </div>
+          <p className="text-slate-500 leading-relaxed">
+            无长期合约，您可以随时取消订阅，次月生效。剩余未使用的咨询次数当月有效。
+          </p>
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="mt-16">
+        <h3 className="text-2xl font-black text-slate-900 text-center mb-8">常见问题</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          {[
+            { q: "AI 诊断次数有限制吗？", a: "按次付费含 1 次，Pro 会员每月 10 次，Max 会员每月 69 次。未使用次数不累积。" },
+            { q: "专家咨询和 AI 诊断有什么区别？", a: "AI 诊断自动分析代码问题，专家咨询由真人专家提供深度解决方案和代码修复。" },
+            { q: "可以随时取消订阅吗？", a: "可以，您可以随时取消，次月生效。当月已支付的会员费用不退还。" },
+            { q: "未使用的次数会累积吗？", a: "不会，Pro 和 Max 的每月次数当月有效，不累积到下月。" }
+          ].map((faq, i) => (
+            <div key={i} className="p-5 bg-white rounded-xl border border-slate-200">
+              <p className="font-bold text-slate-900 mb-2">{faq.q}</p>
+              <p className="text-sm text-slate-500">{faq.a}</p>
             </div>
           ))}
         </div>
-        <h2 className="text-3xl font-bold text-slate-900">
-          {step === 1 && "您在构建什么？"}
-          {step === 2 && "您的技术栈是什么？"}
-          {step === 3 && "预算与时间"}
-          {step === 4 && "支付基础咨询费"}
-          {step === 5 && "确认并发布"}
-        </h2>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="bg-white p-10 rounded-2xl border border-slate-200 vibe-shadow"
-        >
-          {step === 1 && (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">项目标题</label>
-                <input 
-                  type="text" 
-                  placeholder="例如：修复 Next.js 中的水合错误"
-                  className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-vibe-accent focus:border-transparent outline-none transition-all font-medium"
-                  value={formData.title}
-                  onChange={e => setFormData({...formData, title: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">问题描述</label>
-                <textarea 
-                  rows={5}
-                  placeholder="描述错误或您想要实现的目标..."
-                  className="w-full px-5 py-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-vibe-accent focus:border-transparent outline-none transition-all resize-none font-medium"
-                  value={formData.description}
-                  onChange={e => setFormData({...formData, description: e.target.value})}
-                />
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="grid grid-cols-2 gap-3">
-              {techOptions.map(tech => (
-                <button
-                  key={tech}
-                  onClick={() => toggleTech(tech)}
-                  className={`px-4 py-4 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${
-                    formData.techStack.includes(tech)
-                      ? 'bg-vibe-primary border-vibe-primary text-white shadow-lg shadow-vibe-primary/20'
-                      : 'bg-white border-slate-200 text-slate-600 hover:border-vibe-accent/50'
-                  }`}
-                >
-                  {tech}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-8">
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">预算范围</label>
-                <div className="grid grid-cols-1 gap-3">
-                  {['¥300 - ¥600', '¥600 - ¥2000', '¥2000 - ¥6000', '自定义报价'].map(b => (
-                    <button
-                      key={b}
-                      onClick={() => setFormData({...formData, budget: b})}
-                      className={`px-5 py-5 rounded-xl border text-left font-black transition-all ${
-                        formData.budget === b
-                          ? 'bg-vibe-accent/5 border-vibe-accent text-vibe-primary'
-                          : 'bg-white border-slate-200 text-slate-600 hover:border-vibe-accent/50'
-                      }`}
-                    >
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">期望交付时间</label>
-                <select 
-                  className="w-full px-5 py-4 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-vibe-accent font-bold"
-                  value={formData.deliveryTime}
-                  onChange={e => setFormData({...formData, deliveryTime: e.target.value})}
-                >
-                  <option>24 小时内</option>
-                  <option>3 天内</option>
-                  <option>1 周内</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="text-center py-6">
-              <div className="w-20 h-20 bg-vibe-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-vibe-accent/20">
-                <Wallet className="w-10 h-10 text-vibe-accent" />
-              </div>
-              <h3 className="text-2xl font-black text-vibe-primary mb-2 tracking-tight">基础咨询费: ¥49.00</h3>
-              <p className="text-sm text-slate-500 mb-10 font-medium">支付咨询费后，您的需求将优先推送给专家，并获得初步诊断方案。</p>
-              <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 text-left">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">支付方式</span>
-                  <span className="text-[10px] font-black text-vibe-accent uppercase tracking-widest">微信/支付宝</span>
-                </div>
-                <div className="w-full h-40 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-300 font-black uppercase tracking-[0.2em] text-xs">
-                  [ 模拟支付二维码 ]
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 5 && (
-            <div className="space-y-6">
-              <div className="bg-vibe-primary p-8 rounded-2xl space-y-6 border border-slate-800 shadow-xl shadow-vibe-primary/20">
-                <div>
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">项目标题</div>
-                  <div className="text-xl font-black text-white tracking-tight">{formData.title || '未命名项目'}</div>
-                </div>
-                <div className="flex justify-between items-end">
-                  <div>
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">咨询费状态</div>
-                    <div className="text-lg font-black text-emerald-400">已支付 (¥49.00)</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">预算</div>
-                    <div className="text-lg font-black text-vibe-accent">{formData.budget}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 p-5 bg-vibe-accent/5 rounded-2xl border border-vibe-accent/20">
-                <ShieldCheck className="w-6 h-6 text-vibe-accent shrink-0" />
-                <p className="text-xs text-vibe-primary font-bold leading-relaxed">
-                  VibeFello 将作为第三方担保，确保您的资金安全和专家的交付质量。
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-12 flex gap-4">
-            {step > 1 && (
-              <button 
-                onClick={prevStep}
-                className="flex-1 px-6 py-4 rounded-xl border border-slate-200 font-black uppercase tracking-widest text-slate-400 hover:text-vibe-primary hover:bg-slate-50 transition-all"
-              >
-                返回
-              </button>
-            )}
-            <button 
-              onClick={step === 5 ? () => onComplete(formData) : nextStep}
-              className="flex-[2] bg-vibe-primary text-white px-6 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all vibe-shadow shadow-xl shadow-vibe-primary/20"
+      {/* 支付弹窗 */}
+      <AnimatePresence>
+        {showPaymentModal && selectedPlan && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isProcessingPayment && setShowPaymentModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-md rounded-2xl p-8 vibe-shadow"
             >
-              {step === 4 ? '确认支付' : step === 5 ? '发布并寻找专家' : '继续'}
-            </button>
+              {!isProcessingPayment && (
+                <button
+                  onClick={() => setShowPaymentModal(false)}
+                  className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-slate-400" />
+                </button>
+              )}
+
+              {isProcessingPayment ? (
+                <div className="py-12 text-center">
+                  <div className="relative w-20 h-20 mx-auto mb-6">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-0 border-4 border-vibe-accent/20 rounded-full"
+                    />
+                    <motion.div
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-2 border-4 border-t-vibe-accent border-r-transparent border-b-transparent border-l-transparent rounded-full"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Wallet className="w-8 h-8 text-vibe-accent" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-black text-slate-900 mb-2">正在处理支付...</h3>
+                  <p className="text-slate-500">请稍候，正在安全处理您的付款</p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center mb-8">
+                    <div className="w-16 h-16 bg-vibe-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Sparkles className="w-8 h-8 text-vibe-accent" />
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 mb-2">确认升级</h3>
+                    <p className="text-slate-500">您选择了 <span className="font-bold text-vibe-primary">{selectedPlan}</span> 计划</p>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-xl p-4 mb-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-slate-600">计划费用</span>
+                      <span className="font-bold text-slate-900">
+                        {selectedPlan === '按次咨询' ? '$6.9' : selectedPlan === 'Pro' ? '$39/月' : '$199/月'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500">首月优惠</span>
+                      <span className="text-emerald-600 font-bold">
+                        {selectedPlan === '按次咨询' ? '-$3' : selectedPlan === 'Pro' ? '-$12' : '-$60'}
+                      </span>
+                    </div>
+                    <div className="border-t border-slate-200 mt-3 pt-3 flex justify-between items-center">
+                      <span className="font-bold text-slate-900">实付金额</span>
+                      <span className="text-2xl font-black text-vibe-primary">
+                        {selectedPlan === '按次咨询' ? '$6.9' : selectedPlan === 'Pro' ? '$27' : '$139'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={async () => {
+                      setIsProcessingPayment(true);
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      setIsProcessingPayment(false);
+                      setShowPaymentModal(false);
+                      // 升级会员
+                      const tier = selectedPlan === 'Pro' ? 'pro' : selectedPlan === 'Max' ? 'max' : 'free';
+                      onUpgrade?.(tier as 'pro' | 'max');
+                    }}
+                    className="w-full py-4 bg-vibe-primary text-white rounded-xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all vibe-shadow"
+                  >
+                    确认支付
+                  </button>
+                </>
+              )}
+            </motion.div>
           </div>
-        </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
@@ -1129,13 +1433,29 @@ const MatchingScreen = ({ onFinish }: { onFinish: () => void }) => {
   );
 };
 
-const Marketplace = ({ onSelect }: { onSelect: (r: any) => void }) => {
+const Marketplace = ({ onSelect, isExpert, userTier }: { onSelect: (r: any) => void, isExpert: boolean, userTier: UserTier }) => {
+  // 模拟抢单数据
+  const requestStats = MOCK_MARKETPLACE.map(req => ({
+    ...req,
+    claimCount: Math.floor(Math.random() * 8) + 1, // 1-8人抢单
+    maxClaims: 10,
+    aiDiagnosis: req.id === 'm1' || req.id === 'm3' ? {
+      summary: '检测到代码中存在潜在的性能问题和安全漏洞',
+      severity: 'medium',
+      issues: ['内存泄漏', 'XSS风险', '未优化查询']
+    } : null
+  }));
+
   return (
     <div className="pt-32 pb-20 px-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-12">
         <div>
           <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Vibe Request 大厅</h2>
-          <p className="text-slate-500 font-medium">浏览最新的技术救援需求，发挥您的专业技能并获得丰厚报酬。</p>
+          <p className="text-slate-500 font-medium">
+            {isExpert 
+              ? '浏览最新技术救援需求，最多10位专家可同时抢单，提供分析和报价。'
+              : '您的请求发布后，最多10位专家将抢单并为您提供解决方案。'}
+          </p>
         </div>
         <div className="flex gap-2">
           {['全部', '高优', '最新', '高额'].map(f => (
@@ -1143,32 +1463,103 @@ const Marketplace = ({ onSelect }: { onSelect: (r: any) => void }) => {
           ))}
         </div>
       </div>
+
+      {/* 专家提示 */}
+      {isExpert && (
+        <div className="mb-8 p-4 bg-vibe-accent/10 rounded-xl border border-vibe-accent/20 flex items-center gap-3">
+          <div className="w-10 h-10 bg-vibe-accent/20 rounded-lg flex items-center justify-center">
+            <Zap className="w-5 h-5 text-vibe-accent" />
+          </div>
+          <div>
+            <div className="font-bold text-slate-900">专家抢单规则</div>
+            <div className="text-sm text-slate-600">每个需求最多10位专家可同时抢单，提供问题分析和报价，由用户选择最合适的专家。</div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4">
-        {MOCK_MARKETPLACE.map((req) => (
+        {requestStats.map((req) => (
           <div 
             key={req.id}
             onClick={() => onSelect(req)}
-            className="bg-white p-8 rounded-2xl border border-slate-200 vibe-card-shadow hover:border-vibe-accent transition-all cursor-pointer group flex flex-col md:flex-row md:items-center justify-between gap-6"
+            className="bg-white p-6 rounded-2xl border border-slate-200 vibe-card-shadow hover:border-vibe-accent transition-all cursor-pointer group"
           >
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-wider border border-indigo-100">新需求</span>
-                <span className="text-xs text-slate-400 font-medium">{req.time}</span>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-wider border border-indigo-100">新需求</span>
+                  <span className="text-xs text-slate-400 font-medium">{req.time}</span>
+                  {req.aiDiagnosis && (
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[10px] font-black border border-emerald-100 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> 已AI诊断
+                    </span>
+                  )}
+                </div>
+                <h4 className="text-xl font-black text-vibe-primary group-hover:text-vibe-accent transition-colors tracking-tight mb-3">{req.title}</h4>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {req.tags.map(s => <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{s}</span>)}
+                </div>
+                {/* 抢单进度 */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 max-w-[200px]">
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-vibe-accent rounded-full transition-all"
+                        style={{ width: `${(req.claimCount / req.maxClaims) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-xs text-slate-500">
+                    <span className="font-bold text-vibe-primary">{req.claimCount}</span> / {req.maxClaims} 位专家抢单
+                  </span>
+                  {req.claimCount >= 8 && (
+                    <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
+                      即将满员
+                    </span>
+                  )}
+                </div>
               </div>
-              <h4 className="text-xl font-black text-vibe-primary group-hover:text-vibe-accent transition-colors tracking-tight mb-3">{req.title}</h4>
-              <div className="flex flex-wrap gap-2">
-                {req.tags.map(s => <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{s}</span>)}
+              <div className="flex items-center gap-6">
+                <div className="text-right">
+                  <div className="text-2xl font-black text-slate-900">{req.budget}</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">预估报酬</div>
+                </div>
+                <button className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg ${
+                  req.claimCount >= 10 
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                    : 'bg-vibe-primary text-white hover:bg-slate-800 shadow-vibe-primary/10'
+                }`}>
+                  {req.claimCount >= 10 ? '已满员' : '立即抢单'}
+                </button>
               </div>
             </div>
-            <div className="flex items-center gap-8">
-              <div className="text-right">
-                <div className="text-2xl font-black text-slate-900">{req.budget}</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">预估报酬</div>
+
+            {/* AI诊断摘要（仅专家可见） */}
+            {isExpert && req.aiDiagnosis && (
+              <div className="mt-4 pt-4 border-t border-slate-100">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-slate-900 mb-1">AI 诊断摘要</div>
+                    <p className="text-sm text-slate-600 mb-2">{req.aiDiagnosis.summary}</p>
+                    <div className="flex flex-wrap gap-1">
+                      {req.aiDiagnosis.issues.map((issue: string, idx: number) => (
+                        <span key={idx} className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded">{issue}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <span className={`text-xs font-bold px-2 py-1 rounded ${
+                    req.aiDiagnosis.severity === 'high' ? 'bg-red-100 text-red-600' :
+                    req.aiDiagnosis.severity === 'medium' ? 'bg-amber-100 text-amber-600' :
+                    'bg-emerald-100 text-emerald-600'
+                  }`}>
+                    {req.aiDiagnosis.severity === 'high' ? '高' : req.aiDiagnosis.severity === 'medium' ? '中' : '低'}风险
+                  </span>
+                </div>
               </div>
-              <button className="bg-vibe-primary text-white px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/10">
-                立即抢单
-              </button>
-            </div>
+            )}
           </div>
         ))}
       </div>
@@ -1851,7 +2242,145 @@ const ExpertDashboard = ({ requests, onSelect, onEnterWorkspace, onTabChange }: 
   );
 };
 
-const Dashboard = ({ requests, onSelect }: { requests: Request[], onSelect: (r: Request) => void }) => {
+// 会员状态卡片组件
+const MembershipCard = ({ tier, remainingConsults, onUpgrade }: { tier: UserTier, remainingConsults: number, onUpgrade: () => void }) => {
+  const config = {
+    free: {
+      title: '本月剩余次数',
+      value: `${remainingConsults} 次`,
+      subtext: '按次付费',
+      bg: 'bg-slate-50',
+      border: 'border-slate-200',
+      text: 'text-slate-900',
+      subtextColor: 'text-slate-500',
+      iconBg: 'bg-slate-200',
+      iconColor: 'text-slate-600'
+    },
+    pro: {
+      title: '本月剩余次数',
+      value: `${remainingConsults} 次`,
+      subtext: '/ 10次',
+      bg: 'bg-vibe-accent/10',
+      border: 'border-vibe-accent/30',
+      text: 'text-vibe-primary',
+      subtextColor: 'text-vibe-primary/70',
+      iconBg: 'bg-vibe-accent',
+      iconColor: 'text-vibe-primary'
+    },
+    max: {
+      title: '本月剩余次数',
+      value: '无限',
+      subtext: '',
+      bg: 'bg-vibe-primary',
+      border: 'border-vibe-primary',
+      text: 'text-white',
+      subtextColor: 'text-slate-300',
+      iconBg: 'bg-vibe-accent',
+      iconColor: 'text-vibe-primary'
+    }
+  };
+
+  const c = config[tier];
+
+  const tierBadge = tier === 'pro' ? 'Pro' : tier === 'max' ? 'Max' : null;
+
+  return (
+    <div className={`relative flex items-center gap-3 px-4 py-2.5 rounded-xl ${c.bg} border ${c.border} shadow-sm`}>
+      {/* 会员等级角标 */}
+      {tierBadge && (
+        <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-vibe-primary text-white text-[10px] font-black rounded-full shadow-sm">
+          {tierBadge}
+        </div>
+      )}
+      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${c.iconBg}`}>
+        <Sparkles className={`w-4 h-4 ${c.iconColor}`} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className={`text-[10px] ${c.subtextColor}`}>{c.title}</div>
+        <div className="flex items-baseline gap-1.5">
+          <span className={`text-lg font-black ${c.text}`}>{c.value}</span>
+          <span className={`text-xs ${c.subtextColor}`}>{c.subtext}</span>
+        </div>
+      </div>
+      {tier !== 'max' && (
+        <button 
+          onClick={onUpgrade}
+          className="ml-2 px-3 py-1.5 bg-vibe-primary text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors"
+        >
+          升级计划
+        </button>
+      )}
+    </div>
+  );
+};
+
+// 空白状态引导组件
+const EmptyStateGuide = ({ onPostRequest }: { onPostRequest: () => void }) => {
+  return (
+    <div className="relative overflow-hidden rounded-3xl bg-vibe-primary p-12 text-white">
+      {/* 背景装饰 */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-vibe-accent/20 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-vibe-glow/20 blur-[80px] rounded-full -translate-x-1/3 translate-y-1/3" />
+      
+      <div className="relative z-10">
+        {/* 主标题区域 */}
+        <div className="text-center mb-12">
+          <h3 className="text-4xl font-black mb-4 tracking-tight">
+            让Vibe Coding专家为你解决代码难题
+          </h3>
+          <p className="text-slate-300 max-w-lg mx-auto text-lg">
+            只需3分钟描述你的问题，顶级代码审计AI将自动诊断，专家会在24小时内介入解决。
+          </p>
+        </div>
+
+        {/* 流程步骤 - 横向排列 */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
+          {[
+            { num: '01', title: '描述问题', desc: '说明技术难题' },
+            { num: '02', title: 'AI 诊断', desc: '自动分析代码' },
+            { num: '03', title: '专家解决', desc: '资深专家修复' }
+          ].map((step, i, arr) => (
+            <React.Fragment key={i}>
+              <div className="flex items-center gap-4 bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 min-w-[180px]">
+                <div className="w-12 h-12 bg-vibe-accent rounded-xl flex items-center justify-center">
+                  <span className="text-lg font-black text-vibe-primary">{step.num}</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white">{step.title}</h4>
+                  <p className="text-sm text-slate-400">{step.desc}</p>
+                </div>
+              </div>
+              {i < arr.length - 1 && (
+                <ArrowRight className="w-6 h-6 text-vibe-accent hidden md:block" />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* CTA 按钮 */}
+        <div className="text-center">
+          <button 
+            onClick={onPostRequest}
+            className="group inline-flex items-center gap-3 px-10 py-5 bg-vibe-accent text-vibe-primary rounded-2xl font-black text-lg hover:bg-vibe-accent/90 transition-all shadow-2xl shadow-vibe-accent/20 hover:shadow-vibe-accent/40 hover:scale-105"
+          >
+            <Zap className="w-6 h-6 group-hover:animate-pulse" />
+            立即发布需求
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = ({ requests, onSelect, onPostRequest, onUpgrade, userTier, remainingConsults }: {
+  requests: Request[],
+  onSelect: (r: Request) => void,
+  onPostRequest: () => void,
+  onUpgrade: () => void,
+  userTier: UserTier,
+  remainingConsults: number
+}) => {
   const getStatusColor = (status: OrderStatus) => {
     switch(status) {
       case 'pending_consultation': return 'bg-slate-100 text-slate-700 border-slate-200';
@@ -1877,65 +2406,163 @@ const Dashboard = ({ requests, onSelect }: { requests: Request[], onSelect: (r: 
 
   return (
     <div className="pt-32 pb-20 px-6 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-10">
+      {/* 头部区域 */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
           <h2 className="text-3xl font-bold text-slate-900">我的需求</h2>
           <p className="text-slate-500">跟踪您的活跃帮助会话和付款状态。</p>
         </div>
-        <div className="flex gap-4">
-          <div className="bg-white border border-slate-200 p-4 rounded-2xl flex items-center gap-3 shadow-sm">
-            <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-emerald-600" />
-            </div>
+
+        {/* 会员状态和余额 */}
+        <div className="flex items-center gap-3">
+          <MembershipCard tier={userTier} remainingConsults={remainingConsults} onUpgrade={onUpgrade} />
+          <div className="h-10 w-px bg-slate-200" />
+          <div className="flex items-center gap-2 px-3">
+            <Wallet className="w-4 h-4 text-emerald-600" />
             <div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">托管余额</div>
-              <div className="font-bold text-slate-900">¥3250.00</div>
+              <div className="text-[10px] text-slate-400">余额</div>
+              <div className="text-sm font-bold text-slate-900">¥3,250</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {requests.map((req) => (
-          <motion.div
-            key={req.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            onClick={() => onSelect(req)}
-            className="bg-white p-6 rounded-2xl border border-slate-200 vibe-card-shadow hover:shadow-md hover:border-vibe-accent transition-all cursor-pointer group"
-          >
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(req.status)}`}>
-                    {getStatusLabel(req.status)}
-                  </span>
-                  <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {req.createdAt}
-                  </span>
+      {/* 需求列表或空白状态 */}
+      {requests.length > 0 ? (
+        <div className="space-y-4">
+          {requests.map((req) => (
+            <motion.div
+              key={req.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={() => onSelect(req)}
+              className="bg-white p-6 rounded-2xl border border-slate-200 vibe-card-shadow hover:shadow-md hover:border-vibe-accent transition-all cursor-pointer group"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(req.status)}`}>
+                      {getStatusLabel(req.status)}
+                    </span>
+                    <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {req.createdAt}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-black text-vibe-primary group-hover:text-vibe-accent transition-colors tracking-tight">{req.title}</h3>
+                  <div className="flex gap-2 mt-2">
+                    {req.techStack.map(s => <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{s}</span>)}
+                  </div>
                 </div>
-                <h3 className="text-xl font-black text-vibe-primary group-hover:text-vibe-accent transition-colors tracking-tight">{req.title}</h3>
-                <div className="flex gap-2 mt-2">
-                  {req.techStack.map(s => <span key={s} className="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">{s}</span>)}
+                <div className="flex items-center gap-6">
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-slate-900">{req.price ? `¥${req.price}` : req.budget}</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">固定价格</div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-vibe-accent group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
-              <div className="flex items-center gap-6">
-                <div className="text-right">
-                  <div className="text-lg font-bold text-slate-900">{req.price ? `¥${req.price}` : req.budget}</div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">固定价格</div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-vibe-accent group-hover:translate-x-1 transition-all" />
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <EmptyStateGuide onPostRequest={onPostRequest} />
+      )}
     </div>
   );
 };
 
-const OrderDetail = ({ request, onBack }: { request: Request, onBack: () => void }) => {
-  const expert = MOCK_EXPERTS.find(e => e.id === request.expertId) || MOCK_EXPERTS[0];
+// 模拟专家报价数据
+const MOCK_EXPERT_BIDS = [
+  {
+    id: 'bid1',
+    expertId: 'e1',
+    expertName: '陈老师 (Alex)',
+    expertAvatar: 'https://picsum.photos/seed/alex/100/100',
+    expertRating: 4.9,
+    expertCompletedJobs: 124,
+    expertSkills: ['Next.js', 'TypeScript', 'Vercel'],
+    analysis: '这是一个典型的 Next.js 水合错误，主要原因是组件在服务端和客户端渲染结果不一致。具体来说是 Header 组件中直接使用了 window.innerWidth。',
+    solution: '1. 使用 useEffect 包裹浏览器 API 调用\n2. 添加 typeof window !== "undefined" 检查\n3. 使用 dynamic import 禁用特定组件的 SSR',
+    price: 450,
+    deliveryTime: '12',
+    deliveryTimeLabel: '12小时内',
+    isPro: true
+  },
+  {
+    id: 'bid2',
+    expertId: 'e2',
+    expertName: '米勒 (Sarah)',
+    expertAvatar: 'https://picsum.photos/seed/sarah/100/100',
+    expertRating: 4.8,
+    expertCompletedJobs: 89,
+    expertSkills: ['React', 'SSR', '性能优化'],
+    analysis: '检测到 SSR 组件中使用了浏览器 API 导致水合不匹配。问题定位在 Header 组件的响应式逻辑。',
+    solution: '1. 重构 Header 组件，分离服务端和客户端渲染逻辑\n2. 使用 CSS Media Query 替代 JS 响应式\n3. 添加水合错误边界处理',
+    price: 380,
+    deliveryTime: '24',
+    deliveryTimeLabel: '24小时内',
+    isPro: true
+  },
+  {
+    id: 'bid3',
+    expertId: 'e3',
+    expertName: '王大卫 (David)',
+    expertAvatar: 'https://picsum.photos/seed/david/100/100',
+    expertRating: 5.0,
+    expertCompletedJobs: 210,
+    expertSkills: ['React Native', 'Firebase', 'Node.js'],
+    analysis: '水合错误是由于组件在服务端渲染时访问了浏览器专属 API。需要重构组件生命周期。',
+    solution: '1. 使用 useIsClient hook 检测客户端环境\n2. 延迟加载浏览器相关代码\n3. 优化组件渲染性能',
+    price: 520,
+    deliveryTime: '6',
+    deliveryTimeLabel: '6小时内',
+    isPro: false
+  }
+];
+
+const OrderDetail = ({ request, onBack, onSelectExpert }: { request: Request, onBack: () => void, onSelectExpert?: (expertBid: any) => void }) => {
+  const [isProjectInfoExpanded, setIsProjectInfoExpanded] = useState(false);
+  const [expertBids, setExpertBids] = useState<any[]>([]);
+  const [loadingBids, setLoadingBids] = useState(false);
+  const [selectedBid, setSelectedBid] = useState<any>(null);
+
+  // 如果订单状态是 pending_quote，加载专家报价
+  useEffect(() => {
+    if (!request) return;
+    if (request.status === 'pending_quote') {
+      setLoadingBids(true);
+      // 模拟渐进式加载专家报价
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index < MOCK_EXPERT_BIDS.length) {
+          setExpertBids(prev => [...prev, MOCK_EXPERT_BIDS[index]]);
+          index++;
+        } else {
+          clearInterval(interval);
+          setLoadingBids(false);
+        }
+      }, 1500);
+
+      return () => clearInterval(interval);
+    }
+  }, [request?.status]);
+
+  if (!request) {
+    return (
+      <div className="pt-32 pb-20 px-6 max-w-6xl mx-auto text-center">
+        <p className="text-slate-500">加载中...</p>
+      </div>
+    );
+  }
+
+  const expert = request.expertId ? MOCK_EXPERTS.find(e => e.id === request.expertId) : null;
+
+  // 处理选择专家
+  const handleSelectExpert = () => {
+    if (selectedBid && onSelectExpert) {
+      onSelectExpert(selectedBid);
+    }
+  };
 
   return (
     <div className="pt-32 pb-20 px-6 max-w-6xl mx-auto">
@@ -1943,68 +2570,11 @@ const OrderDetail = ({ request, onBack }: { request: Request, onBack: () => void
         <ChevronRight className="w-4 h-4 rotate-180" /> 返回控制台
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-shadow">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-3xl font-bold text-slate-900">{request.title}</h2>
-              <span className="bg-vibe-accent/10 text-vibe-accent px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-vibe-accent/20">
-                {request.status === 'in_service' ? '服务中' : request.status === 'completed' ? '已完成' : '处理中'}
-              </span>
-            </div>
-            <p className="text-slate-600 leading-relaxed mb-8">{request.description}</p>
-            
-            <div className="grid grid-cols-3 gap-4 p-6 bg-slate-50 rounded-xl">
-              <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">预算</div>
-                <div className="font-bold text-slate-900">{request.price ? `¥${request.price}` : request.budget}</div>
-              </div>
-              <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">交付时间</div>
-                <div className="font-bold text-slate-900">{request.deliveryTime}</div>
-              </div>
-              <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">技术栈</div>
-                <div className="flex gap-1">
-                  {request.techStack.map(s => <span key={s} className="text-[10px] font-black text-vibe-accent uppercase tracking-widest">{s}</span>)}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-shadow">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-vibe-accent" /> 沟通记录
-            </h3>
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <img src={expert.avatar} className="w-10 h-10 rounded-full shrink-0" referrerPolicy="no-referrer" />
-                <div className="bg-slate-100 p-4 rounded-xl rounded-tl-none">
-                  <p className="text-sm text-slate-700">您好！我已经分析了您的 Next.js 水合问题。看来您在 SSR 组件中使用了 `window`。我可以为您修复此问题并设置正确的检查逻辑。</p>
-                  <span className="text-[10px] font-bold text-slate-400 mt-2 block">上午 10:45</span>
-                </div>
-              </div>
-              <div className="flex gap-4 flex-row-reverse">
-                <div className="w-10 h-10 bg-vibe-primary rounded-xl flex items-center justify-center text-white font-black shrink-0">我</div>
-                <div className="bg-vibe-primary p-4 rounded-xl rounded-tr-none text-white shadow-lg shadow-vibe-primary/10">
-                  <p className="text-sm">听起来完全正确。我当时正试图获取屏幕宽度以实现响应式组件。那我们开始吧！</p>
-                  <span className="text-[10px] font-black text-white/30 mt-2 block uppercase tracking-widest">上午 10:52</span>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8 flex gap-3">
-              <input type="text" placeholder="输入消息..." className="flex-1 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-vibe-accent font-medium" />
-              <button className="bg-vibe-primary text-white p-3 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/20">
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-8">
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-shadow">
-            <h3 className="text-lg font-bold mb-6">分配的专家</h3>
-            <div className="flex items-center gap-4 mb-6">
+      {/* 选择专家后显示专家信息卡片 - 放在最上方 */}
+      {request.status !== 'pending_quote' && expert && (
+        <div className="mb-8 bg-white p-6 rounded-2xl border border-slate-200 vibe-shadow">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
               <div className="relative">
                 <img src={expert.avatar} className="w-16 h-16 rounded-xl" referrerPolicy="no-referrer" />
                 {expert.isPro && (
@@ -2020,63 +2590,466 @@ const OrderDetail = ({ request, onBack }: { request: Request, onBack: () => void
                 <div className="flex items-center gap-1 text-amber-500 text-sm font-bold">
                   <Star className="w-4 h-4 fill-current" /> {expert.rating}
                 </div>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {expert.skills.slice(0, 3).map(s => <span key={s} className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">{s}</span>)}
+                </div>
               </div>
             </div>
-            <p className="text-sm text-slate-500 mb-6 leading-relaxed">{expert.bio}</p>
-            <div className="flex flex-wrap gap-2 mb-8">
-              {expert.skills.map(s => <span key={s} className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md">{s}</span>)}
+            <div className="text-right">
+              <div className="text-2xl font-black text-vibe-primary">¥{request.price}</div>
+              <div className="text-xs text-slate-400">服务报价</div>
             </div>
-            <button className="w-full py-3 rounded-xl border border-slate-200 font-bold text-slate-700 hover:bg-slate-50 transition-all">
-              查看个人资料
-            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          {/* 项目标题和状态 */}
+          <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-shadow">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-slate-900">{request.title}</h2>
+              <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                request.status === 'pending_quote' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                request.status === 'in_service' ? 'bg-vibe-accent/10 text-vibe-accent border-vibe-accent/20' :
+                request.status === 'completed' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                'bg-slate-100 text-slate-600 border-slate-200'
+              }`}>
+                {request.status === 'pending_quote' ? '等待选择专家' :
+                 request.status === 'in_service' ? '服务中' :
+                 request.status === 'completed' ? '已完成' : '处理中'}
+              </span>
+            </div>
+
+            {/* 标签 */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {request.category && (
+                <span className="px-3 py-1 bg-vibe-primary text-white text-xs font-bold rounded-full">
+                  {request.category}
+                </span>
+              )}
+              {request.subCategory && (
+                <span className="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+                  {request.subCategory}
+                </span>
+              )}
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
+                {request.urgency === 'urgent' ? '加急' : '普通'}
+              </span>
+            </div>
+
+            {/* 项目信息 - 可展开收起 */}
+            <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <button
+                onClick={() => setIsProjectInfoExpanded(!isProjectInfoExpanded)}
+                className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors"
+              >
+                <span className="font-bold text-slate-700">项目信息</span>
+                <ChevronRight className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isProjectInfoExpanded ? 'rotate-90' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isProjectInfoExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-6 space-y-6">
+                      {/* 问题描述 */}
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">问题描述</h4>
+                        <p className="text-slate-600 leading-relaxed">{request.description}</p>
+                      </div>
+
+                      {/* 预期目标 */}
+                      {request.expectedOutcome && (
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">预期目标</h4>
+                          <p className="text-slate-600 leading-relaxed">{request.expectedOutcome}</p>
+                        </div>
+                      )}
+
+                      {/* Git 仓库信息 */}
+                      {request.gitUrl && (
+                        <div className="p-4 bg-slate-50 rounded-xl">
+                          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">代码仓库</h4>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-slate-500">仓库:</span>
+                              <a href={request.gitUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-vibe-primary font-bold hover:underline">
+                                {request.gitUrl}
+                              </a>
+                            </div>
+                            {request.branch && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-slate-500">分支:</span>
+                                <span className="text-sm font-bold text-slate-700">{request.branch}</span>
+                              </div>
+                            )}
+                            {request.filePath && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-slate-500">相关文件:</span>
+                                <span className="text-sm font-bold text-slate-700">{request.filePath}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 项目信息卡片 */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-slate-50 rounded-xl">
+                        <div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">预算</div>
+                          <div className="font-bold text-slate-900">{request.budget}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">交付时间</div>
+                          <div className="font-bold text-slate-900">{request.deliveryTime}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">紧急程度</div>
+                          <div className={`font-bold ${request.urgency === 'urgent' ? 'text-red-500' : 'text-slate-900'}`}>
+                            {request.urgency === 'urgent' ? '加急' : '普通'}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">提交时间</div>
+                          <div className="font-bold text-slate-900">{request.createdAt}</div>
+                        </div>
+                      </div>
+
+                      {/* 技术栈 */}
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">技术栈</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {request.techStack && request.techStack.map(s => (
+                            <span key={s} className="px-3 py-1 bg-vibe-accent/10 text-vibe-primary text-xs font-bold rounded-full">
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* AI 诊断报告 */}
+                      {request.aiDiagnosis && (
+                        <div className="bg-gradient-to-br from-vibe-primary to-slate-800 p-6 rounded-xl text-white">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 bg-vibe-accent/20 rounded-lg flex items-center justify-center">
+                              <Sparkles className="w-5 h-5 text-vibe-accent" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-black">AI 诊断报告</h3>
+                              <p className="text-xs text-slate-300">基于代码分析生成</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3 mb-4">
+                            <div className="p-3 bg-white/10 rounded-lg">
+                              <div className="text-xs font-bold text-vibe-accent mb-1">主要问题</div>
+                              <p className="text-sm">{request.aiDiagnosis.summary}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="p-3 bg-white/10 rounded-lg">
+                                <div className="text-xs font-bold text-vibe-accent mb-1">问题类型</div>
+                                <div className="flex flex-wrap gap-1">
+                                  {request.aiDiagnosis.issues && request.aiDiagnosis.issues.map((issue, idx) => (
+                                    <span key={idx} className="px-2 py-0.5 bg-white/20 rounded text-xs">{issue}</span>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="p-3 bg-white/10 rounded-lg">
+                                <div className="text-xs font-bold text-vibe-accent mb-1">严重程度</div>
+                                <div className={`text-base font-black ${
+                                  request.aiDiagnosis.severity === 'high' ? 'text-red-400' :
+                                  request.aiDiagnosis.severity === 'medium' ? 'text-amber-400' : 'text-emerald-400'
+                                }`}>
+                                  {request.aiDiagnosis.severity === 'high' ? '高' :
+                                   request.aiDiagnosis.severity === 'medium' ? '中' : '低'}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <button className="w-full py-2.5 bg-vibe-accent text-vibe-primary rounded-lg font-black text-sm hover:bg-vibe-accent/90 transition-all">
+                            查看完整报告
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
-          <div className="bg-slate-900 p-8 rounded-2xl text-white overflow-hidden relative vibe-shadow border border-slate-800">
-            <h3 className="text-lg font-bold mb-6 relative z-10">专业担保流程</h3>
-            <div className="space-y-6 relative z-10">
-              <div className="flex gap-4">
-                <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
+          {/* 选择专家页面 - 仅 pending_quote 状态显示 */}
+          {request.status === 'pending_quote' && (
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-shadow">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 1</div>
-                  <div className="font-bold text-sm">基础咨询费已支付 (¥49.00)</div>
+                  <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-vibe-accent" />
+                    选择专家
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-1">
+                    {loadingBids ? '专家正在抢单中...' : `已收到 ${expertBids.length} 位专家的解决方案`}
+                  </p>
+                </div>
+                {/* 24小时倒计时 */}
+                <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-lg border border-amber-100">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-bold text-amber-700">23:45:12</span>
+                  <span className="text-xs text-amber-600">后截止</span>
                 </div>
               </div>
-              <div className="flex gap-4">
-                <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
+
+              {/* 加载状态 */}
+              {loadingBids && expertBids.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="relative w-16 h-16 mx-auto mb-4">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-0 border-4 border-slate-100 border-t-vibe-accent rounded-full"
+                    />
+                    <Users className="absolute inset-0 m-auto w-6 h-6 text-vibe-accent" />
+                  </div>
+                  <p className="text-slate-500">等待专家报价中...</p>
                 </div>
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 2</div>
-                  <div className="font-bold text-sm">专家已报价并托管全额资金</div>
+              )}
+
+              {/* 专家报价列表 */}
+              <div className="space-y-4">
+                {expertBids.filter(Boolean).map((bid, index) => (
+                  <motion.div
+                    key={bid?.id || index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => bid && setSelectedBid(bid)}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
+                      selectedBid?.id === bid?.id
+                        ? 'border-vibe-primary bg-vibe-accent/5'
+                        : 'border-slate-200 hover:border-vibe-accent/50 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* 专家头像 */}
+                      <div className="relative">
+                        <img src={bid?.expertAvatar} alt={bid?.expertName} className="w-14 h-14 rounded-xl object-cover" />
+                        {bid?.isPro && (
+                          <div className="absolute -top-2 -right-2 bg-amber-400 text-amber-950 text-[10px] font-black px-1.5 py-0.5 rounded-md border-2 border-white">
+                            PRO
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 专家信息 */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-bold text-slate-900">{bid?.expertName}</span>
+                          <div className="flex items-center gap-1 text-amber-500">
+                            <Star className="w-4 h-4 fill-current" />
+                            <span className="text-sm font-bold">{bid?.expertRating}</span>
+                          </div>
+                          <span className="text-xs text-slate-400">({bid?.expertCompletedJobs} 单)</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {bid?.expertSkills?.map((skill: string) => (
+                            <span key={skill} className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded">{skill}</span>
+                          ))}
+                        </div>
+
+                        {/* 分析和方案 */}
+                        <div className="space-y-2 mb-4">
+                          <div className="p-3 bg-slate-50 rounded-lg">
+                            <div className="text-xs font-bold text-slate-700 mb-1">问题分析</div>
+                            <p className="text-sm text-slate-600 line-clamp-2">{bid?.analysis}</p>
+                          </div>
+                          <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                            <div className="text-xs font-bold text-emerald-700 mb-1">解决思路</div>
+                            <p className="text-sm text-emerald-600 whitespace-pre-line line-clamp-3">{bid?.solution}</p>
+                          </div>
+                        </div>
+
+                        {/* 报价和时间 */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <span className="text-2xl font-black text-vibe-primary">¥{bid?.price}</span>
+                              <span className="text-xs text-slate-400 ml-1">报价</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-slate-600">
+                              <Clock className="w-4 h-4" />
+                              <span className="text-sm font-bold">{bid?.deliveryTimeLabel}</span>
+                            </div>
+                          </div>
+                          {selectedBid?.id === bid?.id && (
+                            <div className="flex items-center gap-2 text-vibe-primary">
+                              <CheckCircle2 className="w-5 h-5" />
+                              <span className="text-sm font-bold">已选择</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* 选择按钮 */}
+              {expertBids.length > 0 && (
+                <div className="mt-6">
+                  <button
+                    onClick={handleSelectExpert}
+                    disabled={!selectedBid}
+                    className="w-full bg-vibe-primary text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all disabled:bg-slate-200 disabled:cursor-not-allowed"
+                  >
+                    {selectedBid ? `确认选择 ${selectedBid.expertName} 并支付 ¥${selectedBid.price}` : '请选择一位专家'}
+                  </button>
+                  <p className="text-center text-xs text-slate-400 mt-3">
+                    24小时内未选择，订单将自动取消，基础咨询费不予退还
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 沟通记录 - 仅在选择专家后显示 */}
+          {request.status !== 'pending_quote' && expert && (
+            <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-shadow">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-vibe-accent" /> 沟通记录
+              </h3>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <img src={expert.avatar} className="w-10 h-10 rounded-full shrink-0" referrerPolicy="no-referrer" />
+                  <div className="bg-slate-100 p-4 rounded-xl rounded-tl-none">
+                    <p className="text-sm text-slate-700">您好！我已经分析了您的 Next.js 水合问题。看来您在 SSR 组件中使用了 `window`。我可以为您修复此问题并设置正确的检查逻辑。</p>
+                    <span className="text-[10px] font-bold text-slate-400 mt-2 block">上午 10:45</span>
+                  </div>
+                </div>
+                <div className="flex gap-4 flex-row-reverse">
+                  <div className="w-10 h-10 bg-vibe-primary rounded-xl flex items-center justify-center text-white font-black shrink-0">我</div>
+                  <div className="bg-vibe-primary p-4 rounded-xl rounded-tr-none text-white shadow-lg shadow-vibe-primary/10">
+                    <p className="text-sm">听起来完全正确。我当时正试图获取屏幕宽度以实现响应式组件。那我们开始吧！</p>
+                    <span className="text-[10px] font-black text-white/30 mt-2 block uppercase tracking-widest">上午 10:52</span>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-4">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${request.status === 'in_service' ? 'bg-vibe-accent animate-pulse' : 'bg-white/20'}`}>
-                  <Clock className="w-4 h-4" />
+              <div className="mt-8 flex gap-3">
+                <input type="text" placeholder="输入消息..." className="flex-1 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-vibe-accent font-medium" />
+                <button className="bg-vibe-primary text-white p-3 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/20">
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-8">
+          {/* 等待专家时的提示 */}
+          {request.status === 'pending_quote' && !expert && (
+            <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+                  <Clock className="w-5 h-5 text-amber-500" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 3</div>
-                  <div className="font-bold text-sm">服务进行中</div>
+                  <h3 className="font-bold text-amber-900 mb-1">等待专家报价</h3>
+                  <p className="text-sm text-amber-700">最多10位专家可参与抢单，您可以在24小时内选择最合适的方案。</p>
                 </div>
               </div>
             </div>
-            <div className="mt-10 p-4 bg-white/10 rounded-xl border border-white/10 relative z-10">
-              <div className="flex justify-between text-xs font-bold mb-1">
-                <span className="text-white/60">平台担保费 (10%)</span>
-                <span>-¥50.00</span>
+          )}
+
+          {/* 专业担保流程 - 仅在选择专家后显示 */}
+          {request.status !== 'pending_quote' && (
+            <div className="bg-slate-900 p-8 rounded-2xl text-white overflow-hidden relative vibe-shadow border border-slate-800">
+              <h3 className="text-lg font-bold mb-6 relative z-10">专业担保流程</h3>
+              <div className="space-y-5 relative z-10">
+                <div className="flex gap-4">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 1</div>
+                    <div className="font-bold text-sm">基础咨询</div>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 2</div>
+                    <div className="font-bold text-sm">专家分析并报价</div>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 3</div>
+                    <div className="font-bold text-sm">选择专家并支付费用（平台托管）</div>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${request.status === 'in_service' ? 'bg-vibe-accent animate-pulse' : request.status === 'completed' ? 'bg-emerald-500' : 'bg-white/20'}`}>
+                    {request.status === 'in_service' ? <Clock className="w-4 h-4" /> : request.status === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-2 h-2 rounded-full bg-white/40" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 4</div>
+                    <div className="font-bold text-sm">开始 VibeFello 服务</div>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${request.status === 'completed' ? 'bg-emerald-500' : 'bg-white/20'}`}>
+                    {request.status === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-2 h-2 rounded-full bg-white/40" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 5</div>
+                    <div className="font-bold text-sm">专家完成服务待确认</div>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${request.status === 'completed' ? 'bg-emerald-500' : 'bg-white/20'}`}>
+                    {request.status === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-2 h-2 rounded-full bg-white/40" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 6</div>
+                    <div className="font-bold text-sm">用户验收服务并确认</div>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${request.status === 'completed' ? 'bg-emerald-500' : 'bg-white/20'}`}>
+                    {request.status === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : <div className="w-2 h-2 rounded-full bg-white/40" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-white/50">步骤 7</div>
+                    <div className="font-bold text-sm">结算资金给专家</div>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between text-sm font-bold">
-                <span>专家预计收入</span>
-                <span className="text-emerald-400">¥450.00</span>
+              <div className="mt-8 p-4 bg-white/10 rounded-xl border border-white/10 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm">平台全程担保</div>
+                    <div className="text-xs text-white/60">资金安全 · 服务质量 · 售后保障</div>
+                  </div>
+                </div>
               </div>
-              <div className="mt-3 pt-3 border-t border-white/10 text-[10px] text-white/40 leading-tight">
-                * 该专家为 {expert.tier} 会员，享受 {expert.feeDiscount * 100}% 手续费减免。
-              </div>
+              <div className="absolute bottom-0 right-0 w-40 h-40 bg-vibe-accent/10 blur-3xl rounded-full -mb-20 -mr-20"></div>
             </div>
-            <div className="absolute bottom-0 right-0 w-40 h-40 bg-vibe-accent/10 blur-3xl rounded-full -mb-20 -mr-20"></div>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -2087,13 +3060,16 @@ const OrderDetail = ({ request, onBack }: { request: Request, onBack: () => void
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
-  const [requests, setRequests] = useState<Request[]>(MOCK_REQUESTS);
+  const [requests, setRequests] = useState<Request[]>([]);
   const [matching, setMatching] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   
   // New States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<'user' | 'expert' | null>(null);
+  const [userTier, setUserTier] = useState<UserTier>('free');
+  const [remainingAiDiagnosis, setRemainingAiDiagnosis] = useState(1); // 剩余AI诊断次数
+  const [remainingConsults, setRemainingConsults] = useState(1); // 剩余专家咨询次数
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showMarketplaceModal, setShowMarketplaceModal] = useState(false);
   const [selectedMarketplaceReq, setSelectedMarketplaceReq] = useState<any>(null);
@@ -2108,14 +3084,21 @@ export default function App() {
       id: `r${Date.now()}`,
       title: data.title || 'Untitled',
       description: data.description || '',
-      budget: data.budget || '$50 - $100',
+      expectedOutcome: data.expectedOutcome || '',
+      budget: data.budget || '¥100 - ¥300',
       techStack: data.techStack || [],
-      deliveryTime: data.deliveryTime || '24 hours',
+      deliveryTime: data.deliveryTime || '24 小时内',
       status: 'pending_quote',
       createdAt: new Date().toISOString().split('T')[0],
-      expertId: 'e1',
-      price: 75,
-      consultationFeePaid: true
+      // 新订单不设置 expertId，等待用户选择
+      consultationFeePaid: true,
+      category: data.category || '',
+      subCategory: data.subCategory || '',
+      urgency: data.urgency || 'normal',
+      gitUrl: data.gitUrl || '',
+      branch: data.branch || '',
+      filePath: data.filePath || '',
+      aiDiagnosis: data.aiDiagnosis
     };
     setRequests([newReq, ...requests]);
   };
@@ -2147,24 +3130,26 @@ export default function App() {
     setShowMarketplaceModal(true);
   };
 
-  const handleClaimOrder = async (req: any) => {
+  const handleClaimOrder = async (req: any, bidData?: any) => {
     setIsClaiming(true);
     setShowMarketplaceModal(false);
-    
+
     // 模拟抢单过程
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     setIsClaiming(false);
     setClaimSuccess(true);
-    
+
     // 模拟将订单添加到我的项目中
     const newProject: Request = {
       ...req,
       id: `claimed-${Date.now()}`,
-      status: 'in_service',
+      status: 'pending_quote', // 抢单后等待用户选择
       createdAt: new Date().toISOString().split('T')[0],
       expertId: 'e1',
-      consultationFeePaid: true
+      consultationFeePaid: true,
+      // 保存专家的抢单方案
+      expertBid: bidData
     };
     setRequests([newProject, ...requests]);
   };
@@ -2174,6 +3159,9 @@ export default function App() {
       setShowLoginModal(true);
       return;
     }
+    // 切换 tab 时重置详情页状态
+    setSelectedRequest(null);
+    setWorkspaceRequest(null);
     setActiveTab(tab);
   };
 
@@ -2184,6 +3172,7 @@ export default function App() {
         onTabChange={handleTabChange} 
         isLoggedIn={isLoggedIn}
         userRole={userRole}
+        userTier={userTier}
         onLoginClick={() => setShowLoginModal(true)}
         onLogout={handleLogout}
       />
@@ -2210,19 +3199,38 @@ export default function App() {
 
         {activeTab === 'pricing' && (
           <motion.div key="pricing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Pricing userRole={userRole} />
+            <Pricing 
+              userRole={userRole}
+              userTier={userTier}
+              onUpgrade={(tier) => {
+                setUserTier(tier);
+                setRemainingAiDiagnosis(USER_TIER_CONFIG[tier].aiDiagnosisLimit);
+              }}
+            />
           </motion.div>
         )}
         
         {activeTab === 'post' && (
           <motion.div key="post" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <PostRequestFlow onComplete={handlePostComplete} />
+            <PostRequestFlow 
+              onComplete={handlePostComplete} 
+              onUpgrade={(tier) => {
+                setUserTier(tier);
+                setRemainingAiDiagnosis(USER_TIER_CONFIG[tier].aiDiagnosisLimit);
+              }}
+              remainingAiDiagnosis={remainingAiDiagnosis}
+              onUseAiDiagnosis={() => setRemainingAiDiagnosis(prev => Math.max(0, prev - 1))}
+            />
           </motion.div>
         )}
 
         {activeTab === 'marketplace' && (
           <motion.div key="marketplace" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Marketplace onSelect={handleMarketplaceClick} />
+            <Marketplace 
+              onSelect={handleMarketplaceClick} 
+              isExpert={userRole === 'expert'}
+              userTier={userTier}
+            />
           </motion.div>
         )}
 
@@ -2236,9 +3244,13 @@ export default function App() {
                 onTabChange={setActiveTab}
               />
             ) : (
-              <Dashboard 
-                requests={requests} 
-                onSelect={(r) => setSelectedRequest(r)} 
+              <Dashboard
+                requests={requests}
+                onSelect={(r) => setSelectedRequest(r)}
+                onPostRequest={() => setActiveTab('post')}
+                onUpgrade={() => setActiveTab('pricing')}
+                userTier={userTier}
+                remainingConsults={remainingConsults}
               />
             )}
           </motion.div>
@@ -2255,9 +3267,21 @@ export default function App() {
 
         {selectedRequest && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <OrderDetail 
-              request={selectedRequest} 
-              onBack={() => setSelectedRequest(null)} 
+            <OrderDetail
+              request={selectedRequest}
+              onBack={() => setSelectedRequest(null)}
+              onSelectExpert={(expertBid) => {
+                // 更新订单状态为 in_service，并设置专家信息
+                const updatedRequest = {
+                  ...selectedRequest,
+                  status: 'in_service' as OrderStatus,
+                  expertId: expertBid.expertId,
+                  price: expertBid.price,
+                  deliveryTime: expertBid.deliveryTimeLabel
+                };
+                setRequests(prev => prev.map(r => r.id === selectedRequest.id ? updatedRequest : r));
+                setSelectedRequest(updatedRequest);
+              }}
             />
           </motion.div>
         )}
