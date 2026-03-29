@@ -52,6 +52,7 @@ import { LoginModal } from './components/modals';
 import { Home as HomePage } from './pages/Home';
 import { Pricing as PricingPage } from './pages/Pricing';
 import { Dashboard as DashboardPage } from './pages/Dashboard';
+import { OrderDetail as OrderDetailPage } from './pages/OrderDetail';
 
 // --- Components ---
 // Note: VibeLogo, Navbar, and LoginModal are now imported from './components/*'
@@ -3328,7 +3329,7 @@ export default function App() {
 
         {selectedRequest && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <OrderDetail
+            <OrderDetailPage
               request={selectedRequest}
               onBack={() => setSelectedRequest(null)}
               onSelectExpert={(expertBid) => {
