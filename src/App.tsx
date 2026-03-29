@@ -55,6 +55,7 @@ import { Dashboard as DashboardPage } from './pages/Dashboard';
 import { OrderDetail as OrderDetailPage } from './pages/OrderDetail';
 import { Marketplace as MarketplacePage } from './pages/Marketplace';
 import { ExpertDashboard as ExpertDashboardPage } from './pages/ExpertDashboard';
+import { Workspace as WorkspacePage } from './pages/Workspace';
 
 // --- Components ---
 // Note: VibeLogo, Navbar, and LoginModal are now imported from './components/*'
@@ -3322,7 +3323,7 @@ export default function App() {
 
         {workspaceRequest && (
           <motion.div key="workspace" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Workspace 
+            <WorkspacePage 
               request={workspaceRequest} 
               onBack={() => setWorkspaceRequest(null)} 
             />
