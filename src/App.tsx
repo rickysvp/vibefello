@@ -46,100 +46,15 @@ import { Request, Expert, MOCK_EXPERTS, MOCK_REQUESTS, MOCK_MARKETPLACE, OrderSt
 import { PostRequestFlow } from './PostRequestFlow';
 import { ExpertOnboardingFlow } from './components/onboarding';
 import { AdminPanel } from './components/admin';
+import { VibeLogo } from './components/common';
+import { Navbar } from './components/layout';
+import { LoginModal } from './components/modals';
+import { Home as HomePage } from './pages/Home';
+import { Pricing as PricingPage } from './pages/Pricing';
+import { Dashboard as DashboardPage } from './pages/Dashboard';
 
 // --- Components ---
-
-const VibeLogo = ({ className = "w-9 h-9", iconOnly = false }: { className?: string, iconOnly?: boolean }) => (
-  <div className={`flex items-center gap-3 ${!iconOnly ? 'group cursor-pointer' : ''}`}>
-    <div className={`${className} bg-vibe-primary rounded-lg flex items-center justify-center relative overflow-hidden shadow-lg shadow-vibe-primary/20 border border-slate-800 group-hover:shadow-vibe-accent/20 transition-shadow duration-300`}>
-      {/* Subtle gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-vibe-accent/10 to-transparent" />
-      
-      {/* Clean Geometric V */}
-      <svg 
-        viewBox="0 0 40 40" 
-        className="w-1/2 h-1/2 relative z-10"
-        fill="none"
-      >
-        {/* Main V - sharp geometric */}
-        <path 
-          d="M10 10 L20 30 L30 10"
-          stroke="#38BDF8"
-          strokeWidth="2.5"
-          strokeLinecap="square"
-          strokeLinejoin="miter"
-        />
-        {/* Top horizontal bar */}
-        <line x1="8" y1="10" x2="14" y2="10" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="square" />
-        <line x1="26" y1="10" x2="32" y2="10" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="square" />
-      </svg>
-    </div>
-    {!iconOnly && (
-      <span className="font-black text-xl tracking-tighter text-vibe-primary vibe-glow-text">
-        VIBE<span className="text-vibe-accent">FELLO</span>
-      </span>
-    )}
-  </div>
-);
-
-const LoginModal = ({ isOpen, onClose, onLogin, role = 'user' }: { isOpen: boolean, onClose: () => void, onLogin: (role: 'user' | 'expert') => void, role?: 'user' | 'expert' }) => {
-  if (!isOpen) return null;
-
-  const isExpert = role === 'expert';
-  const subtitle = isExpert ? '技术专家工作台，接单赚钱' : '发布需求，获取专业技术支持';
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        onClick={onClose}
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-      />
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative bg-white w-full max-w-md rounded-2xl p-10 vibe-shadow border border-slate-100 overflow-hidden"
-      >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-vibe-primary via-vibe-accent to-vibe-primary" />
-        <button onClick={onClose} className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 transition-colors">
-          <X className="w-6 h-6" />
-        </button>
-        
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <VibeLogo className="w-16 h-16" iconOnly />
-          </div>
-          <h2 className="text-2xl font-black text-vibe-primary mb-2 tracking-tight uppercase">
-            {isExpert ? '专家登录' : '用户登录'}
-          </h2>
-          <p className="text-slate-500 font-medium">{subtitle}</p>
-        </div>
-
-        <div className="space-y-3 mb-8">
-          <button 
-            onClick={() => onLogin(role)}
-            className="w-full py-3.5 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl shadow-slate-900/20"
-          >
-            <Github className="w-5 h-5" />
-            使用 GitHub 登录
-          </button>
-          <button 
-            onClick={() => onLogin(role)}
-            className="w-full py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
-          >
-            <Mail className="w-5 h-5 text-red-500" />
-            使用 Google 账号登录
-          </button>
-        </div>
-
-        <p className="mt-10 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-          登录即表示您同意我们的 <span className="text-vibe-accent hover:underline cursor-pointer">服务条款</span>
-        </p>
-      </motion.div>
-    </div>
-  );
-};
+// Note: VibeLogo, Navbar, and LoginModal are now imported from './components/*'
 
 const MarketplaceDetailModal = ({ isOpen, onClose, request, isExpert, onClaim, onUpgrade }: { isOpen: boolean, onClose: () => void, request: any, isExpert: boolean, onClaim: (r: any, bidData: any) => void, onUpgrade: () => void }) => {
   const [showBidForm, setShowBidForm] = useState(false);
@@ -447,145 +362,6 @@ const ClaimSuccessModal = ({ isOpen, onClose, onGoToDashboard }: { isOpen: boole
 };
 
 // --- Components ---
-
-const Navbar = ({ activeTab, onTabChange, isLoggedIn, userRole, userTier, onLoginClick, onLogout }: { activeTab: string, onTabChange: (t: string) => void, isLoggedIn: boolean, userRole: 'user' | 'expert' | null, userTier: 'free' | 'pro' | 'max', onLoginClick: (role?: 'user' | 'expert') => void, onLogout: () => void }) => {
-  const [showUserMenu, setShowUserMenu] = useState(false);
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 z-50 flex items-center justify-between px-8">
-      <div onClick={() => onTabChange('home')} className="cursor-pointer">
-        <VibeLogo />
-      </div>
-      
-      {isLoggedIn && (
-        <div className="hidden md:flex items-center gap-10">
-          {[
-            { id: 'home', label: '首页' },
-            { id: 'dashboard', label: userRole === 'expert' ? '专家控制台' : '我的项目' },
-            { id: 'marketplace', label: 'Vibe Request', showOnlyForExpert: true },
-            { id: 'post', label: '提交咨询', hideForExpert: true },
-            { id: 'pricing', label: userRole === 'expert' ? '订阅计划' : '升级计划' }
-          ].filter(tab => {
-            if (tab.hideForExpert && userRole === 'expert') return false;
-            if (tab.showOnlyForExpert && userRole !== 'expert') return false;
-            return true;
-          }).map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`text-[11px] font-black uppercase tracking-[0.2em] transition-all relative py-2 ${
-                activeTab === tab.id ? 'text-vibe-primary' : 'text-slate-400 hover:text-vibe-primary'
-              }`}
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <motion.div 
-                  layoutId="nav-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-vibe-accent"
-                />
-              )}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="flex items-center gap-6">
-        {isLoggedIn ? (
-          <>
-            {/* 会员标识 - 仅普通用户显示 */}
-            {userRole === 'user' && userTier !== 'free' && (
-              <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                userTier === 'max' 
-                  ? 'bg-slate-900 text-white' 
-                  : 'bg-vibe-accent/10 text-vibe-primary border border-vibe-accent/20'
-              }`}>
-                {userTier === 'max' ? 'Max' : 'Pro'}
-              </div>
-            )}
-            <div className="relative">
-              <button 
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-3 px-4 py-2 rounded-full bg-slate-50 border border-slate-200/60 hover:bg-slate-100 transition-all"
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-[10px] border shadow-sm ${
-                  userRole === 'expert' 
-                    ? 'bg-vibe-primary text-vibe-accent border-slate-800' 
-                    : userTier === 'max'
-                      ? 'bg-slate-900 text-white border-slate-700'
-                      : userTier === 'pro'
-                        ? 'bg-vibe-accent text-vibe-primary border-vibe-primary'
-                        : 'bg-slate-200 text-slate-600 border-slate-300'
-                }`}>
-                  {userRole === 'expert' ? 'E' : userTier === 'max' ? 'M' : userTier === 'pro' ? 'P' : 'U'}
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 hidden sm:inline">
-                  {userRole === 'expert' ? 'Expert' : userTier === 'max' ? 'Max' : userTier === 'pro' ? 'Pro' : 'Member'}
-                </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
-              </button>
-
-              <AnimatePresence>
-                {showUserMenu && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-3 w-56 bg-white rounded-2xl border border-slate-200 vibe-shadow overflow-hidden py-2"
-                  >
-                    <div className="px-4 py-3 border-b border-slate-50 mb-2">
-                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">当前账户</div>
-                      <div className="text-xs font-bold text-vibe-primary truncate">rickysevp@gmail.com</div>
-                    </div>
-                    
-                    <button className="w-full px-4 py-2.5 flex items-center gap-3 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors">
-                      <User className="w-4 h-4" /> 个人资料
-                    </button>
-                    <button className="w-full px-4 py-2.5 flex items-center gap-3 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors">
-                      <Settings className="w-4 h-4" /> 账号设置
-                    </button>
-                    <div className="h-px bg-slate-50 my-2 mx-2"></div>
-                    <button 
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        onLogout();
-                      }}
-                      className="w-full px-4 py-2.5 flex items-center gap-3 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" /> 退出登录
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            {userRole !== 'expert' && (
-              <button 
-                onClick={() => onTabChange('post')}
-                className="bg-vibe-primary text-white px-6 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/10"
-              >
-                获取帮助
-              </button>
-            )}
-          </>
-        ) : (
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => onLoginClick('expert')}
-              className="text-slate-600 hover:text-vibe-primary px-4 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-            >
-              专家登录
-            </button>
-            <button 
-              onClick={() => onLoginClick('user')}
-              className="bg-vibe-primary text-white px-8 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-vibe-primary/10"
-            >
-              登录 / 注册
-            </button>
-          </div>
-        )}
-      </div>
-    </nav>
-  );
-};
 
 const FAQItem: React.FC<{ faq: { q: string, a: string } }> = ({ faq }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -3449,7 +3225,7 @@ export default function App() {
       <AnimatePresence mode="wait">
         {activeTab === 'home' && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Home 
+            <HomePage 
               onStart={() => handleTabChange('post')} 
               onViewPricing={() => handleTabChange('pricing')} 
               onMarketplaceClick={handleMarketplaceClick}
@@ -3482,7 +3258,7 @@ export default function App() {
 
         {activeTab === 'pricing' && (
           <motion.div key="pricing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Pricing 
+            <PricingPage 
               userRole={userRole}
               userTier={userTier}
               onUpgrade={(tier) => {
@@ -3529,7 +3305,7 @@ export default function App() {
                 onStartApplication={() => setShowExpertOnboarding(true)}
               />
             ) : (
-              <Dashboard
+              <DashboardPage
                 requests={requests}
                 onSelect={(r) => setSelectedRequest(r)}
                 onPostRequest={() => setActiveTab('post')}
