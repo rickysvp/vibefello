@@ -45,6 +45,7 @@ import {
 import { Request, Expert, MOCK_EXPERTS, MOCK_REQUESTS, MOCK_MARKETPLACE, OrderStatus, USER_TIER_CONFIG, UserTier, ExpertApplication, ExpertVerificationStatus } from './types';
 import { PostRequestFlow } from './PostRequestFlow';
 import { ExpertOnboardingFlow } from './components/onboarding';
+import { AdminPanel } from './components/admin';
 
 // --- Components ---
 
@@ -3278,7 +3279,7 @@ const OrderDetail = ({ request, onBack, onSelectExpert }: { request: Request, on
 // --- Main App ---
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'marketplace' | 'pricing' | 'dashboard' | 'post' | 'admin'>('home');
   const [requests, setRequests] = useState<Request[]>([]);
   const [matching, setMatching] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
@@ -3422,6 +3423,14 @@ export default function App() {
     setActiveTab(tab);
   };
 
+  // 检测是否是管理后台路径
+  const isAdminPath = window.location.pathname === '/admin';
+  
+  // 如果是管理后台路径，直接显示管理后台
+  if (isAdminPath) {
+    return <AdminPanel />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       <Navbar 
@@ -3561,6 +3570,7 @@ export default function App() {
             />
           </motion.div>
         )}
+
       </AnimatePresence>
 
       <LoginModal
