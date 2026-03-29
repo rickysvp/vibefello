@@ -53,6 +53,7 @@ import { Home as HomePage } from './pages/Home';
 import { Pricing as PricingPage } from './pages/Pricing';
 import { Dashboard as DashboardPage } from './pages/Dashboard';
 import { OrderDetail as OrderDetailPage } from './pages/OrderDetail';
+import { Marketplace as MarketplacePage } from './pages/Marketplace';
 
 // --- Components ---
 // Note: VibeLogo, Navbar, and LoginModal are now imported from './components/*'
@@ -3286,7 +3287,7 @@ export default function App() {
 
         {activeTab === 'marketplace' && (
           <motion.div key="marketplace" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Marketplace 
+            <MarketplacePage 
               onSelect={handleMarketplaceClick} 
               isExpert={userRole === 'expert'}
               userTier={userTier}
