@@ -159,13 +159,8 @@ export const Footer: React.FC = () => {
             <div className="text-slate-500 text-sm">
               © {currentYear} VibeFello. 保留所有权利。
             </div>
-            <div className="flex items-center gap-6 text-sm text-slate-500">
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                所有系统正常运行
-              </span>
-              <span>|</span>
-              <span>Made with ❤️ for Vibe Coders</span>
+            <div className="text-sm text-slate-500">
+              Made with ❤️ for Vibe Coders
             </div>
           </div>
         </div>
