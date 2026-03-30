@@ -1,6 +1,6 @@
 import React from 'react';
 import { VibeLogo } from '../common';
-import { Twitter, Github, FileText, BookOpen, Mail, MessageCircle } from 'lucide-react';
+import { Twitter, FileText, BookOpen, Mail, Send } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -33,8 +33,7 @@ export const Footer: React.FC = () => {
 
   const socialLinks = [
     { label: 'Twitter', href: 'https://x.com/vibefello', icon: Twitter },
-    { label: 'GitHub', href: 'https://github.com/vibefello', icon: Github },
-    { label: 'Discord', href: 'https://discord.gg/vibefello', icon: MessageCircle },
+    { label: 'Telegram', href: 'https://t.me/+H3SnvF92Twc3YTI9', icon: Send },
   ];
 
   return (

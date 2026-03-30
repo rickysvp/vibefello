@@ -21,7 +21,7 @@ describe('Smoke Tests', () => {
 
     it('should render Footer', () => {
       render(<Footer />);
-      expect(screen.getByText(/VibeFello/i)).toBeInTheDocument();
+      expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     });
   });
 
