@@ -63,6 +63,7 @@ import { Terms } from './pages/Terms';
 import { Privacy } from './pages/Privacy';
 import { Help } from './pages/Help';
 import { Cases } from './pages/Cases';
+import { ExpertLanding } from './pages/ExpertLanding';
 
 // --- Components ---
 // Note: Components are now imported from './components/*'
@@ -450,6 +451,7 @@ export default function App() {
       <Route path="/help" element={<Help />} />
       <Route path="/docs" element={<Help />} />
       <Route path="/cases" element={<Cases />} />
+      <Route path="/expert-landing" element={<ExpertLanding />} />
       <Route path="/*" element={<AppContent />} />
     </Routes>
   );

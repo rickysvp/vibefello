@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
 
   const footerLinks = {
     product: [
-      { label: '专家入驻', href: '#experts' },
+      { label: '专家入驻', href: '/expert-landing' },
       { label: '成功案例', href: '/cases' },
     ],
     resources: [
