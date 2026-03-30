@@ -1,6 +1,9 @@
+import type { Database } from './database.types';
 import { supabase } from './supabase';
 
-export async function createOrder(orderData: Record<string, unknown>) {
+type OrderInsert = Database['public']['Tables']['orders']['Insert'];
+
+export async function createOrder(orderData: OrderInsert) {
   return supabase.from('orders').insert(orderData).select().single();
 }
 

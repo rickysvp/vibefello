@@ -1,6 +1,10 @@
+import type { Database } from './database.types';
 import { supabase } from './supabase';
 
-export async function submitExpertApplication(applicationData: Record<string, unknown>) {
+type ExpertApplicationInsert =
+  Database['public']['Tables']['expert_applications']['Insert'];
+
+export async function submitExpertApplication(applicationData: ExpertApplicationInsert) {
   return supabase
     .from('expert_applications')
     .insert(applicationData)

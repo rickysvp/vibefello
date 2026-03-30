@@ -1,6 +1,9 @@
+import type { Database } from './database.types';
 import { supabase } from './supabase';
 
-export async function createBid(bidData: Record<string, unknown>) {
+type BidInsert = Database['public']['Tables']['bids']['Insert'];
+
+export async function createBid(bidData: BidInsert) {
   return supabase.from('bids').insert(bidData).select().single();
 }
 

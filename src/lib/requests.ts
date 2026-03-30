@@ -1,6 +1,9 @@
+import type { Database } from './database.types';
 import { supabase } from './supabase';
 
-export async function createRequest(requestData: Record<string, unknown>) {
+type RequestInsert = Database['public']['Tables']['requests']['Insert'];
+
+export async function createRequest(requestData: RequestInsert) {
   return supabase.from('requests').insert(requestData).select().single();
 }
 

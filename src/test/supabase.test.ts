@@ -31,6 +31,13 @@ describe('Supabase service boundaries', () => {
     });
   });
 
+  it('falls back for an unknown request status string', () => {
+    expect(getRequestStatusMeta('unknown_status' as never)).toEqual({
+      label: 'Unknown',
+      tone: 'neutral',
+    });
+  });
+
   it('maps order status metadata for the order detail view', () => {
     expect(getOrderStatusMeta('pending_payment')).toMatchObject({
       label: 'Pending payment',

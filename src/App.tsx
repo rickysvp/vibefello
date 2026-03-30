@@ -61,6 +61,8 @@ import { Workspace as WorkspacePage } from './pages/Workspace';
 import { About } from './pages/About';
 import { Terms } from './pages/Terms';
 import { Privacy } from './pages/Privacy';
+import { Help } from './pages/Help';
+import { Docs } from './pages/Docs';
 
 // --- Components ---
 // Note: Components are now imported from './components/*'
@@ -445,6 +447,8 @@ export default function App() {
       <Route path="/about" element={<About />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/help" element={<Help />} />
+      <Route path="/docs" element={<Docs />} />
       <Route path="/*" element={<AppContent />} />
     </Routes>
   );

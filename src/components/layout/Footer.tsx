@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
     resources: [
       { label: '文档中心', href: '/docs', icon: FileText },
       { label: '技术博客', href: '/blog', icon: BookOpen },
-      { label: '帮助中心', href: '#help' },
+      { label: '帮助中心', href: '/help' },
     ],
     company: [
       { label: '关于我们', href: '/about' },
