@@ -54,17 +54,9 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-3 mb-6">
               <VibeLogo className="h-10" />
             </div>
-            <p className="text-slate-600 text-sm leading-relaxed mb-4 max-w-sm">
+            <p className="text-slate-600 text-sm leading-relaxed mb-6 max-w-sm">
               VibeFello 是专业的 Vibe Coding 救援平台，连接非技术创始人与技术专家，让 AI 生成的代码真正上线运行。
             </p>
-            {/* Email */}
-            <a
-              href="mailto:feedback@vibefello.com"
-              className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 transition-colors mb-6"
-            >
-              <Mail className="w-4 h-4" />
-              feedback@vibefello.com
-            </a>
             {/* Social Links */}
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => (
@@ -79,6 +71,14 @@ export const Footer: React.FC = () => {
                   <social.Icon className="w-5 h-5" />
                 </a>
               ))}
+              {/* Email Icon */}
+              <a
+                href="mailto:feedback@vibefello.com"
+                className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all"
+                aria-label="Email"
+              >
+                <Mail className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
