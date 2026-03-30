@@ -1,6 +1,18 @@
 import React from 'react';
 import { VibeLogo } from '../common';
-import { Twitter, FileText, BookOpen, Mail, Send } from 'lucide-react';
+import { FileText, BookOpen, Mail, Send } from 'lucide-react';
+
+// X (Twitter) Logo Component
+const XLogo: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -8,7 +20,6 @@ export const Footer: React.FC = () => {
   const footerLinks = {
     product: [
       { label: '功能介绍', href: '#features' },
-      { label: '定价方案', href: '#pricing' },
       { label: '专家入驻', href: '#experts' },
       { label: '成功案例', href: '#cases' },
     ],
@@ -16,13 +27,10 @@ export const Footer: React.FC = () => {
       { label: '文档中心', href: '/docs', icon: FileText },
       { label: '技术博客', href: '/blog', icon: BookOpen },
       { label: '帮助中心', href: '#help' },
-      { label: 'API 文档', href: '/docs/api' },
     ],
     company: [
       { label: '关于我们', href: '#about' },
       { label: '联系我们', href: '#contact', icon: Mail },
-      { label: '加入我们', href: '#careers' },
-      { label: '合作伙伴', href: '#partners' },
     ],
     legal: [
       { label: '服务条款', href: '#terms' },
@@ -32,8 +40,8 @@ export const Footer: React.FC = () => {
   };
 
   const socialLinks = [
-    { label: 'Twitter', href: 'https://x.com/vibefello', icon: Twitter },
-    { label: 'Telegram', href: 'https://t.me/+H3SnvF92Twc3YTI9', icon: Send },
+    { label: 'X', href: 'https://x.com/vibefello', Icon: XLogo },
+    { label: 'Telegram', href: 'https://t.me/+H3SnvF92Twc3YTI9', Icon: Send },
   ];
 
   return (
@@ -60,7 +68,7 @@ export const Footer: React.FC = () => {
                   className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.Icon className="w-5 h-5" />
                 </a>
               ))}
             </div>
