@@ -11,9 +11,20 @@ function TestComponent() {
       <div data-testid="isAuthenticated">{auth.isAuthenticated ? 'true' : 'false'}</div>
       <div data-testid="isLoading">{auth.isLoading ? 'true' : 'false'}</div>
       <div data-testid="userRole">{auth.userRole || 'null'}</div>
-      <button onClick={() => auth.signIn('test@test.com', 'password')}>Sign In</button>
+      <button
+        onClick={async () => {
+          const result = await auth.signIn('test@test.com', 'password');
+          const errorNode = document.querySelector('[data-testid="signInError"]');
+          if (errorNode) {
+            errorNode.textContent = result.error?.message || '';
+          }
+        }}
+      >
+        Sign In
+      </button>
       <button onClick={() => auth.signUp('test@test.com', 'password', 'Test User')}>Sign Up</button>
       <button onClick={() => auth.signOut()}>Sign Out</button>
+      <div data-testid="signInError" />
     </div>
   );
 }
@@ -121,8 +132,10 @@ describe('AuthContext', () => {
     );
 
     const signInButton = screen.getByText('Sign In');
-    const result = await (signInButton.onclick as any)();
+    signInButton.click();
 
-    expect(result.error).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByTestId('signInError').textContent).toBe('Invalid credentials');
+    });
   });
 });

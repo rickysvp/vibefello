@@ -1,45 +1,51 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-// Mock Supabase
-vi.mock('../lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getSession: vi.fn(),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
-      signUp: vi.fn(),
-      signInWithPassword: vi.fn(),
-      signOut: vi.fn(),
-      getUser: vi.fn(),
-    },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(),
-          order: vi.fn(() => ({ data: [], error: null })),
-        })),
+const mockSupabase = {
+  auth: {
+    getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
+    onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+    signUp: vi.fn(),
+    signInWithPassword: vi.fn(),
+    signOut: vi.fn(),
+    getUser: vi.fn(),
+  },
+  from: vi.fn(() => ({
+    select: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        single: vi.fn(),
         order: vi.fn(() => ({ data: [], error: null })),
       })),
-      insert: vi.fn(() => ({
+      order: vi.fn(() => ({ data: [], error: null })),
+    })),
+    insert: vi.fn(() => ({
+      select: vi.fn(() => ({
+        single: vi.fn(() => ({ data: null, error: null })),
+      })),
+    })),
+    update: vi.fn(() => ({
+      eq: vi.fn(() => ({
         select: vi.fn(() => ({
           single: vi.fn(() => ({ data: null, error: null })),
         })),
       })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn(() => ({ data: null, error: null })),
-          })),
-        })),
-      })),
     })),
-    channel: vi.fn(() => ({
-      on: vi.fn(() => ({ subscribe: vi.fn() })),
-      subscribe: vi.fn(),
-      unsubscribe: vi.fn(),
-    })),
-  },
-}));
+  })),
+  channel: vi.fn(() => ({
+    on: vi.fn(() => ({ subscribe: vi.fn() })),
+    subscribe: vi.fn(),
+    unsubscribe: vi.fn(),
+  })),
+};
+
+vi.mock('@supabase/supabase-js', async () => {
+  const actual = await vi.importActual<typeof import('@supabase/supabase-js')>('@supabase/supabase-js');
+
+  return {
+    ...actual,
+    createClient: vi.fn(() => mockSupabase),
+  };
+});
 
 // Mock environment variables
 vi.mock('import.meta.env', () => ({
