@@ -6,14 +6,15 @@ import {
   Search, 
   ChevronDown, 
   BookOpen, 
-  Code, 
   Zap, 
   Shield, 
   Users, 
   FileText,
-  Terminal,
   Settings,
-  ExternalLink
+  ExternalLink,
+  CreditCard,
+  MessageCircle,
+  Lightbulb
 } from 'lucide-react';
 
 export const Docs: React.FC = () => {
@@ -30,188 +31,134 @@ export const Docs: React.FC = () => {
         {
           title: '平台概述',
           content: 'VibeFello 是一个连接非技术创始人与技术专家的平台。我们的使命是让每一个有想法的人都能将创意转化为现实。\n\n核心功能包括：\n• 救援请求发布 - 遇到技术难题时快速获得帮助\n• 专家匹配 - 根据技术栈智能匹配最合适的专家\n• 安全交易 - 平台担保支付，保障双方权益\n• 代码托管 - 安全的代码分享和协作环境',
-          code: null
         },
         {
           title: '用户注册与登录',
           content: 'VibeFello 提供两种身份：普通用户和专家。\n\n普通用户可以：\n• 发布救援请求\n• 浏览专家列表\n• 查看订单状态\n\n专家可以：\n• 接收救援请求\n• 提供技术服务\n• 管理收入提现',
-          code: `// 用户登录示例
-const login = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-  
-  if (error) throw error;
-  return data.user;
-};`
         },
         {
           title: '发布第一个救援请求',
           content: '遇到技术难题？按照以下步骤发布请求：\n\n1. 点击"提交救援申请"按钮\n2. 详细描述您的问题\n3. 选择相关技术栈标签\n4. 设置预算范围\n5. 支付基础咨询费\n6. 等待专家响应',
-          code: null
         }
       ]
     },
     {
-      id: 'api',
-      title: 'API 文档',
-      icon: Code,
-      description: '开发者集成指南和 API 参考',
+      id: 'account',
+      title: '账户管理',
+      icon: Users,
+      description: '管理您的个人信息和账户设置',
       articles: [
         {
-          title: 'API 认证',
-          content: '所有 API 请求都需要在 Header 中包含认证令牌。您可以在个人设置中生成 API 密钥。\n\n请求头格式：\nAuthorization: Bearer YOUR_API_KEY',
-          code: `// 设置请求头
-const headers = {
-  'Authorization': 'Bearer sk_live_xxxxxxxxxxxxx',
-  'Content-Type': 'application/json'
-};`
+          title: '完善个人资料',
+          content: '完整的个人资料有助于专家更好地了解您的需求：\n\n• 上传真实头像 - 增加信任度\n• 填写公司/项目名称 - 帮助专家理解业务背景\n• 添加技术栈偏好 - 便于匹配相关专家\n• 设置时区和语言 - 确保沟通顺畅',
         },
         {
-          title: '获取专家列表',
-          content: '获取平台上的专家列表，支持按技术栈筛选。',
-          code: `// GET /api/v1/experts
-const getExperts = async (techStack?: string[]) => {
-  const params = new URLSearchParams();
-  techStack?.forEach(tech => params.append('tech', tech));
-  
-  const response = await fetch(
-    \`https://api.vibefello.com/v1/experts?\${params}\`,
-    { headers }
-  );
-  
-  return response.json();
-};
-
-// 响应示例
-{
-  "experts": [
-    {
-      "id": "exp_123",
-      "name": "张工程师",
-      "skills": ["React", "Node.js"],
-      "rating": 4.9,
-      "hourlyRate": 300
-    }
-  ]
-}`
+          title: '修改密码和安全设置',
+          content: '保护账户安全的重要措施：\n\n• 定期更换密码（建议每3个月）\n• 启用双重认证（2FA）\n• 绑定手机和邮箱\n• 查看登录历史，发现异常及时处理',
         },
         {
-          title: '创建救援请求',
-          content: '通过 API 创建新的救援请求。',
-          code: `// POST /api/v1/requests
-const createRequest = async (requestData: RequestData) => {
-  const response = await fetch(
-    'https://api.vibefello.com/v1/requests',
-    {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(requestData)
-    }
-  );
-  
-  return response.json();
-};
-
-// 请求体示例
-{
-  "title": "React 项目部署问题",
-  "description": "构建成功但部署后白屏...",
-  "techStack": ["React", "Vercel"],
-  "budget": { "min": 200, "max": 500 }
-}`
+          title: '通知设置',
+          content: '自定义您接收通知的方式：\n\n• 邮件通知 - 订单状态更新、专家消息\n• 站内消息 - 实时推送\n• Telegram 通知 - 绑定后接收即时消息\n• 通知频率 - 实时、每日摘要或关闭',
         }
       ]
     },
     {
-      id: 'integration',
-      title: '集成指南',
-      icon: Terminal,
-      description: '与常用工具和平台的集成方案',
+      id: 'payment',
+      title: '支付与账单',
+      icon: CreditCard,
+      description: '了解支付流程和费用说明',
       articles: [
         {
-          title: 'GitHub 集成',
-          content: '将 VibeFello 与您的 GitHub 仓库连接，实现代码自动同步和问题追踪。\n\n集成步骤：\n1. 进入个人设置 → 集成\n2. 点击"连接 GitHub"\n3. 授权 VibeFello 访问您的仓库\n4. 选择要同步的仓库',
-          code: `// GitHub Webhook 配置
-{
-  "payload_url": "https://api.vibefello.com/webhooks/github",
-  "content_type": "json",
-  "events": ["push", "issues"]
-}`
+          title: '支持的支付方式',
+          content: 'VibeFello 支持多种支付方式：\n\n• 信用卡/借记卡 - Visa、Mastercard、American Express\n• PayPal - 快速安全的在线支付\n• 银行转账 - 大额订单支持\n\n所有支付均通过加密通道处理，确保资金安全。',
         },
         {
-          title: 'Slack 通知',
-          content: '在 Slack 中接收救援请求状态更新和专家消息。\n\n配置方法：\n1. 在 Slack 中创建 Incoming Webhook\n2. 复制 Webhook URL\n3. 在 VibeFello 设置中粘贴 URL\n4. 选择要接收的通知类型',
-          code: `// Slack 消息格式
-{
-  "text": "新的救援请求",
-  "attachments": [{
-    "color": "#6366f1",
-    "fields": [
-      { "title": "问题", "value": "React 部署失败" },
-      { "title": "预算", "value": "$50-80" }
-    ]
-  }]
-}`
+          title: '费用说明',
+          content: '平台费用透明清晰：\n\n• 基础咨询费 - 发布请求时支付，用于获取专家初步诊断\n• 服务费 - 选择专家后支付，平台收取约 10% 作为服务费\n• 托管机制 - 资金由平台托管，确认交付后释放给专家\n\n具体费率会在交易前明确告知。',
         },
         {
-          title: 'VS Code 扩展',
-          content: '安装 VibeFello VS Code 扩展，直接在编辑器中发布救援请求。\n\n功能特性：\n• 一键发布当前文件相关问题\n• 实时接收专家消息\n• 代码片段分享\n• 屏幕录制功能',
-          code: `// VS Code 命令面板
-Cmd/Ctrl + Shift + P → VibeFello: 发布救援请求
-
-// 快捷键
-Cmd/Ctrl + Shift + R - 快速发布请求`
+          title: '申请退款',
+          content: '以下情况可申请退款：\n\n• 专家未能在约定时间内交付\n• 专家提供的解决方案完全无效\n• 专家无故中断服务\n\n退款流程：\n1. 在订单详情页点击"申请退款"\n2. 填写退款原因和说明\n3. 平台审核（1-3个工作日）\n4. 退款原路返回',
+        }
+      ]
+    },
+    {
+      id: 'requests',
+      title: '发布与管理请求',
+      icon: FileText,
+      description: '学习如何高效发布和管理救援请求',
+      articles: [
+        {
+          title: '撰写有效的请求标题',
+          content: '好的标题能让专家快速理解问题：\n\n推荐示例：\n- "Next.js 项目部署到 Vercel 后白屏"\n- "Python 爬虫被目标网站拦截，需要反反爬方案"\n- "React Native 应用 iOS 构建失败"\n\n避免示例：\n- "代码有问题"（太笼统）\n- "紧急求助！！！"（无实质内容）\n- "谁能帮我看看"（不清晰）',
+        },
+        {
+          title: '如何描述问题',
+          content: '详细的问题描述应包含：\n\n1. 预期行为 - 您希望代码如何工作\n2. 实际行为 - 目前出现了什么问题\n3. 错误信息 - 完整的报错截图或文本\n4. 复现步骤 - 如何触发这个问题\n5. 已尝试的方案 - 避免专家重复建议\n\n小提示：使用 Loom 录制屏幕演示会更直观！',
+        },
+        {
+          title: '选择合适的预算',
+          content: '合理预算能吸引更多优质专家：\n\n参考定价：\n• 简单问题（1-2小时）：$30-60\n• 中等复杂度（3-5小时）：$80-150\n• 复杂问题（5小时+）：$150+\n\n考虑因素：\n• 问题的紧急程度\n• 所需技术栈的稀缺性\n• 专家的经验水平',
+        }
+      ]
+    },
+    {
+      id: 'collaboration',
+      title: '与专家协作',
+      icon: MessageCircle,
+      description: '建立高效的合作关系',
+      articles: [
+        {
+          title: '首次沟通技巧',
+          content: '与专家建立良好合作的开端：\n\n• 主动介绍项目背景\n• 明确期望的交付标准\n• 商定沟通频率和方式\n• 确认时区和可用时间\n• 提供必要的访问权限（如需要）',
+        },
+        {
+          title: '代码分享安全指南',
+          content: '与专家分享代码时的安全建议：\n\n1. 删除敏感信息\n   • API 密钥和密钥\n   • 数据库连接字符串\n   • 密码和令牌\n\n2. 使用环境变量\n   • 将配置移到 .env 文件\n   • 提供 .env.example 作为参考\n\n3. 数据脱敏\n   • 使用假数据代替真实用户数据\n   • 隐藏个人身份信息',
+        },
+        {
+          title: '验收与评价',
+          content: '确认交付并给予反馈：\n\n验收检查清单：\n☐ 问题是否已解决\n☐ 代码是否可以正常运行\n☐ 是否收到必要的文档说明\n☐ 后续维护事项是否清晰\n\n评价建议：\n• 客观描述合作体验\n• 提及专家的专业能力\n• 分享项目成果（可选）\n• 您的评价会帮助其他用户选择专家',
         }
       ]
     },
     {
       id: 'security',
-      title: '安全指南',
+      title: '安全与隐私',
       icon: Shield,
-      description: '保护您的代码和数据安全的最佳实践',
+      description: '保护您的代码和数据安全',
       articles: [
-        {
-          title: '代码分享安全',
-          content: '与专家分享代码时的安全建议：\n\n1. 删除敏感信息\n   • API 密钥和密钥\n   • 数据库连接字符串\n   • 密码和令牌\n\n2. 使用环境变量\n   • 将配置移到 .env 文件\n   • 提供 .env.example 作为参考\n\n3. 数据脱敏\n   • 使用假数据代替真实用户数据\n   • 隐藏个人身份信息',
-          code: `# .env.example
-DATABASE_URL=postgresql://user:password@localhost/db
-API_KEY=your_api_key_here
-JWT_SECRET=your_jwt_secret`
-        },
         {
           title: 'NDA 保密协议',
           content: '对于商业敏感项目，建议与专家签署 NDA（保密协议）。\n\nVibeFello 提供：\n• 标准 NDA 模板\n• 电子签名功能\n• 协议执行追踪\n\n在发布请求时勾选"需要 NDA"选项，系统将自动处理协议流程。',
-          code: null
         },
         {
-          title: '账户安全',
-          content: '保护您的 VibeFello 账户：\n\n• 启用双重认证（2FA）\n• 使用强密码并定期更换\n• 不在公共设备上保持登录\n• 定期检查登录历史\n• 及时更新关联邮箱和手机号',
-          code: null
+          title: '账户安全最佳实践',
+          content: '保护您的 VibeFello 账户：\n\n• 启用双重认证（2FA）\n• 使用强密码并定期更换\n• 不在公共设备上保持登录\n• 定期检查登录历史\n• 及时更新关联邮箱和手机号\n• 警惕钓鱼邮件和诈骗信息',
+        },
+        {
+          title: '数据保护措施',
+          content: '我们采取的多重安全措施：\n\n• 所有数据传输使用 SSL/TLS 加密\n• 代码仅在用户和专家之间共享\n• 专家需签署保密协议\n• 平台不存储您的核心代码\n• 定期安全审计和漏洞扫描',
         }
       ]
     },
     {
       id: 'best-practices',
       title: '最佳实践',
-      icon: Settings,
-      description: '提高协作效率的实用技巧',
+      icon: Lightbulb,
+      description: '提高成功率的实用技巧',
       articles: [
         {
-          title: '撰写有效的救援请求',
-          content: '好的问题描述能让专家更快理解并解决您的问题：\n\n1. 清晰的标题\n   例："React + Vite 项目在生产环境构建后白屏"\n\n2. 详细的问题描述\n   • 预期行为 vs 实际行为\n   • 错误信息和截图\n   • 复现步骤\n\n3. 提供上下文\n   • 技术栈版本\n   • 相关配置文件\n   • 已尝试的解决方案',
-          code: null
+          title: 'Vibe Coding 常见问题',
+          content: 'AI 生成代码的典型问题及预防：\n\n1. 水合错误（Hydration Error）\n   • 原因：服务端和客户端渲染不一致\n   • 预防：避免在 SSR 组件中使用浏览器 API\n\n2. 环境配置问题\n   • 原因：本地和生产环境差异\n   • 预防：使用 Docker 或详细记录环境要求\n\n3. 依赖冲突\n   • 原因：AI 可能推荐不兼容的版本\n   • 预防：锁定版本号，测试后再升级',
         },
         {
-          title: '与专家高效沟通',
-          content: '建立良好的合作关系：\n\n• 及时回复消息\n• 提供清晰的反馈\n• 分阶段确认进展\n• 测试并验证解决方案\n• 给予诚实的评价\n\n良好的沟通能显著提高问题解决效率。',
-          code: null
+          title: '如何节省时间和成本',
+          content: '最大化 VibeFello 的价值：\n\n• 发布前先用 AI 尝试解决（记录尝试过程）\n• 准备最小可复现示例（Minimal Reproducible Example）\n• 提供清晰的验收标准\n• 及时响应专家的问题\n• 建立长期合作关系（优先选择熟悉的专家）',
         },
         {
-          title: '预算规划建议',
-          content: '合理设置预算能吸引更多优质专家：\n\n参考定价：\n• 简单问题（1-2小时）：$30-60\n• 中等复杂度（3-5小时）：$80-150\n• 复杂问题（5小时+）：$150+\n\n考虑因素：\n• 问题的紧急程度\n• 所需技术栈的稀缺性\n• 专家的经验水平',
-          code: null
+          title: '推荐工具清单',
+          content: '提升协作效率的工具：\n\n代码分享：\n• GitHub Gist - 快速分享代码片段\n• CodeSandbox - 在线代码演示\n• Loom - 屏幕录制说明\n\n沟通协作：\n• Telegram - 实时消息\n• Figma - 设计稿分享\n• Notion - 文档协作\n\n项目管理：\n• Trello - 任务追踪\n• Linear - 问题管理',
         }
       ]
     },
@@ -219,22 +166,19 @@ JWT_SECRET=your_jwt_secret`
       id: 'resources',
       title: '资源中心',
       icon: BookOpen,
-      description: '模板、工具和参考资料',
+      description: '模板、检查清单和参考资料',
       articles: [
         {
-          title: '项目模板',
-          content: '我们提供常用技术栈的启动模板：\n\n• React + TypeScript + Vite\n• Next.js + Tailwind CSS\n• Node.js + Express + Prisma\n• Python + FastAPI\n• Flutter 移动端模板\n\n每个模板都包含最佳实践配置和示例代码。',
-          code: null
+          title: '发布请求检查清单',
+          content: '发布前确认以下事项：\n\n代码准备：\n☐ 已移除敏感信息（API 密钥、密码）\n☐ 代码可运行/可复现\n☐ 包含必要的配置文件\n☐ 提供 .env.example 文件\n\n问题描述：\n☐ 标题清晰明确\n☐ 包含错误信息和截图\n☐ 说明已尝试的方案\n☐ 提供复现步骤\n\n沟通准备：\n☐ 预留足够的响应时间\n☐ 准备好补充信息\n☐ 确认预算范围\n☐ 确定期望的交付时间',
         },
         {
-          title: '检查清单',
-          content: '发布请求前的自查清单：\n\n代码准备：\n☐ 已移除敏感信息\n☐ 代码可运行/可复现\n☐ 包含必要的配置文件\n\n问题描述：\n☐ 标题清晰明确\n☐ 包含错误信息\n☐ 说明已尝试的方案\n\n沟通准备：\n☐ 预留足够的响应时间\n☐ 准备好补充信息\n☐ 确认预算范围',
-          code: null
+          title: '技术栈标签指南',
+          content: '正确选择标签有助于精准匹配专家：\n\n前端框架：\nReact, Vue.js, Next.js, Nuxt.js, Angular, Svelte\n\n后端技术：\nNode.js, Python, Go, Java, Ruby, PHP\n\n数据库：\nPostgreSQL, MySQL, MongoDB, Redis, Supabase\n\n云服务：\nAWS, Vercel, Google Cloud, Azure, DigitalOcean\n\n其他：\nDocker, Kubernetes, Web3, AI/ML, Mobile',
         },
         {
-          title: '推荐工具',
-          content: '提升开发效率的工具推荐：\n\n代码分享：\n• GitHub Gist - 快速分享代码片段\n• CodeSandbox - 在线代码演示\n• Loom - 屏幕录制说明\n\n沟通协作：\n• Telegram - 实时消息\n• Figma - 设计稿分享\n• Notion - 文档协作',
-          code: null
+          title: '学习资源推荐',
+          content: '提升技术理解能力的资源：\n\nVibe Coding 教程：\n• Cursor 官方文档\n• Vercel AI SDK 指南\n• LangChain 入门教程\n\n基础知识：\n• MDN Web Docs - Web 技术权威参考\n• freeCodeCamp - 免费编程课程\n• Roadmap.sh - 学习路线图\n\n社区：\n• VibeFello Telegram 群组\n• Twitter/X 上的 #VibeCoding 话题',
         }
       ]
     }
@@ -268,7 +212,7 @@ JWT_SECRET=your_jwt_secret`
             transition={{ delay: 0.1 }}
             className="text-xl text-slate-600 mb-8"
           >
-            全面的开发指南、API 文档和最佳实践
+            全面的使用指南、最佳实践和操作手册
           </motion.p>
           
           {/* Search */}
@@ -362,16 +306,9 @@ JWT_SECRET=your_jwt_secret`
                             <FileText className="w-4 h-4 text-indigo-500" />
                             {article.title}
                           </h3>
-                          <div className="text-slate-600 leading-relaxed whitespace-pre-line mb-4">
+                          <div className="text-slate-600 leading-relaxed whitespace-pre-line">
                             {article.content}
                           </div>
-                          {article.code && (
-                            <div className="bg-slate-900 rounded-lg p-4 overflow-x-auto">
-                              <pre className="text-sm text-slate-300 font-mono">
-                                <code>{article.code}</code>
-                              </pre>
-                            </div>
-                          )}
                         </div>
                       ))}
                     </div>
@@ -396,7 +333,7 @@ JWT_SECRET=your_jwt_secret`
             <div className="p-6 bg-white rounded-xl border border-slate-200">
               <Users className="w-8 h-8 text-indigo-600 mb-4" />
               <h3 className="font-bold text-slate-900 mb-2">社区支持</h3>
-              <p className="text-sm text-slate-600 mb-4">加入我们的开发者社区，与其他用户交流经验</p>
+              <p className="text-sm text-slate-600 mb-4">加入我们的用户社区，与其他创始人交流经验</p>
               <a 
                 href="https://t.me/+H3SnvF92Twc3YTI9"
                 target="_blank"
@@ -407,14 +344,14 @@ JWT_SECRET=your_jwt_secret`
               </a>
             </div>
             <div className="p-6 bg-white rounded-xl border border-slate-200">
-              <Terminal className="w-8 h-8 text-indigo-600 mb-4" />
-              <h3 className="font-bold text-slate-900 mb-2">API 状态</h3>
-              <p className="text-sm text-slate-600 mb-4">查看 API 实时状态和服务可用性</p>
+              <MessageCircle className="w-8 h-8 text-indigo-600 mb-4" />
+              <h3 className="font-bold text-slate-900 mb-2">专家咨询</h3>
+              <p className="text-sm text-slate-600 mb-4">需要一对一指导？预约专家进行深度咨询</p>
               <a 
-                href="#"
+                href="mailto:feedback@vibefello.com"
                 className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-700 text-sm font-medium"
               >
-                查看状态页 <ExternalLink className="w-3 h-3" />
+                联系我们 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
             <div className="p-6 bg-white rounded-xl border border-slate-200">
@@ -437,14 +374,14 @@ JWT_SECRET=your_jwt_secret`
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-slate-900 mb-4">需要更多帮助？</h2>
           <p className="text-slate-600 mb-8">
-            如果您在文档中找不到答案，欢迎联系我们的技术支持团队
+            如果您在文档中找不到答案，欢迎联系我们的客服团队
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="mailto:feedback@vibefello.com"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
             >
-              联系技术支持
+              联系客服
             </a>
             <a
               href="https://t.me/+H3SnvF92Twc3YTI9"
@@ -452,7 +389,7 @@ JWT_SECRET=your_jwt_secret`
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-xl font-medium hover:border-indigo-300 transition-colors"
             >
-              加入开发者社区
+              加入社区
             </a>
           </div>
         </div>
