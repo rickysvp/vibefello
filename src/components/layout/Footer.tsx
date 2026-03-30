@@ -29,12 +29,12 @@ export const Footer: React.FC = () => {
       { label: '帮助中心', href: '#help' },
     ],
     company: [
-      { label: '关于我们', href: '#about' },
-      { label: '联系我们', href: '#contact', icon: Mail },
+      { label: '关于我们', href: '/about' },
+      { label: '联系我们', href: 'mailto:feedback@vibefello.com' },
     ],
     legal: [
-      { label: '服务条款', href: '#terms' },
-      { label: '隐私政策', href: '#privacy' },
+      { label: '服务条款', href: '/terms' },
+      { label: '隐私政策', href: '/privacy' },
     ],
   };
 

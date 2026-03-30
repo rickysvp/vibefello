@@ -1,0 +1,10 @@
+export { Home } from './Home';
+export { Pricing } from './Pricing';
+export { Dashboard } from './Dashboard';
+export { OrderDetail } from './OrderDetail';
+export { Marketplace } from './Marketplace';
+export { ExpertDashboard } from './ExpertDashboard';
+export { Workspace } from './Workspace';
+export { About } from './About';
+export { Terms } from './Terms';
+export { Privacy } from './Privacy';

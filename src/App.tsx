@@ -50,6 +50,7 @@ import { VibeLogo, MatchingScreen, FAQItem, ClaimingScreen } from './components/
 import { MembershipCard, EmptyStateGuide } from './components/dashboard';
 import { Navbar, Footer } from './components/layout';
 import { LoginModal, MarketplaceDetailModal, ClaimSuccessModal } from './components/modals';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Home as HomePage } from './pages/Home';
 import { Pricing as PricingPage } from './pages/Pricing';
 import { Dashboard as DashboardPage } from './pages/Dashboard';
@@ -57,6 +58,9 @@ import { OrderDetail as OrderDetailPage } from './pages/OrderDetail';
 import { Marketplace as MarketplacePage } from './pages/Marketplace';
 import { ExpertDashboard as ExpertDashboardPage } from './pages/ExpertDashboard';
 import { Workspace as WorkspacePage } from './pages/Workspace';
+import { About } from './pages/About';
+import { Terms } from './pages/Terms';
+import { Privacy } from './pages/Privacy';
 
 // --- Components ---
 // Note: Components are now imported from './components/*'
@@ -70,7 +74,8 @@ import { Workspace as WorkspacePage } from './pages/Workspace';
 
 // --- Main App ---
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<'home' | 'marketplace' | 'pricing' | 'dashboard' | 'post' | 'admin'>('home');
   const [requests, setRequests] = useState<Request[]>([]);
   const [matching, setMatching] = useState(false);
@@ -430,5 +435,17 @@ export default function App() {
 
       <Footer />
     </div>
+  );
+}
+
+// Main App with Routing
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/about" element={<About />} />
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/*" element={<AppContent />} />
+    </Routes>
   );
 }
