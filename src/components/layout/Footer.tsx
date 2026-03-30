@@ -35,7 +35,6 @@ export const Footer: React.FC = () => {
     legal: [
       { label: '服务条款', href: '#terms' },
       { label: '隐私政策', href: '#privacy' },
-      { label: 'Cookie 政策', href: '#cookies' },
     ],
   };
 
