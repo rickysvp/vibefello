@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, User, Settings, LogOut } from 'lucide-react';
 import { VibeLogo } from '../common/VibeLogo';
 import { UserTier } from '../../types';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface NavbarProps {
   activeTab: string;
@@ -32,6 +33,18 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogoClick = () => {
+    if (location.pathname === '/') {
+      // 如果在首页，使用 onTabChange
+      onTabChange('home');
+    } else {
+      // 如果在其他页面，直接跳转到首页
+      navigate('/');
+    }
+  };
 
   const filteredNavItems = navItems.filter(tab => {
     if (tab.hideForExpert && userRole === 'expert') return false;
@@ -56,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 z-50 flex items-center justify-between px-8">
-      <div onClick={() => onTabChange('home')} className="cursor-pointer">
+      <div onClick={handleLogoClick} className="cursor-pointer">
         <VibeLogo />
       </div>
       
