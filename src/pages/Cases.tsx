@@ -285,6 +285,234 @@ const caseStudies: CaseStudy[] = [
       role: 'ContentAI 创始人'
     },
     liveUrl: 'https://contentai.tools'
+  },
+  {
+    id: 'casual-game',
+    title: '休闲益智小游戏',
+    subtitle: 'AI 生成的游戏代码性能糟糕，专家优化后日活破万',
+    industry: '游戏 / 娱乐',
+    timeline: '4 天',
+    budget: '$800',
+    heroImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=600&fit=crop',
+    founder: {
+      name: '王小明',
+      role: '独立游戏开发者',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
+      background: '游戏策划出身，用 AI 尝试开发首款独立游戏'
+    },
+    expert: {
+      name: '赵强',
+      role: '游戏开发工程师',
+      avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face'
+    },
+    painPoints: [
+      {
+        title: '游戏卡顿严重',
+        description: 'AI 生成的消除类游戏在手机上运行卡顿，帧率只有 15-20fps，用户体验极差。',
+        impact: '测试用户反馈"玩不下去"，担心上线后差评如潮'
+      },
+      {
+        title: '内存泄漏问题',
+        description: '游戏运行 5 分钟后内存占用从 50MB 飙升到 300MB，导致 App 闪退。',
+        impact: '无法通过微信小游戏的审核，上线计划受阻'
+      },
+      {
+        title: '广告集成失败',
+        description: '想接入广告变现，但 AI 生成的广告代码与游戏循环冲突，要么不显示要么崩溃。',
+        impact: '商业模式无法跑通，项目面临夭折'
+      }
+    ],
+    solution: {
+      title: '游戏性能优化与架构重构',
+      steps: [
+        '性能分析：使用 Chrome DevTools 定位渲染瓶颈，发现大量不必要的重绘',
+        '渲染优化：实现对象池复用，优化碰撞检测算法，帧率提升至 60fps',
+        '内存管理：修复事件监听器泄漏，优化纹理加载策略，内存占用稳定在 80MB',
+        '广告集成：重构游戏循环与广告回调的时序关系，实现无缝广告体验',
+        '发布支持：协助通过微信小游戏审核，完成 iOS/Android 双端打包'
+      ],
+      technologies: ['Cocos Creator', 'TypeScript', 'WeChat Mini Game', 'AdMob', 'Unity Ads']
+    },
+    results: [
+      {
+        metric: '游戏帧率',
+        value: '60fps',
+        description: '从 15fps 优化到稳定 60fps，体验流畅'
+      },
+      {
+        metric: '内存占用',
+        value: '80MB',
+        description: '从 300MB 降至 80MB，不再闪退'
+      },
+      {
+        metric: '日活用户',
+        value: '12,000+',
+        description: '上线 2 周日活突破 1.2 万'
+      },
+      {
+        metric: '广告收入',
+        value: '$450/月',
+        description: '广告变现跑通，持续产生收入'
+      }
+    ],
+    testimonial: {
+      quote: '赵强不仅解决了技术问题，还教了我很多游戏优化的技巧。现在我的第二款游戏已经自己完成了性能优化，感谢 VibeFello 让我真正成长为一个独立开发者。',
+      author: '王小明',
+      role: 'PuzzleMaster 开发者'
+    },
+    liveUrl: 'https://puzzlemaster-game.vercel.app'
+  },
+  {
+    id: 'chrome-extension',
+    title: 'Chrome 效率插件',
+    subtitle: 'AI 写的扩展插件无法上架 Chrome 商店，专家 1 天解决合规问题',
+    industry: '浏览器扩展 / 生产力工具',
+    timeline: '1 天',
+    budget: '$300',
+    heroImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop',
+    founder: {
+      name: '张琳',
+      role: '产品经理',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+      background: '互联网产品经理，想开发一款自己的效率工具'
+    },
+    expert: {
+      name: '李华',
+      role: '浏览器扩展专家',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=face'
+    },
+    painPoints: [
+      {
+        title: 'Chrome 商店审核被拒',
+        description: 'AI 生成的代码使用了过时的 Manifest V2 格式，且包含远程代码加载，被 Chrome Web Store 直接拒绝。',
+        impact: '开发 2 周的作品无法发布，所有努力可能白费'
+      },
+      {
+        title: '权限申请过度',
+        description: 'AI 为了保险申请了所有可能的权限，包括"读取所有网站数据"，用户安装时会被吓退。',
+        impact: '测试用户 90% 在权限页面放弃安装'
+      },
+      {
+        title: '内容安全策略错误',
+        description: '内联脚本和 eval() 的使用违反了 CSP 规范，导致扩展在某些页面无法正常工作。',
+        impact: '核心功能在 Gmail、Notion 等网站失效'
+      }
+    ],
+    solution: {
+      title: 'Chrome 扩展合规化改造',
+      steps: [
+        'Manifest 升级：将 V2 迁移到 V3，移除所有远程代码加载',
+        '权限最小化：根据实际功能重新申请权限，从 12 个减少到 3 个',
+        'CSP 合规：重构代码移除内联脚本，使用外部 JS 文件',
+        '审核准备：编写详细的隐私政策和使用说明，准备审核材料',
+        '快速过审：协助提交审核，24 小时内通过 Chrome Web Store 审核'
+      ],
+      technologies: ['Chrome Extension V3', 'JavaScript', 'Manifest V3', 'Content Script', 'Background Service Worker']
+    },
+    results: [
+      {
+        metric: '审核时间',
+        value: '24h',
+        description: '从被拒到通过审核仅用 24 小时'
+      },
+      {
+        metric: '安装转化率',
+        value: '65%',
+        description: '权限优化后，安装转化率从 10% 提升到 65%'
+      },
+      {
+        metric: '用户数',
+        value: '5,000+',
+        description: '上线首月获得 5000+ 用户'
+      },
+      {
+        metric: '用户评分',
+        value: '4.9',
+        description: 'Chrome Web Store 评分 4.9 星'
+      }
+    ],
+    testimonial: {
+      quote: '李华对 Chrome 扩展的规范了如指掌，1 天就解决了困扰我 2 周的问题。现在我的插件已经帮助了 5000 多人提高效率，这种成就感无法形容。',
+      author: '张琳',
+      role: 'TabMaster 开发者'
+    },
+    liveUrl: 'https://chrome.google.com/webstore/detail/tabmaster/abc123'
+  },
+  {
+    id: 'web3-nft',
+    title: 'Web3 NFT 铸造平台',
+    subtitle: '智能合约安全漏洞险些酿成大祸，专家审计挽回数十万损失',
+    industry: 'Web3 / NFT',
+    timeline: '6 天',
+    budget: '$2,500',
+    heroImage: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=600&fit=crop',
+    founder: {
+      name: 'Alex Wong',
+      role: 'Web3 创业者',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=face',
+      background: '加密领域投资人，首次尝试开发 NFT 项目'
+    },
+    expert: {
+      name: '孙博士',
+      role: '智能合约安全专家',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
+    },
+    painPoints: [
+      {
+        title: '重入攻击漏洞',
+        description: 'AI 生成的 Solidity 合约没有防范重入攻击，黑客可以通过递归调用盗走合约中的 ETH。',
+        impact: '如果上线，预计损失可能超过 $200,000'
+      },
+      {
+        title: 'Gas 费用过高',
+        description: '合约代码没有优化，用户铸造一个 NFT 需要支付 $80+ 的 Gas 费，毫无竞争力。',
+        impact: '与竞品相比成本高出 5 倍，项目没有生存空间'
+      },
+      {
+        title: '前端与合约交互失败',
+        description: 'AI 生成的 Web3 连接代码与 MetaMask 兼容性差，用户经常无法完成交易。',
+        impact: '测试阶段 70% 的交易失败，用户体验极差'
+      }
+    ],
+    solution: {
+      title: '智能合约安全审计与全栈优化',
+      steps: [
+        '安全审计：使用 Slither 和 Mythril 进行静态分析，发现 3 个高危漏洞',
+        '合约重构：实现 Checks-Effects-Interactions 模式，添加重入锁保护',
+        'Gas 优化：使用 Merkle Tree 实现白名单，优化存储布局，Gas 费降低 70%',
+        '前端修复：升级 wagmi/viem 到最新版，完善错误处理和用户引导',
+        '测试覆盖：编写 50+ 单元测试，进行主网分叉测试，确保万无一失'
+      ],
+      technologies: ['Solidity', 'Hardhat', 'OpenZeppelin', 'Ethers.js', 'React', 'wagmi', 'IPFS']
+    },
+    results: [
+      {
+        metric: '安全漏洞',
+        value: '0',
+        description: '修复所有高危漏洞，通过专业安全审计'
+      },
+      {
+        metric: 'Gas 费用',
+        value: '-70%',
+        description: '从 $80 降至 $24，具备市场竞争力'
+      },
+      {
+        metric: '铸造收入',
+        value: '$85,000',
+        description: '首发 3000 个 NFT 全部售罄'
+      },
+      {
+        metric: '交易成功率',
+        value: '98.5%',
+        description: '从前端的 30% 提升至 98.5%'
+      }
+    ],
+    testimonial: {
+      quote: '孙博士救了我的项目，也救了我的投资。如果没有这次审计，我可能已经损失了全部积蓄。Web3 开发不能心存侥幸，专业审计是必须的。',
+      author: 'Alex Wong',
+      role: 'CryptoArt 平台创始人'
+    },
+    liveUrl: 'https://cryptoart-nft.io'
   }
 ];
 

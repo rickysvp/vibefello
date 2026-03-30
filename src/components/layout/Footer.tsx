@@ -19,7 +19,6 @@ export const Footer: React.FC = () => {
 
   const footerLinks = {
     product: [
-      { label: '功能介绍', href: '#features' },
       { label: '专家入驻', href: '#experts' },
       { label: '成功案例', href: '/cases' },
     ],
@@ -49,9 +48,9 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-6">
+            <a href="/" className="flex items-center gap-3 mb-6">
               <VibeLogo className="h-10" />
-            </div>
+            </a>
             <p className="text-slate-600 text-sm leading-relaxed mb-6 max-w-sm">
               VibeFello 是专业的 Vibe Coding 救援平台，连接非技术创始人与技术专家，让 AI 生成的代码真正上线运行。
             </p>
