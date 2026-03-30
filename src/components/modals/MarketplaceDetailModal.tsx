@@ -142,7 +142,7 @@ export const MarketplaceDetailModal: React.FC<MarketplaceDetailModalProps> = ({
               {/* 报价和交付时间 */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-900 mb-2">报价 (¥)</label>
+                  <label className="block text-sm font-bold text-slate-900 mb-2">报价 ($)</label>
                   <input
                     type="number"
                     value={bidData.price}

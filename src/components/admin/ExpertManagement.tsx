@@ -409,7 +409,7 @@ const ExpertDetailModal = ({
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl">
                   <p className="text-xs text-slate-500 mb-1">总收入</p>
-                  <p className="text-2xl font-black text-emerald-600">¥{expert.totalEarnings.toLocaleString()}</p>
+                  <p className="text-2xl font-black text-emerald-600">${expert.totalEarnings.toLocaleString()}</p>
                 </div>
                 <div className="bg-slate-50 p-4 rounded-xl">
                   <p className="text-xs text-slate-500 mb-1">评分</p>
@@ -782,7 +782,7 @@ export const ExpertManagement = () => {
                     <td className="px-6 py-4">
                       <div className="text-sm">
                         <p><span className="font-bold">{expert.completedOrders}</span> 订单</p>
-                        <p className="text-emerald-600 font-bold">¥{expert.totalEarnings.toLocaleString()}</p>
+                        <p className="text-emerald-600 font-bold">${expert.totalEarnings.toLocaleString()}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">

@@ -94,7 +94,7 @@ export const PostRequestFlow: React.FC<PostRequestFlowProps> = ({ onComplete, on
     filePath: '',
     category: '',
     subCategory: '',
-    budget: '¥100 - ¥300',
+    budget: '$100 - $300',
     deliveryTime: '24 小时内',
     urgency: 'normal'
   });
@@ -631,7 +631,7 @@ export const PostRequestFlow: React.FC<PostRequestFlowProps> = ({ onComplete, on
                   预算范围 <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-3">
-                  {['¥100 - ¥300', '¥301 - ¥600', '¥601 - ¥2000', '¥2000 - ¥6000', '面议'].map(b => (
+                  {['$100 - $300', '$301 - $600', '$601 - $2000', '$2000 - $6000', '面议'].map(b => (
                     <button
                       key={b}
                       onClick={() => setFormData({...formData, budget: b})}

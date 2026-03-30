@@ -118,7 +118,7 @@ const UserManagement = () => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-slate-700">{user.orderCount}</td>
-                <td className="px-6 py-4 font-bold text-slate-900">¥{user.totalSpent.toLocaleString()}</td>
+                <td className="px-6 py-4 font-bold text-slate-900">${user.totalSpent.toLocaleString()}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-bold ${
                     user.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
@@ -141,9 +141,9 @@ const OrderManagement = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   const mockOrders = [
-    { id: 'o1', title: '修复 Next.js 水合错误', user: '张三', expert: '陈老师', budget: '¥300-600', status: 'in_service', createdAt: '2024-03-25' },
-    { id: 'o2', title: 'AWS Lambda 部署优化', user: '李四', expert: '-', budget: '¥1000-2000', status: 'pending_quote', createdAt: '2024-03-27' },
-    { id: 'o3', title: 'Solidity 合约审计', user: '王五', expert: '米勒', budget: '¥3000-7000', status: 'completed', createdAt: '2024-03-20' },
+    { id: 'o1', title: '修复 Next.js 水合错误', user: '张三', expert: '陈老师', budget: '$300-600', status: 'in_service', createdAt: '2024-03-25' },
+    { id: 'o2', title: 'AWS Lambda 部署优化', user: '李四', expert: '-', budget: '$1000-2000', status: 'pending_quote', createdAt: '2024-03-27' },
+    { id: 'o3', title: 'Solidity 合约审计', user: '王五', expert: '米勒', budget: '$3000-7000', status: 'completed', createdAt: '2024-03-20' },
   ];
 
   return (
@@ -229,15 +229,15 @@ const FinanceManagement = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-sm text-slate-500 mb-1">平台总收入</p>
-          <p className="text-3xl font-black text-slate-900">¥45,230</p>
+          <p className="text-3xl font-black text-slate-900">$45,230</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-sm text-slate-500 mb-1">待结算金额</p>
-          <p className="text-3xl font-black text-amber-600">¥8,450</p>
+          <p className="text-3xl font-black text-amber-600">$8,450</p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
           <p className="text-sm text-slate-500 mb-1">本月收入</p>
-          <p className="text-3xl font-black text-emerald-600">¥12,680</p>
+          <p className="text-3xl font-black text-emerald-600">$12,680</p>
         </div>
       </div>
 
@@ -260,21 +260,21 @@ const FinanceManagement = () => {
               <td className="px-6 py-4 font-medium">#f1</td>
               <td className="px-6 py-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">订单服务费</span></td>
               <td className="px-6 py-4 text-slate-700">订单 #o1 平台服务费</td>
-              <td className="px-6 py-4 font-bold text-emerald-600">+¥120</td>
+              <td className="px-6 py-4 font-bold text-emerald-600">+$120</td>
               <td className="px-6 py-4"><span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">已完成</span></td>
             </tr>
             <tr className="hover:bg-slate-50">
               <td className="px-6 py-4 font-medium">#f2</td>
               <td className="px-6 py-4"><span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs font-bold">订阅费用</span></td>
               <td className="px-6 py-4 text-slate-700">专家 Pro 订阅费用</td>
-              <td className="px-6 py-4 font-bold text-emerald-600">+¥99</td>
+              <td className="px-6 py-4 font-bold text-emerald-600">+$99</td>
               <td className="px-6 py-4"><span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">已完成</span></td>
             </tr>
             <tr className="hover:bg-slate-50">
               <td className="px-6 py-4 font-medium">#f3</td>
               <td className="px-6 py-4"><span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-bold">专家结算</span></td>
               <td className="px-6 py-4 text-slate-700">专家收入结算</td>
-              <td className="px-6 py-4 font-bold text-red-600">-¥480</td>
+              <td className="px-6 py-4 font-bold text-red-600">-$480</td>
               <td className="px-6 py-4"><span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-bold">处理中</span></td>
             </tr>
           </tbody>

@@ -110,7 +110,7 @@ function AppContent() {
       title: data.title || 'Untitled',
       description: data.description || '',
       expectedOutcome: data.expectedOutcome || '',
-      budget: data.budget || '¥100 - ¥300',
+      budget: data.budget || '$100 - $300',
       techStack: data.techStack || [],
       deliveryTime: data.deliveryTime || '24 小时内',
       status: 'pending_quote',

@@ -48,7 +48,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Wallet className="w-4 h-4 text-emerald-600" />
             <div>
               <div className="text-[10px] text-slate-400">余额</div>
-              <div className="text-sm font-bold text-slate-900">¥3,250</div>
+              <div className="text-sm font-bold text-slate-900">$3,250</div>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <div className="text-lg font-bold text-slate-900">{req.price ? `¥${req.price}` : req.budget}</div>
+                      <div className="text-lg font-bold text-slate-900">{req.price ? `$${req.price}` : req.budget}</div>
                       <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">固定价格</div>
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-vibe-accent group-hover:translate-x-1 transition-all" />

@@ -172,9 +172,9 @@ export const AdminDashboard = () => {
         />
         <StatCard
           title="总收入"
-          value={`¥${stats.totalRevenue.toLocaleString()}`}
+          value={`$${stats.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
-          trend="+¥3,400 今日"
+          trend="+$3,400 今日"
           trendUp={true}
           color="bg-amber-500"
         />

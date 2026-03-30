@@ -138,7 +138,7 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ request, onBack, onSel
               </div>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-black text-vibe-primary">¥{request.price}</div>
+              <div className="text-2xl font-black text-vibe-primary">${request.price}</div>
               <div className="text-xs text-slate-400">服务报价</div>
             </div>
           </div>
@@ -364,7 +364,7 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ request, onBack, onSel
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
                             <div>
-                              <span className="text-2xl font-black text-vibe-primary">¥{bid?.price}</span>
+                              <span className="text-2xl font-black text-vibe-primary">${bid?.price}</span>
                               <span className="text-xs text-slate-400 ml-1">报价</span>
                             </div>
                             <div className="flex items-center gap-1 text-slate-600">
@@ -392,7 +392,7 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ request, onBack, onSel
                     disabled={!selectedBid}
                     className="w-full bg-vibe-primary text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all disabled:bg-slate-200 disabled:cursor-not-allowed"
                   >
-                    {selectedBid ? `确认选择 ${selectedBid.expertName} 并支付 ¥${selectedBid.price}` : '请选择一位专家'}
+                    {selectedBid ? `确认选择 ${selectedBid.expertName} 并支付 $${selectedBid.price}` : '请选择一位专家'}
                   </button>
                   <p className="text-center text-xs text-slate-400 mt-3">
                     24小时内未选择，订单将自动取消，已支付的咨询费不予退还

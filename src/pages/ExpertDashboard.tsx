@@ -16,7 +16,7 @@ interface ExpertDashboardProps {
 }
 
 const expertStats = [
-  { label: '本月收入', value: '¥8,240.00', icon: Wallet, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { label: '本月收入', value: '$8,240.00', icon: Wallet, color: 'text-emerald-600', bg: 'bg-emerald-50' },
   { label: '完成订单', value: '12', icon: CheckCircle2, color: 'text-blue-600', bg: 'bg-blue-50' },
   { label: '当前评分', value: '4.9', icon: Star, color: 'text-amber-600', bg: 'bg-amber-50' },
 ];
@@ -202,7 +202,7 @@ export const ExpertDashboard: React.FC<ExpertDashboardProps> = ({
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right mr-4">
-                            <div className="text-lg font-black text-slate-900">{req.budget || `¥${req.price}`}</div>
+                            <div className="text-lg font-black text-slate-900">{req.budget || `$${req.price}`}</div>
                             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">项目预算</div>
                           </div>
                           <button 
@@ -307,7 +307,7 @@ export const ExpertDashboard: React.FC<ExpertDashboardProps> = ({
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right mr-4">
-                    <div className="text-lg font-black text-slate-900">{req.budget || `¥${req.price}`}</div>
+                    <div className="text-lg font-black text-slate-900">{req.budget || `$${req.price}`}</div>
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">项目预算</div>
                   </div>
                   <button 
@@ -364,7 +364,7 @@ export const ExpertDashboard: React.FC<ExpertDashboardProps> = ({
                     </div>
                     <div className="flex items-center gap-8">
                       <div className="text-right">
-                        <div className="text-xl font-black text-slate-900">{req.budget || `¥${req.price}`}</div>
+                        <div className="text-xl font-black text-slate-900">{req.budget || `$${req.price}`}</div>
                         <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">完成时间: {req.createdAt}</div>
                       </div>
                       <button className="bg-slate-50 text-slate-600 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-vibe-primary hover:text-white transition-all border border-slate-200">
@@ -469,17 +469,17 @@ export const ExpertDashboard: React.FC<ExpertDashboardProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-card-shadow">
                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">本月收入</div>
-                <div className="text-4xl font-black text-slate-900">¥8,240</div>
+                <div className="text-4xl font-black text-slate-900">$8,240</div>
                 <div className="text-sm text-emerald-600 font-bold mt-2">+23% 较上月</div>
               </div>
               <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-card-shadow">
                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">待结算</div>
-                <div className="text-4xl font-black text-slate-900">¥3,600</div>
+                <div className="text-4xl font-black text-slate-900">$3,600</div>
                 <div className="text-sm text-slate-400 font-medium mt-2">3 个订单待确认</div>
               </div>
               <div className="bg-white p-8 rounded-2xl border border-slate-200 vibe-card-shadow">
                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">累计收入</div>
-                <div className="text-4xl font-black text-slate-900">¥45,280</div>
+                <div className="text-4xl font-black text-slate-900">$45,280</div>
                 <div className="text-sm text-slate-400 font-medium mt-2">自加入以来</div>
               </div>
             </div>
@@ -498,7 +498,7 @@ export const ExpertDashboard: React.FC<ExpertDashboardProps> = ({
                       <div className="text-xs text-slate-400">{item.date}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-black text-slate-900">+¥{item.amount}</div>
+                      <div className="font-black text-slate-900">+${item.amount}</div>
                       <div className="text-xs text-emerald-600 font-bold">{item.status}</div>
                     </div>
                   </div>

@@ -202,11 +202,11 @@ export const Workspace: React.FC<WorkspaceProps> = ({ request, onBack }) => {
               <div className="space-y-6 mb-8">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">项目预算</span>
-                  <span className="font-black text-vibe-accent text-xl">{request.budget || `¥${request.price}`}</span>
+                  <span className="font-black text-vibe-accent text-xl">{request.budget || `$${request.price}`}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">已托管资金</span>
-                  <span className="font-black text-emerald-500 text-lg">¥500.00</span>
+                  <span className="font-black text-emerald-500 text-lg">$500.00</span>
                 </div>
                 <div className="h-px bg-slate-100" />
                 <div className="flex justify-between items-center">
