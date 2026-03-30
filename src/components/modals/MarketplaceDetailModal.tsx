@@ -249,7 +249,7 @@ export const MarketplaceDetailModal: React.FC<MarketplaceDetailModalProps> = ({
               </div>
               <div className="bg-white p-4 rounded-lg border border-slate-200">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">咨询费状态</div>
-                <div className="text-xl font-black text-emerald-500">已支付 (¥49.00)</div>
+                <div className="text-xl font-black text-emerald-500">已支付</div>
               </div>
             </div>
 

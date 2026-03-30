@@ -395,7 +395,7 @@ export const OrderDetail: React.FC<OrderDetailProps> = ({ request, onBack, onSel
                     {selectedBid ? `确认选择 ${selectedBid.expertName} 并支付 ¥${selectedBid.price}` : '请选择一位专家'}
                   </button>
                   <p className="text-center text-xs text-slate-400 mt-3">
-                    24小时内未选择，订单将自动取消，基础咨询费不予退还
+                    24小时内未选择，订单将自动取消，已支付的咨询费不予退还
                   </p>
                 </div>
               )}

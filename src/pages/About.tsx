@@ -48,7 +48,7 @@ export const About: React.FC = () => {
       name: '李雪',
       role: '独立产品经理',
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
-      content: '之前找外包开发要几万块，现在用 AI 生成代码成本大幅降低，但最后的调试环节总是卡壳。VibeFello 的基础咨询费非常划算，专家不仅解决了我的问题，还教会了我很多调试技巧。强烈推荐！',
+      content: '之前找外包开发要几万块，现在用 AI 生成代码成本大幅降低，但最后的调试环节总是卡壳。VibeFello 的咨询费用非常合理，专家不仅解决了我的问题，还教会了我很多调试技巧。强烈推荐！',
       rating: 5,
       project: '移动端 App 调试',
     },

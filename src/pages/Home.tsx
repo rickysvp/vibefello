@@ -23,7 +23,7 @@ const PROBLEM_CARDS = [
 ];
 
 const PROCESS_STEPS = [
-  { step: "01", title: "提交咨询", desc: "描述您的 Vibe Coding 困境并支付基础咨询费。" },
+  { step: "01", title: "提交咨询", desc: "描述您的 Vibe Coding 困境并支付小额咨询费。" },
   { step: "02", title: "专家诊断", desc: "多位专家分析问题并提供初步解决方案与报价。" },
   { step: "03", title: "托管资金", desc: "选择专家并托管全额费用，平台提供全程担保。" },
   { step: "04", title: "上线交付", desc: "专家修复问题，确认无误后释放资金，项目上线。" }
@@ -39,7 +39,7 @@ const FAQS = [
 
 const TESTIMONIALS = [
   { name: "张先生", role: "某 AI 创业公司 CEO", content: "作为非技术创始人，Vibe Coding 让我快速搭建了原型，但最后的部署真的让我崩溃。VibeFello 的专家在 2 小时内就解决了我的问题，非常专业！", avatar: "https://picsum.photos/seed/user1/100/100" },
-  { name: "李女士", role: "独立开发者", content: "基础咨询费非常划算，专家给出的诊断报告让我少走了很多弯路。以前自己摸索要好几天，现在半天就搞定了。强烈推荐给所有独立开发者。", avatar: "https://picsum.photos/seed/user2/100/100" }
+  { name: "李女士", role: "独立开发者", content: "VibeFello 的咨询费用非常合理，专家给出的诊断报告让我少走了很多弯路。以前自己摸索要好几天，现在半天就搞定了。强烈推荐给所有独立开发者。", avatar: "https://picsum.photos/seed/user2/100/100" }
 ];
 
 const TAGS = ['全部', 'Frontend', 'Backend', 'SaaS', 'Game', 'Agent 编排', 'API 调试', '云部署', '环境安装', 'Mobile', 'Web3', 'Smart Contract', 'SDK 集成', 'Infrastructure', 'Skills', 'UI/UX', 'Testing', 'Security', 'DevOps', 'Data Science'];

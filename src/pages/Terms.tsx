@@ -36,7 +36,7 @@ export const Terms: React.FC = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-4">3. 服务流程</h2>
             <p className="text-slate-600 leading-relaxed mb-4">
-              3.1 用户发布请求时需支付基础咨询费，该费用用于获取专家的初步诊断。
+              3.1 用户发布请求时需支付基础咨询费，具体金额根据问题复杂度确定，该费用用于获取专家的初步诊断。
             </p>
             <p className="text-slate-600 leading-relaxed mb-4">
               3.2 专家提交方案后，用户可选择接受或拒绝。接受后需支付全额服务费用。
