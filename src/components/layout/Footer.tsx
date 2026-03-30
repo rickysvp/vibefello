@@ -45,24 +45,24 @@ export const Footer: React.FC = () => {
     <footer className="bg-slate-50 border-t border-slate-200">
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <a href="/" className="flex items-center gap-3 mb-6">
-              <VibeLogo className="h-10" />
+              <VibeLogo className="h-12" />
             </a>
-            <p className="text-slate-600 text-sm leading-relaxed mb-6 max-w-sm">
+            <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8 max-w-sm">
               VibeFello 是专业的 Vibe Coding 救援平台，连接非技术创始人与技术专家，让 AI 生成的代码真正上线运行。
             </p>
             {/* Social Links */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all"
+                  className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:shadow-md transition-all duration-300"
                   aria-label={social.label}
                 >
                   <social.Icon className="w-5 h-5" />
@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
               {/* Email Icon */}
               <a
                 href="mailto:feedback@vibefello.com"
-                className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm transition-all"
+                className="w-10 h-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:shadow-md transition-all duration-300"
                 aria-label="Email"
               >
                 <Mail className="w-5 h-5" />
@@ -81,13 +81,13 @@ export const Footer: React.FC = () => {
 
           {/* Product Links */}
           <div>
-            <h3 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">产品</h3>
+            <h3 className="font-semibold text-slate-900 mb-5 text-sm uppercase tracking-wider">产品</h3>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm"
+                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm md:text-base"
                   >
                     {link.label}
                   </a>
@@ -98,13 +98,13 @@ export const Footer: React.FC = () => {
 
           {/* Resources Links */}
           <div>
-            <h3 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">资源</h3>
+            <h3 className="font-semibold text-slate-900 mb-5 text-sm uppercase tracking-wider">资源</h3>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm flex items-center gap-2"
+                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm md:text-base flex items-center gap-2"
                   >
                     {link.label}
                   </a>
@@ -115,13 +115,13 @@ export const Footer: React.FC = () => {
 
           {/* Company Links */}
           <div>
-            <h3 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">公司</h3>
+            <h3 className="font-semibold text-slate-900 mb-5 text-sm uppercase tracking-wider">公司</h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm"
+                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm md:text-base"
                   >
                     {link.label}
                   </a>
@@ -132,13 +132,13 @@ export const Footer: React.FC = () => {
 
           {/* Legal Links */}
           <div>
-            <h3 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">法律</h3>
+            <h3 className="font-semibold text-slate-900 mb-5 text-sm uppercase tracking-wider">法律</h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm"
+                    className="text-slate-600 hover:text-indigo-600 transition-colors text-sm md:text-base"
                   >
                     {link.label}
                   </a>
@@ -153,10 +153,10 @@ export const Footer: React.FC = () => {
       <div className="border-t border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-slate-500 text-sm">
+            <div className="text-slate-500 text-sm md:text-base">
               © {currentYear} VibeFello. 保留所有权利。
             </div>
-            <div className="text-sm text-slate-500">
+            <div className="text-sm md:text-base text-slate-500">
               Made with ❤️ for Vibe Coders
             </div>
           </div>

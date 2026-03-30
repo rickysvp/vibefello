@@ -52,23 +52,28 @@ export const ExpertLanding: React.FC = () => {
   const howItWorks = [
     {
       step: '01',
-      title: '提交申请',
-      description: '填写技术技能、工作经验、项目案例等信息，我们的团队会在 3-5 个工作日内审核'
+      title: '专业信息',
+      description: '填写真实姓名、技术领域、技术栈、开发语言和 Vibe Coding 经验等信息'
     },
     {
       step: '02',
-      title: '完善资料',
-      description: '通过审核后，完善个人主页，展示技术栈、服务范围和过往作品'
+      title: '身份验证',
+      description: '上传身份证或护照等证件进行身份验证，确保平台安全'
     },
     {
       step: '03',
-      title: '接收请求',
-      description: '平台根据技术栈智能匹配救援请求，您可以选择感兴趣的项目进行报价'
+      title: '服务协议',
+      description: '阅读并同意 VibeFello 专家服务协议，确认独立承包商关系'
     },
     {
       step: '04',
-      title: '提供服务',
-      description: '与客户沟通需求，提供技术解决方案，完成后获得报酬和好评'
+      title: '订阅计划',
+      description: '选择适合您的订阅计划，支付费用后正式成为平台专家'
+    },
+    {
+      step: '05',
+      title: '开始服务',
+      description: '平台根据技术栈智能匹配救援请求，您可以选择感兴趣的项目进行报价和服务'
     }
   ];
 
@@ -105,11 +110,11 @@ export const ExpertLanding: React.FC = () => {
   const faqs = [
     {
       question: '入驻需要收费吗？',
-      answer: '完全免费。专家入驻不收取任何费用，只有在成功完成服务后，平台会收取约 10% 的服务费。'
+      answer: '专家入驻需要选择订阅计划，费用为 $39-299/月。不同计划对应不同的接单额度和平台服务费比例，具体请参考订阅计划详情。'
     },
     {
       question: '我需要投入多少时间？',
-      answer: '完全由您决定。您可以根据自己的时间安排选择项目，全职专家每月可处理 10-20 个项目，兼职专家每月处理 2-5 个项目都可以。'
+      answer: '完全由您决定。您可以根据自己的时间安排选择项目，全职专家每月可处理 10-20 个项目，兼职专家每月处理 2-5 个项目都可以。不同订阅计划有不同的接单额度限制。'
     },
     {
       question: '如何定价我的服务？',
@@ -117,11 +122,19 @@ export const ExpertLanding: React.FC = () => {
     },
     {
       question: '平台如何保障专家权益？',
-      answer: '平台提供多重保障：1）客户支付的费用由平台托管，服务完成后立即释放；2）完善的争议处理机制；3）客户评价系统，优质专家获得更多曝光；4）平台承担客户违约风险。'
+      answer: '平台提供多重保障：1）客户支付的费用由平台托管，服务完成后按结算周期释放；2）完善的争议处理机制；3）客户评价系统，优质专家获得更多曝光；4）平台承担客户违约风险。'
     },
     {
       question: '我需要哪些技术栈？',
       answer: '平台需求涵盖广泛：前端（React/Vue/Next.js）、后端（Node.js/Python/Go）、移动开发（React Native/Flutter）、AI 集成（OpenAI API/LangChain）、Web3（Solidity）等。只要您精通任一领域，都欢迎申请。'
+    },
+    {
+      question: '平台服务费是多少？',
+      answer: '平台服务费根据订阅计划不同而不同：Starter 计划约 20%，Pro 计划约 15%，Elite 计划约 10%。服务费将从您的订单收入中自动扣除。'
+    },
+    {
+      question: '结算周期是多久？',
+      answer: '不同订阅计划有不同的结算周期：Starter 计划 15 天，Pro 和 Elite 计划 7 天。'
     }
   ];
 
@@ -241,6 +254,15 @@ export const ExpertLanding: React.FC = () => {
                     </div>
                     <span className="text-xl font-bold text-slate-900">4.9/5</span>
                   </div>
+                  <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <Award className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <span className="font-medium text-slate-700">订阅计划</span>
+                    </div>
+                    <span className="text-xl font-bold text-slate-900">$39-299/月</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -283,9 +305,9 @@ export const ExpertLanding: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">入驻流程</h2>
-            <p className="text-xl text-slate-600">简单四步，开始您的专家之旅</p>
+            <p className="text-xl text-slate-600">简单五步，开始您的专家之旅</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {howItWorks.map((step, index) => (
               <motion.div
                 key={step.step}
@@ -405,7 +427,7 @@ export const ExpertLanding: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl md:text-4xl font-black mb-6">准备好开始了吗？</h2>
           <p className="text-xl text-white/80 mb-8">
-            加入 500+ 专家，一起帮助非技术创始人实现创业梦想
+            加入 500+ 专家，一起帮助非技术创始人实现创业梦想。选择适合您的订阅计划，开启专家变现之旅。
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
