@@ -159,8 +159,8 @@ const translations = {
       ]
     },
     testimonials: {
-      title: "What Our Clients Say",
-      subtitle: "Hear from founders who have successfully launched with VibeFello",
+      title: "What Our Friends Say",
+      subtitle: "Hear from friends who have successfully launched with VibeFello",
       items: [
         {
           name: "Sarah Johnson",
@@ -394,8 +394,8 @@ const translations = {
       ]
     },
     testimonials: {
-      title: "客户评价",
-      subtitle: "听听成功通过 VibeFello 上线产品的创始人怎么说",
+      title: "朋友评价",
+      subtitle: "听听成功通过 VibeFello 上线产品的朋友们怎么说",
       items: [
         {
           name: "Sarah Johnson",
