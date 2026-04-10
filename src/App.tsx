@@ -8,7 +8,7 @@ import { useState, FormEvent, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Logo } from './components/Logo';
-import { Dashboard } from './components/Dashboard';
+
 import { 
   Code2, 
   Zap, 
@@ -573,7 +573,6 @@ export default function App() {
   const [activeScenario, setActiveScenario] = useState(0);
   const [submittedEmail, setSubmittedEmail] = useState('');
   const [isMember, setIsMember] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{type: 'success' | 'error' | 'loading', message: string} | null>(null);
   const [memberCount, setMemberCount] = useState<number | null>(null);
   const [waitlistCount, setWaitlistCount] = useState(1);
@@ -800,42 +799,20 @@ export default function App() {
             >
               {lang === 'en' ? 'CN' : 'EN'}
             </button>
-            {!showConversion && !showDashboard && (
-              isMember ? (
-                <button 
-                  onClick={() => setShowDashboard(true)}
-                  className="flex items-center gap-2 bg-accent text-black px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-pop"
-                >
-                  Genesis Member
-                </button>
-              ) : (
-                <a 
-                  href="#waitlist" 
-                  className="bg-foreground text-white px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-lg shadow-foreground/10"
-                >
-                  {t.nav.joinWaitlist}
-                </a>
-              )
-            )}
-            {showDashboard && (
-              <button 
-                onClick={() => setShowDashboard(false)}
-                className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors"
+            {!showConversion && (
+              <a 
+                href="#waitlist" 
+                className="bg-foreground text-white px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-lg shadow-foreground/10"
               >
-                {t.conversion.back}
-              </button>
+                {t.nav.joinWaitlist}
+              </a>
             )}
           </div>
         </div>
       </header>
 
       <main className="relative z-10">
-        {showDashboard ? (
-          <Dashboard 
-            userEmail={submittedEmail || "Genesis Member"} 
-            onBack={() => setShowDashboard(false)} 
-          />
-        ) : showConversion ? (
+        {showConversion ? (
           <div className="min-h-screen flex items-center justify-center p-4 md:p-8 pt-6 md:pt-12 overflow-x-hidden">
             <div className="max-w-5xl mx-auto w-full relative pb-20">
               {/* Background Accents */}
@@ -874,13 +851,7 @@ export default function App() {
                           </p>
 
                           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                            <button 
-                              onClick={() => setShowDashboard(true)}
-                              className="candy-button px-8 py-4 text-lg group"
-                            >
-                              {t.conversion.successCta}
-                              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" strokeWidth={3} />
-                            </button>
+
                             <button 
                               onClick={() => {
                                 setShowConversion(false);
