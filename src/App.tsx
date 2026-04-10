@@ -166,19 +166,19 @@ const translations = {
           name: "Mike Johnson",
           role: "Founder, SaaS Startup",
           quote: "VibeFello was a game-changer for our launch. They helped us navigate the technical hurdles that were slowing us down. Their team's expertise and responsiveness were exceptional.",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20friendly%20smile%20business%20attire&image_size=square"
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20casual%20white%20man%20portrait%20friendly%20smile%20outdoor%20setting&image_size=square"
         },
         {
           name: "Emily Davis",
           role: "Solo Developer",
           quote: "As someone new to deployment and infrastructure, VibeFello made the process seamless. They handled all the technical details, letting me focus on creating great features for my users.",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20woman%20headshot%20confident%20expression%20business%20attire&image_size=square"
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20casual%20white%20woman%20portrait%20relaxed%20expression%20coffee%20shop%20setting&image_size=square"
         },
         {
           name: "Chris Wilson",
           role: "CTO, Early-Stage Company",
           quote: "The VibeFello team delivered exactly what we needed to get our product ready for production. Their problem-solving skills and attention to detail were impressive and made a huge difference.",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20professional%20expression%20glasses&image_size=square"
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20casual%20white%20man%20portrait%20smiling%20with%20glasses%20casual%20clothing&image_size=square"
         }
       ]
     },
@@ -401,19 +401,19 @@ const translations = {
           name: "Mike Johnson",
           role: "SaaS 创业公司创始人",
           quote: "VibeFello 对我们的上线来说是一个游戏规则改变者。他们帮助我们克服了阻碍我们前进的技术障碍。他们团队的专业知识和响应能力非常出色。",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20friendly%20smile%20business%20attire&image_size=square"
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20casual%20white%20man%20portrait%20friendly%20smile%20outdoor%20setting&image_size=square"
         },
         {
           name: "Emily Davis",
           role: "独立开发者",
           quote: "作为对部署和基础设施不熟悉的人，VibeFello 让这个过程变得无缝。他们处理了所有技术细节，让我能够专注于为用户创建出色的功能。",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20woman%20headshot%20confident%20expression%20business%20attire&image_size=square"
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20casual%20white%20woman%20portrait%20relaxed%20expression%20coffee%20shop%20setting&image_size=square"
         },
         {
           name: "Chris Wilson",
           role: "早期公司 CTO",
           quote: "VibeFello 团队提供了我们所需的确切专业知识，使我们的产品达到生产就绪状态。他们的问题解决能力和对细节的关注令人印象深刻，产生了巨大的影响。",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20professional%20expression%20glasses&image_size=square"
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=natural%20casual%20white%20man%20portrait%20smiling%20with%20glasses%20casual%20clothing&image_size=square"
         }
       ]
     },
