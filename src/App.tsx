@@ -183,24 +183,19 @@ const translations = {
       ]
     },
     caseStudies: {
-      title: "Success Stories",
-      subtitle: "See how we've helped founders launch their products",
-      items: [
-        {
-          title: "AI-Powered SaaS Platform",
-          description: "Helped a non-technical founder launch their AI-powered SaaS platform by solving deployment issues and integrating payment systems.",
-          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20tech%20office%20with%20product%20dashboard%20on%20screen&image_size=landscape_16_9"
-        },
-        {
-          title: "Mobile App Launch",
-          description: "Assisted a solo developer in launching their mobile app by setting up CI/CD pipelines and resolving infrastructure challenges.",
-          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=mobile%20app%20development%20workspace%20with%20smartphone%20and%20laptop&image_size=landscape_16_9"
-        },
-        {
-          title: "E-Commerce Platform",
-          description: "Helped a startup optimize their e-commerce platform for performance and scalability, resulting in 50% faster load times.",
-          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=e-commerce%20website%20dashboard%20with%20sales%20analytics&image_size=landscape_16_9"
-        }
+      title: "Trusted by Founders",
+      subtitle: "Join the growing community of builders who have launched with VibeFello",
+      logos: [
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20abstract%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20line%20art%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20geometric%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20line%20art%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20abstract%20minimalist&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20line%20art%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square"
       ]
     },
     footer: {
@@ -403,24 +398,19 @@ const translations = {
       ]
     },
     caseStudies: {
-      title: "成功案例",
-      subtitle: "了解我们如何帮助创始人成功上线产品",
-      items: [
-        {
-          title: "AI 驱动的 SaaS 平台",
-          description: "帮助非技术创始人上线他们的 AI 驱动 SaaS 平台，解决了部署问题并集成了支付系统。",
-          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20tech%20office%20with%20product%20dashboard%20on%20screen&image_size=landscape_16_9"
-        },
-        {
-          title: "移动应用上线",
-          description: "协助独立开发者上线他们的移动应用，设置了 CI/CD 管道并解决了基础设施挑战。",
-          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=mobile%20app%20development%20workspace%20with%20smartphone%20and%20laptop&image_size=landscape_16_9"
-        },
-        {
-          title: "电子商务平台",
-          description: "帮助创业公司优化他们的电子商务平台，提高性能和可扩展性，使加载时间缩短了 50%。",
-          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=e-commerce%20website%20dashboard%20with%20sales%20analytics&image_size=landscape_16_9"
-        }
+      title: "受到创始人信任",
+      subtitle: "加入已经通过 VibeFello 成功上线的建设者社区",
+      logos: [
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20abstract%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20line%20art%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20geometric%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20line%20art%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20abstract%20minimalist&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20line%20art%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square"
       ]
     },
     footer: {
@@ -744,10 +734,14 @@ export default function App() {
             href="/" 
             className="group cursor-pointer"
           >
-            <img 
+            <motion.img 
               src="/img/logo.png" 
               alt="VibeFello" 
-              className="h-20 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-20 w-auto object-contain"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.1, rotate: 2 }}
+              transition={{ duration: 0.3 }}
             />
           </a>
           
@@ -1859,7 +1853,7 @@ export default function App() {
             </section>
 
             {/* Case Studies Section */}
-            <section className="py-16 px-6 relative overflow-hidden">
+            <section className="py-16 px-6 relative overflow-hidden bg-foreground/5">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-12">
@@ -1870,28 +1864,21 @@ export default function App() {
                     {t.caseStudies.subtitle}
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {t.caseStudies.items.map((item, idx) => (
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+                  {t.caseStudies.logos.map((logo, idx) => (
                     <motion.div 
                       key={idx} 
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="bg-white rounded-2xl border-2 border-foreground shadow-pop overflow-hidden hover:shadow-pop-lg transition-all duration-300"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.05, duration: 0.5 }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="bg-white p-6 rounded-xl border-2 border-foreground shadow-pop flex items-center justify-center h-24"
                     >
-                      <div className="h-48 overflow-hidden">
-                        <img 
-                          src={item.image} 
-                          alt={item.title} 
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <h3 className="font-bold text-xl mb-3">{item.title}</h3>
-                        <p className="text-foreground/70 leading-relaxed">
-                          {item.description}
-                        </p>
-                      </div>
+                      <img 
+                        src={logo} 
+                        alt={`Client logo ${idx + 1}`} 
+                        className="max-h-16 max-w-full object-contain"
+                      />
                     </motion.div>
                   ))}
                 </div>
