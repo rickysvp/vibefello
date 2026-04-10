@@ -1066,12 +1066,19 @@ export default function App() {
                   <motion.h1 
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                     className="font-display text-6xl md:text-8xl font-extrabold tracking-tight mb-8 leading-[0.9]"
                   >
                     {t.hero.title.split(',').map((part, i) => (
-                      <span key={i} className="block whitespace-nowrap">
+                      <motion.span 
+                        key={i} 
+                        className="block whitespace-nowrap"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * i, duration: 0.5 }}
+                      >
                         {part.trim()}{i === 0 ? ',' : ''}
-                      </span>
+                      </motion.span>
                     ))}
                   </motion.h1>
 
@@ -1098,9 +1105,14 @@ export default function App() {
                   >
                     <form 
                       onSubmit={(e) => handleSubmit(e, 'hero')}
-                      className="w-full max-w-xl flex flex-col sm:flex-row gap-4 sm:gap-2"
+                      className="w-full max-w-xl flex flex-col sm:flex-row gap-4 sm:gap-3"
                     >
                       <div className="flex-1 relative">
+                        <motion.div 
+                          className="absolute -inset-1 bg-gradient-to-r from-accent to-secondary rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 0.3 }}
+                        />
                         <input 
                           required
                           type="email"
@@ -1115,7 +1127,7 @@ export default function App() {
                             }
                           }}
                           placeholder={t.waitlist.placeholderEmail}
-                          className={`w-full px-4 py-3 rounded-xl bg-white border-2 ${heroEmailError ? 'border-red-500' : 'border-foreground'} focus:border-accent outline-none transition-all font-bold placeholder:text-muted-foreground/50 text-sm shadow-pop`}
+                          className={`w-full px-5 py-4 rounded-xl bg-white border-2 ${heroEmailError ? 'border-red-500' : 'border-foreground'} focus:border-accent outline-none transition-all duration-300 font-bold placeholder:text-muted-foreground/50 text-sm shadow-pop hover:shadow-pop-lg group`}
                         />
                         {heroEmailError && (
                           <motion.p 
@@ -1130,39 +1142,61 @@ export default function App() {
                       <button 
                         disabled={isSubmitting}
                         type="submit"
-                        className="candy-button py-3 px-8 text-sm whitespace-nowrap relative overflow-hidden"
+                        className="candy-button py-4 px-10 text-sm whitespace-nowrap relative overflow-hidden group"
                       >
                         <SparkleDots />
                         {isSubmitting ? (
                           <div className="w-5 h-5 border-4 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                          <>
+                          <motion.div 
+                            className="flex items-center"
+                            whileHover={{ x: 5 }}
+                            transition={{ duration: 0.2 }}
+                          >
                             {t.hero.cta}
-                            <div className="ml-2 w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                            <motion.div 
+                              className="ml-2 w-6 h-6 bg-white rounded-full flex items-center justify-center"
+                              whileHover={{ scale: 1.1, rotate: 90 }}
+                              transition={{ duration: 0.2 }}
+                            >
                               <ArrowRight className="w-3 h-3 text-black" strokeWidth={4} />
-                            </div>
-                          </>
+                            </motion.div>
+                          </motion.div>
                         )}
                       </button>
                     </form>
                   </motion.div>
 
-                  <div className="mt-8 flex items-center gap-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(52,239,141,0.5)]" />
-                      <span className="text-xs font-black text-foreground/60 uppercase tracking-widest">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-10 flex items-center gap-6"
+                  >
+                    <div className="flex items-center gap-3 group">
+                      <motion.div 
+                        className="w-2 h-2 bg-accent rounded-full shadow-[0_0_10px_rgba(52,239,141,0.5)]"
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                      />
+                      <span className="text-xs font-black text-foreground/60 uppercase tracking-widest group-hover:text-foreground/80 transition-colors">
                         {(() => {
                           return t.hero.socialProof.replace(/\[.*?\]/, `[${waitlistCount}]`).split(/\[|\]/).map((part, i) => 
                             i % 2 === 1 ? (
-                              <span key={i} className="text-accent text-sm font-black">
+                              <motion.span 
+                                key={i} 
+                                className="text-accent text-sm font-black"
+                                animate={{ scale: [1, 1.1, 1] }}
+                                transition={{ repeat: Infinity, duration: 2, delay: 1 }}
+                              >
                                 {part}
-                              </span>
+                              </motion.span>
                             ) : part
                           );
                         })()}
                       </span>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
 
                 <div className="relative lg:block">
@@ -1173,11 +1207,27 @@ export default function App() {
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     className="relative flex justify-center lg:justify-end"
                   >
-                    <div className="w-full max-w-[440px] aspect-[4/5] bg-white border-2 border-foreground rounded-[3rem] p-8 shadow-pop relative overflow-hidden flex flex-col gap-6">
+                    <motion.div 
+                      className="w-full max-w-[440px] aspect-[4/5] bg-white border-2 border-foreground rounded-[3rem] p-8 shadow-pop relative overflow-hidden flex flex-col gap-6"
+                      whileHover={{ y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-3 h-3 rounded-full bg-red-400" />
-                        <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                        <div className="w-3 h-3 rounded-full bg-green-400" />
+                        <motion.div 
+                          className="w-3 h-3 rounded-full bg-red-400" 
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ repeat: Infinity, duration: 2 }}
+                        />
+                        <motion.div 
+                          className="w-3 h-3 rounded-full bg-yellow-400" 
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}
+                        />
+                        <motion.div 
+                          className="w-3 h-3 rounded-full bg-green-400" 
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ repeat: Infinity, duration: 2, delay: 0.6 }}
+                        />
                         <div className="ml-auto text-[10px] font-black text-foreground/30 uppercase tracking-widest">Vibe-Chat-v1.0</div>
                       </div>
 
@@ -1191,9 +1241,9 @@ export default function App() {
                         >
                           {/* User Message */}
                           <motion.div 
-                            initial={{ x: 40, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.8, duration: 0.8 }}
+                            initial={{ x: 40, opacity: 0, scale: 0.9 }}
+                            animate={{ x: 0, opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
                             className="self-end max-w-[90%] bg-foreground text-background p-6 rounded-3xl rounded-tr-none shadow-pop text-sm md:text-base font-medium leading-relaxed"
                           >
                             {CHAT_SCENARIOS[activeScenario].user}
@@ -1201,9 +1251,9 @@ export default function App() {
 
                           {/* VibeFello Response */}
                           <motion.div 
-                            initial={{ x: -40, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 3.5, duration: 0.8 }}
+                            initial={{ x: -40, opacity: 0, scale: 0.9 }}
+                            animate={{ x: 0, opacity: 1, scale: 1 }}
+                            transition={{ delay: 3.5, duration: 0.8, ease: "easeOut" }}
                             className="self-start max-w-[90%] bg-accent text-black p-6 rounded-3xl rounded-tl-none shadow-pop text-sm md:text-base font-black border-2 border-foreground leading-relaxed relative"
                           >
                             {CHAT_SCENARIOS[activeScenario].fello}
@@ -1225,11 +1275,26 @@ export default function App() {
                       </AnimatePresence>
 
                       {/* Bottom Input Mockup */}
-                      <div className="mt-auto pt-4 border-t border-foreground/10 flex gap-2">
-                        <div className="flex-1 h-10 bg-muted rounded-full border border-foreground/20" />
-                        <div className="w-10 h-10 bg-accent rounded-full border border-foreground shadow-pop flex items-center justify-center">
+                      <div className="mt-auto pt-4 border-t border-foreground/10 flex gap-3">
+                        <motion.div 
+                          className="flex-1 h-12 bg-muted rounded-full border border-foreground/20 relative group"
+                          whileHover={{ scale: 1.02 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <motion.div 
+                            className="absolute -inset-1 bg-gradient-to-r from-accent to-secondary rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.2 }}
+                          />
+                        </motion.div>
+                        <motion.div 
+                          className="w-12 h-12 bg-accent rounded-full border border-foreground shadow-pop flex items-center justify-center"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <ArrowRight className="w-5 h-5 text-black" strokeWidth={3} />
-                        </div>
+                        </motion.div>
                       </div>
 
                       {/* SHIP IT Sticker repositioned to bottom-left of chat dialog */}
