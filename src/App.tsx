@@ -1865,33 +1865,23 @@ export default function App() {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
               <div className="max-w-6xl mx-auto">
 
-                <div className="overflow-hidden">
-                  <motion.div 
-                    className="flex gap-8 py-4"
-                    animate={{ x: [-100, -1000, -100] }}
-                    transition={{ 
-                      repeat: Infinity, 
-                      duration: 30, 
-                      ease: "linear" 
-                    }}
-                  >
-                    {[...t.caseStudies.logos, ...t.caseStudies.logos].map((logo, idx) => (
-                      <motion.div 
-                        key={idx} 
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: idx * 0.05, duration: 0.5 }}
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="flex items-center justify-center h-20 min-w-[150px]"
-                      >
-                        <img 
-                          src={logo} 
-                          alt={`Client logo ${idx + 1}`} 
-                          className="h-12 w-auto object-contain grayscale"
-                        />
-                      </motion.div>
-                    ))}
-                  </motion.div>
+                <div className="flex flex-wrap gap-4 justify-center items-center py-8">
+                  {t.caseStudies.logos.map((logo, idx) => (
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.05, duration: 0.5 }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="flex items-center justify-center h-24 min-w-[180px]"
+                    >
+                      <img 
+                        src={logo} 
+                        alt={`Client logo ${idx + 1}`} 
+                        className="h-16 w-auto object-contain grayscale"
+                      />
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </section>
