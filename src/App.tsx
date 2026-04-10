@@ -1306,7 +1306,7 @@ export default function App() {
                       >
                         SHIP IT! 🚀
                       </motion.div>
-                    </div>
+                    </motion.div>
                   </motion.div>
                 </div>
               </div>
