@@ -1339,18 +1339,11 @@ export default function App() {
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    className="text-lg md:text-xl font-bold text-foreground bg-vibe-gradient px-8 py-4 rounded-2xl inline-block mt-8 shadow-pop border-2 border-foreground max-w-3xl"
+                    className="text-lg md:text-xl font-bold text-foreground bg-vibe-gradient px-8 py-6 rounded-2xl inline-block mt-8 shadow-pop border-2 border-foreground max-w-3xl text-center"
                   >
-                    {t.solution.highlight}
+                    <div className="font-bold mb-4">{t.solution.highlight}</div>
+                    <div className="text-base md:text-lg text-foreground/70 font-medium leading-relaxed">{t.solution.description}</div>
                   </motion.div>
-                  <motion.p 
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mt-8 text-base md:text-lg text-foreground/70 max-w-3xl mx-auto leading-relaxed"
-                  >
-                    {t.solution.description}
-                  </motion.p>
                 </div>
                 <div className="grid md:grid-cols-3 gap-8">
                   {t.solution.cards.map((card, idx) => (
