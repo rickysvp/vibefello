@@ -163,22 +163,22 @@ const translations = {
       subtitle: "Hear from friends who have successfully launched with VibeFello",
       items: [
         {
-          name: "Sarah Johnson",
-          role: "Founder, AI Startup",
-          quote: "VibeFello helped us solve the technical issues that were holding us back from launch. Their team was incredibly responsive and knowledgeable. We went from stuck to shipping in just two weeks!",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20business%20woman%20headshot%20friendly%20smile&image_size=square"
+          name: "TechFounder88",
+          role: "Founder, SaaS Startup",
+          quote: "VibeFello was a game-changer for our launch. They helped us navigate the technical hurdles that were slowing us down. Their team's expertise and responsiveness were exceptional.",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20friendly%20smile%20business%20attire&image_size=square"
         },
         {
-          name: "David Chen",
-          role: "Solo AI Builder",
-          quote: "As a solo developer, I struggled with deployment and infrastructure. VibeFello took care of all the technical details, allowing me to focus on building features that users love.",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20asian%20man%20headshot%20confident%20expression&image_size=square"
+          name: "AI_Builder_Girl",
+          role: "Solo Developer",
+          quote: "As someone new to deployment and infrastructure, VibeFello made the process seamless. They handled all the technical details, letting me focus on creating great features for my users.",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20woman%20headshot%20confident%20expression%20business%20attire&image_size=square"
         },
         {
-          name: "Alex Rodriguez",
-          role: "CTO, Early-Stage Startup",
-          quote: "The VibeFello team provided exactly the expertise we needed to get our product production-ready. Their attention to detail and problem-solving skills were impressive.",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20hispanic%20man%20headshot%20professional%20expression&image_size=square"
+          name: "StartupCTO123",
+          role: "CTO, Early-Stage Company",
+          quote: "The VibeFello team delivered exactly what we needed to get our product ready for production. Their problem-solving skills and attention to detail were impressive and made a huge difference.",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20professional%20expression%20glasses&image_size=square"
         }
       ]
     },
@@ -398,22 +398,22 @@ const translations = {
       subtitle: "听听成功通过 VibeFello 上线产品的朋友们怎么说",
       items: [
         {
-          name: "Sarah Johnson",
-          role: "AI 创业公司创始人",
-          quote: "VibeFello 帮助我们解决了阻碍上线的技术问题。他们的团队响应迅速，知识渊博。我们在短短两周内从停滞状态到成功上线！",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20business%20woman%20headshot%20friendly%20smile&image_size=square"
+          name: "科技创始人88",
+          role: "SaaS 创业公司创始人",
+          quote: "VibeFello 对我们的上线来说是一个游戏规则改变者。他们帮助我们克服了阻碍我们前进的技术障碍。他们团队的专业知识和响应能力非常出色。",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20friendly%20smile%20business%20attire&image_size=square"
         },
         {
-          name: "David Chen",
-          role: "独立 AI 构建者",
-          quote: "作为独立开发者，我在部署和基础设施方面遇到了困难。VibeFello 处理了所有技术细节，让我能够专注于构建用户喜爱的功能。",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20asian%20man%20headshot%20confident%20expression&image_size=square"
+          name: "AI构建女孩",
+          role: "独立开发者",
+          quote: "作为对部署和基础设施不熟悉的人，VibeFello 让这个过程变得无缝。他们处理了所有技术细节，让我能够专注于为用户创建出色的功能。",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20woman%20headshot%20confident%20expression%20business%20attire&image_size=square"
         },
         {
-          name: "Alex Rodriguez",
-          role: "早期创业公司 CTO",
-          quote: "VibeFello 团队提供了我们所需的确切专业知识，使我们的产品达到生产就绪状态。他们对细节的关注和解决问题的能力令人印象深刻。",
-          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20hispanic%20man%20headshot%20professional%20expression&image_size=square"
+          name: "创业CTO123",
+          role: "早期公司 CTO",
+          quote: "VibeFello 团队提供了我们所需的确切专业知识，使我们的产品达到生产就绪状态。他们的问题解决能力和对细节的关注令人印象深刻，产生了巨大的影响。",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20white%20man%20headshot%20professional%20expression%20glasses&image_size=square"
         }
       ]
     },
