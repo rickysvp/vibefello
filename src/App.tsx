@@ -1052,6 +1052,75 @@ export default function App() {
           <>
             {/* Hero Section */}
             <section className="min-h-screen flex items-center pt-20 pb-12 px-6 relative overflow-hidden">
+              {/* Background Decorations */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
+                {/* Green Glow */}
+                <motion.div 
+                  className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[100px]"
+                  animate={{ 
+                    scale: [1, 1.2, 1], 
+                    opacity: [0.3, 0.5, 0.3] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 8, 
+                    ease: "easeInOut" 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/20 rounded-full blur-[80px]"
+                  animate={{ 
+                    scale: [1, 1.1, 1], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 6, 
+                    ease: "easeInOut",
+                    delay: 1 
+                  }}
+                />
+                
+                {/* Geometric Shapes */}
+                <motion.div 
+                  className="absolute top-1/3 right-1/3 w-16 h-16 border-2 border-accent/30 rounded-full"
+                  animate={{ 
+                    rotate: 360, 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 20, 
+                    ease: "linear" 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/3 left-1/3 w-12 h-12 border-2 border-secondary/30 transform rotate-45"
+                  animate={{ 
+                    rotate: [45, 135, 45], 
+                    opacity: [0.1, 0.3, 0.1] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 15, 
+                    ease: "easeInOut" 
+                  }}
+                />
+                <motion.div 
+                  className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-accent/20 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.2, 1], 
+                    opacity: [0.1, 0.2, 0.1] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 10, 
+                    ease: "easeInOut",
+                    delay: 2 
+                  }}
+                />
+              </div>
+              
               <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
                 <div className="relative z-10 text-left">
                   <motion.div
@@ -1109,7 +1178,7 @@ export default function App() {
                     >
                       <div className="flex-1 relative">
                         <motion.div 
-                          className="absolute -inset-1 bg-gradient-to-r from-accent to-secondary rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"
+                          className="absolute -inset-1 bg-gradient-to-r from-accent to-secondary rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity -z-10"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 0.3 }}
                         />
@@ -1127,13 +1196,13 @@ export default function App() {
                             }
                           }}
                           placeholder={t.waitlist.placeholderEmail}
-                          className={`w-full px-5 py-4 rounded-xl bg-white border-2 ${heroEmailError ? 'border-red-500' : 'border-foreground'} focus:border-accent outline-none transition-all duration-300 font-bold placeholder:text-muted-foreground/50 text-sm shadow-pop hover:shadow-pop-lg group`}
+                          className={`w-full px-5 py-4 rounded-xl bg-white border-2 ${heroEmailError ? 'border-red-500' : 'border-foreground'} focus:border-accent outline-none transition-all duration-300 font-bold placeholder:text-muted-foreground/50 text-sm shadow-pop hover:shadow-pop-lg group relative z-10`}
                         />
                         {heroEmailError && (
                           <motion.p 
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="absolute -bottom-5 left-2 text-[10px] font-black text-red-500 uppercase tracking-wider whitespace-nowrap"
+                            className="absolute -bottom-5 left-2 text-[10px] font-black text-red-500 uppercase tracking-wider whitespace-nowrap relative z-10"
                           >
                             {heroEmailError}
                           </motion.p>
@@ -1142,7 +1211,7 @@ export default function App() {
                       <button 
                         disabled={isSubmitting}
                         type="submit"
-                        className="candy-button py-4 px-10 text-sm whitespace-nowrap relative overflow-hidden group"
+                        className="candy-button py-4 px-10 text-sm whitespace-nowrap relative overflow-hidden group z-10"
                       >
                         <SparkleDots />
                         {isSubmitting ? (
