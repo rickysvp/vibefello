@@ -1791,7 +1791,7 @@ export default function App() {
             <section className="py-16 px-6 relative overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
               <div className="max-w-3xl mx-auto">
-                <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-12 tracking-tighter text-center">
+                <h2 className="font-display text-4xl md:text-5xl font-extrabold mb-12 tracking-tighter text-center">
                   {t.faq.title}
                 </h2>
                 <div className="space-y-4">
@@ -1851,7 +1851,7 @@ export default function App() {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-12">
-                  <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter">
+                  <h2 className="font-display text-4xl md:text-5xl font-extrabold mb-4 tracking-tighter">
                     {t.testimonials.title}
                   </h2>
                   <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
