@@ -1,36 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
-@import "tailwindcss";
-
-@theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", sans-serif;
-  
-  /* Refined Black & Yellow Palette */
-  --color-background: #FFFFFF;
-  --color-foreground: #000000;
-  --color-muted: #F4F4F5;
-  --color-muted-foreground: #71717A;
-  --color-accent: #34EF8D;
-  --color-accent-foreground: #000000;
-  --color-emerald: #10B981;
-  --color-secondary: #18181B;
-  --color-tertiary: #E4E4E7;
-  --color-quaternary: #000000;
-  --color-border: #000000;
-
-  --color-gradient-1: #34EF8D;
-  --color-gradient-2: #28D97E;
-  --color-gradient-3: #1FC46F;
-  
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  
-  --background-image-vibe-gradient: linear-gradient(135deg, var(--color-gradient-1), var(--color-gradient-2), var(--color-gradient-3));
-
-  /* Custom Transitions */
-  --transition-bounce: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   html {
@@ -38,7 +9,7 @@
   }
   
   body {
-    @apply antialiased text-foreground bg-background font-sans;
+    @apply antialiased bg-background text-foreground font-sans;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -47,9 +18,11 @@
 }
 
 @layer utilities {
-  /* Refined Shadows */
   .shadow-pop {
     box-shadow: 2px 2px 0px 0px #000000;
+  }
+  .shadow-pop-sm {
+    box-shadow: 1px 1px 0px 0px #000000;
   }
   .shadow-pop-lg {
     box-shadow: 4px 4px 0px 0px #000000;
@@ -63,7 +36,6 @@
     transform: translate(1px, 1px);
   }
 
-  /* Patterns */
   .bg-dot-grid {
     background-image: radial-gradient(#000000 1px, transparent 1px);
     background-size: 32px 32px;
@@ -80,22 +52,21 @@
     );
   }
 
-  /* Bouncy Transition */
   .transition-bounce {
-    transition: var(--transition-bounce);
+    transition: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-white/90 backdrop-blur-md border border-foreground/10;
+    @apply bg-white/90 backdrop-blur-md border border-black/10;
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
   }
 
   .candy-button {
-    @apply relative inline-flex items-center justify-center px-6 py-3 text-black font-bold rounded-full border border-foreground;
-    background-image: var(--background-image-vibe-gradient);
-    transition: var(--transition-bounce);
+    @apply relative inline-flex items-center justify-center px-6 py-3 text-black font-bold rounded-full border border-black;
+    background-image: linear-gradient(135deg, #34EF8D, #28D97E, #1FC46F);
+    transition: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
     box-shadow: 2px 2px 0px 0px #000000;
   }
   .candy-button:hover {
@@ -108,17 +79,17 @@
   }
 
   .secondary-button {
-    @apply relative inline-flex items-center justify-center px-6 py-3 bg-transparent text-foreground font-bold rounded-full border border-foreground;
-    transition: var(--transition-bounce);
+    @apply relative inline-flex items-center justify-center px-6 py-3 bg-transparent text-black font-bold rounded-full border border-black;
+    transition: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
   }
   .secondary-button:hover {
     @apply bg-accent;
   }
 
   .sticker-card {
-    @apply bg-white border border-foreground/10 rounded-2xl p-6;
+    @apply bg-white border border-black/10 rounded-2xl p-6;
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    transition: var(--transition-bounce);
+    transition: all 0.2s cubic-bezier(0.2, 1, 0.3, 1);
   }
   .sticker-card:hover {
     @apply -translate-y-1;

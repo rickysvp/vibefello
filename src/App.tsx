@@ -89,13 +89,15 @@ const translations = {
       ]
     },
     solution: {
-      title: "Your Vibe Coach for the Final Mile",
-      highlight: "Stop staring at error screens alone. VibeFello is your vibe coding rescue expert, turning AI prototypes into real commercial products.",
+      title: "THE VIBE SOLUTION",
+      highlight: "From AI Prototype to Launch-Ready Product",
+      description: "VibeFello helps founders and builders solve the technical work that AI often leaves unfinished right before launch. From deployment and integrations to production reliability, the focus is simple: get the product live and make it work where it matters.",
       cards: [
-        { title: "No More Deployment Anxiety", desc: "Docker errors? SSL certificates? VibeFello sweeps away all technical obstacles before launch, ensuring your app is rock-solid in production." },
-        { title: "Close the Business Loop", desc: "Payment integration, OAuth, Webhooks—the 'dirty work' that makes AI struggle. VibeFello handles it elegantly so your revenue actually flows." },
-        { title: "Zero Technical Debt", desc: "AI code 'just works'? VibeFello performs deep architecture audits, optimizes performance, and hardcover security so your product stands the test of real users." }
-      ]
+        { title: "Production Setup", desc: "Deployment, infrastructure, environment variables, SSL, CI/CD, and the production issues that only show up when it is time to ship." },
+        { title: "Business-Critical Flows", desc: "Payments, OAuth, webhooks, and backend workflows that determine whether the product can actually function and generate revenue." },
+        { title: "Launch Readiness", desc: "Performance, stability, and architectural fixes that help the product hold up in production, not just in a demo." }
+      ],
+      conclusion: "Not more prompting. Not more guesswork. Just focused senior engineering help for the final mile."
     },
     howItWorks: {
       title: "The Path to Production",
@@ -107,33 +109,33 @@ const translations = {
     },
     audience: {
       title: "Is VibeFello for You?",
-      subtitle: "We help those who have the vision but are stuck in the technical 'last mile'.",
+      subtitle: "Built for founders and builders who have already made real progress, but are blocked by the technical last mile before launch.",
       cards: [
         { 
           title: "Non-Technical Founders", 
-          desc: "You have the vision and the UI, but the 'plumbing' (APIs, DBs, Deployment) is holding you back.",
+          desc: "Founders with a clear product vision and working prototype, but limited experience in Webhook integration, backend development, API implementation, payment gateway setup, databases, deployment, and production infrastructure.",
           icon: "Users"
         },
         { 
-          title: "AI-First Builders", 
-          desc: "You use Cursor/v0 heavily but need a human expert to fix the deep hallucinations and complex logic.",
+          title: "AI Builders", 
+          desc: "Builders who moved fast with tools like Cursor, Lovable or Claude Code and now need expert help with the final technical blockers before shipping.",
           icon: "Zap"
         },
         { 
           title: "Solo Developers", 
-          desc: "You're 90% there but need a specialist to handle Docker, SSL, or complex third-party integrations.",
+          desc: "Independent developers with an app that is nearly ready, but held back by Docker, SSL, infrastructure problems, or fragile third-party integrations.",
           icon: "Code2"
         },
         { 
-          title: "Product Visionaries", 
-          desc: "You want to ship fast without hiring a full-time CTO or expensive agency. You need a partner, not a contractor.",
+          title: "MVP Teams", 
+          desc: "Small teams looking to build and launch an MVP quickly to validate product-market fit without the overhead of hiring a full-time technical team.",
           icon: "TrendingUp"
         }
       ]
     },
     waitlist: {
       title: "Join the Genesis Circle",
-      desc: "Get early access, limited to 999 seats, <br>first come first served. Full companionship, fast shipping.",
+      desc: "Get early access , limited to 999 seats FCFS . <br>Full companionship , fast shipping.",
       emailLabel: "Email Address",
       blockerLabel: "What's the biggest hurdle between you and launch?",
       placeholderEmail: "you@vibecoding.com",
@@ -171,43 +173,26 @@ const translations = {
           name: "Genesis Lifetime",
           title: "Become a VibeFello Genesis Member",
           description: "Don't let your vision die on a local server. Get the elite technical companionship you need to cross the finish line and stay there.",
-          price: "$999",
-          originalPrice: "$3,999",
+          price: "$99.9",
+          originalPrice: "$199.8",
           period: "One-Time Payment • Lifetime Access",
           badge: "Genesis Member • Limited 99 Seats",
-          scarcityMessage: "Only 99 Genesis slots available for this cohort. Once they're gone, the price increases to $3,999.",
+          scarcityMessage: "Price doubles every 99 seats filled. Act fast before the next price increase!",
           benefits: [
             "Unlimited technical companionship until your product ships.",
             "Full-stack support: from Docker configs to global scaling.",
             "1-on-1 architecture audits to fix deep AI hallucinations.",
             "Lifetime free access to all future premium features."
           ]
-        },
-        monthly: {
-          name: "Monthly Pro",
-          title: "Join the VibeFello Pro Circle",
-          description: "Accelerate your shipping speed with dedicated expert support. Perfect for founders who need a professional push to launch.",
-          price: "$199",
-          originalPrice: "$299",
-          period: "per month",
-          badge: "Limited Time Offer",
-          scarcityMessage: "Special pricing for early adopters. Lock in your rate today.",
-          benefits: [
-            "10 expert consultations per month.",
-            "1-on-1 problem solving before launch.",
-            "Product technical architecture diagnosis.",
-            "Marketing and promotion suggestions.",
-            "Access to all advanced features."
-          ]
         }
       },
       cta: "Secure Access Now",
       back: "Return to Home",
-      price: "$999",
+      price: "$99.9",
       pricePeriod: "One-Time Payment • Lifetime Access",
-      comparison: "Standard service starts at $199/mo",
+      comparison: "Price doubles every 99 seats",
       scarcity: "Limited Slots Available",
-      scarcityMessage: "Only 99 Genesis slots available for this cohort. Once they're gone, the price increases to $3,999.",
+      scarcityMessage: "Price doubles every 99 seats filled. Act fast before the next price increase!",
       valueProp: "One successful launch pays for this membership 10x over.",
       opportunityBadge: "Exclusive Genesis Offer",
       paymentSuccess: "Welcome to the inner circle. Check your email for next steps.",
@@ -279,13 +264,15 @@ const translations = {
       ]
     },
     solution: {
-      title: "你的 Vibe 陪跑教练，陪你走完最后 10%",
-      highlight: "别再一个人对着报错屏幕发呆。VibeFello 是你的 Vibe Coding 救援专家，帮你把 AI 的半成品变成真正的商业产品。",
+      title: "THE VIBE SOLUTION",
+      highlight: "从 AI 原型到可上线产品",
+      description: "VibeFello 帮助创始人和构建者解决 AI 在上线前往往未完成的技术工作。从部署和集成到生产可靠性，重点很简单：让产品上线并在关键时刻正常运行。",
       cards: [
-        { title: "告别部署焦虑", desc: "Docker 报错？SSL 证书搞不定？VibeFello 帮你扫清上线前的所有技术障碍，让你的应用在生产环境稳如磐石。" },
-        { title: "打通商业闭环", desc: "支付对接、OAuth 登录、Webhook 监听——这些让 AI 抓狂的‘脏活累活’，VibeFello 帮你优雅搞定，确保每一分钱都能进账。" },
-        { title: "拒绝技术债", desc: "AI 生成的代码能跑就行？VibeFello 帮你做深度架构审计，优化性能，加固安全，让你的产品经得起真实用户的考验。" }
-      ]
+        { title: "生产环境设置", desc: "部署、基础设施、环境变量、SSL、CI/CD，以及只有在准备上线时才会出现的生产问题。" },
+        { title: "业务关键流程", desc: "支付、OAuth、Webhook 和后端工作流，这些决定了产品是否能真正运行并产生收入。" },
+        { title: "上线准备", desc: "性能、稳定性和架构修复，帮助产品在生产环境中保持稳定，而不仅仅是在演示中。" }
+      ],
+      conclusion: "不再需要更多提示。不再需要更多猜测。只为最后一公里提供专注的资深工程帮助。"
     },
     howItWorks: {
       title: "通往生产环境之路",
@@ -297,33 +284,33 @@ const translations = {
     },
     audience: {
       title: "VibeFello 适合你吗？",
-      subtitle: "我们帮助那些有愿景但卡在技术“最后一公里”的人。",
+      subtitle: "专为已经取得实质性进展，但在上线前被技术最后一公里阻挡的创始人和构建者打造。",
       cards: [
         { 
           title: "非技术创始人", 
-          desc: "你有创意和 UI，但后端对接、数据库和部署等“管道工程”让你头疼。",
+          desc: "拥有清晰产品愿景和可工作原型，但在 Webhook 集成、后端开发、API 实现、支付网关设置、数据库、部署和生产基础设施方面经验有限的创始人。",
           icon: "Users"
         },
         { 
-          title: "AI 优先开发者", 
-          desc: "你重度使用 Cursor/v0，但需要人类专家修复深层“幻觉”错误和复杂逻辑。",
+          title: "AI 构建者", 
+          desc: "使用 Cursor、Lovable 或 Claude Code 等工具快速开发，现在需要专家帮助解决上线前的最终技术障碍的构建者。",
           icon: "Zap"
         },
         { 
           title: "独立开发者", 
-          desc: "你已经完成了 90%，但需要专家处理 Docker、SSL 或复杂的第三方集成。",
+          desc: "应用几乎准备就绪，但被 Docker、SSL、基础设施问题或脆弱的第三方集成所阻碍的独立开发者。",
           icon: "Code2"
         },
         { 
-          title: "产品愿景家", 
-          desc: "你想快速上线，而不需要雇佣全职 CTO 或昂贵的外包团队。你需要的是合伙人，而非承包商。",
+          title: "MVP 团队", 
+          desc: "希望快速构建并发布 MVP 以验证产品市场契合度，而无需承担雇佣全职技术团队开销的小型团队。",
           icon: "TrendingUp"
         }
       ]
     },
     waitlist: {
       title: "加入创始圈",
-      desc: "获取早期访问权限，限量999个席位，<br>先到先得。全程陪跑，快速发货。",
+      desc: "获取早期访问权限，限量999个席位，先到先得。<br>全程陪跑，快速发货。",
       emailLabel: "电子邮箱",
       blockerLabel: "阻碍你上线的最大难题是什么？",
       placeholderEmail: "you@awesome-startup.com",
@@ -361,43 +348,26 @@ const translations = {
           name: "Genesis 终身会员",
           title: "成为 VibeFello Genesis 创始会员",
           description: "别让你的创意死在本地服务器上。获取顶级技术陪跑，确保你的每一个 Vibe 都能成功冲过终点线。",
-          price: "$999",
-          originalPrice: "$3,999",
+          price: "$99.9",
+          originalPrice: "$199.8",
           period: "一次性付费 • 终身有效",
           badge: "Genesis 会员 • 限量 99 位",
-          scarcityMessage: "本批次仅限 99 个 Genesis 创始席位。售罄后，价格将上调至 $3,999。",
+          scarcityMessage: "价格将每满 99 个席位价格翻倍。请在下次价格上涨前尽快行动！",
           benefits: [
             "无限次技术陪跑，直到你的产品成功上线。",
             "全栈支持：从 Docker 配置到全球化生产环境扩容。",
             "资深架构师 1对1 诊断，解决 AI 无法处理的深层逻辑。",
             "终身免费使用 VibeFello 未来推出的所有高级功能。"
           ]
-        },
-        monthly: {
-          name: "月度专业版",
-          title: "加入 VibeFello 专业陪跑圈",
-          description: "通过专业的专家支持加速你的发货速度。适合需要专业推力来完成上线的创始人。",
-          price: "$199",
-          originalPrice: "$299",
-          period: "每月",
-          badge: "限时优惠",
-          scarcityMessage: "早期用户的专属定价。立即锁定你的优惠费率。",
-          benefits: [
-            "每月 10 次专家咨询服务。",
-            "1对1 解决上线前的核心技术难题。",
-            "产品技术架构深度诊断与优化。",
-            "市场营销与推广增长建议。",
-            "优先体验所有高级功能与工具。"
-          ]
         }
       },
       cta: "立即锁定席位",
       back: "返回首页",
-      price: "$999",
+      price: "$99.9",
       pricePeriod: "一次性付费 • 终身有效",
-      comparison: "标准陪跑服务起售价 $199/月",
+      comparison: "价格将每满 99 个席位价格翻倍",
       scarcity: "名额有限，先到先得",
-      scarcityMessage: "本批次仅限 99 个 Genesis 创始席位。售罄后，价格将上调至 $3,999。",
+      scarcityMessage: "价格将每满 99 个席位价格翻倍。请在下次价格上涨前尽快行动！",
       valueProp: "一次成功的项目上线，即可为你带来 10 倍以上的投资回报。",
       opportunityBadge: "限时 Genesis 优惠",
       paymentSuccess: "支付成功！欢迎加入核心圈子，请查收邮件获取后续指引。",
@@ -476,7 +446,7 @@ export default function App() {
   const [blocker, setBlocker] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [showConversion, setShowConversion] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'lifetime' | 'monthly'>('lifetime');
+  const [selectedPlan, setSelectedPlan] = useState<'lifetime'>('lifetime');
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'cancel' | null>(null);
@@ -486,6 +456,7 @@ export default function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{type: 'success' | 'error' | 'loading', message: string} | null>(null);
   const [memberCount, setMemberCount] = useState<number | null>(null);
+  const [waitlistCount, setWaitlistCount] = useState(1);
 
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -497,7 +468,24 @@ export default function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveScenario((prev) => (prev + 1) % CHAT_SCENARIOS.length);
-    }, 8000);
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update waitlist count every 20 minutes
+  useEffect(() => {
+    const updateWaitlistCount = () => {
+      const randomIncrease = Math.floor(Math.random() * 3) + 1; // 1-3
+      setWaitlistCount(prev => prev + randomIncrease);
+    };
+
+    // Initial update
+    updateWaitlistCount();
+
+    // Set interval for 20 minutes (1200000 ms)
+    const interval = setInterval(updateWaitlistCount, 1200000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -545,9 +533,8 @@ export default function App() {
     
     // Check for direct payment link first
     const lifetimeLink = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_5kQeV69qtb3HaB48V0fw400";
-    const monthlyLink = import.meta.env.VITE_STRIPE_MONTHLY_PAYMENT_LINK || "https://buy.stripe.com/test_monthly_link_placeholder";
     
-    const paymentLink = selectedPlan === 'lifetime' ? lifetimeLink : monthlyLink;
+    const paymentLink = lifetimeLink;
     
     if (paymentLink) {
       const url = new URL(paymentLink);
@@ -618,10 +605,7 @@ export default function App() {
       hasError = true;
     }
 
-    if (source === 'waitlist' && currentBlocker.trim().length < 10) {
-      setBlockerError(t.validation.blockerTooShort);
-      hasError = true;
-    }
+
 
     if (hasError) return;
 
@@ -663,13 +647,19 @@ export default function App() {
         <div className="absolute inset-0 bg-dot-grid" />
       </div>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b-2 border-foreground">
+      {/* Header with Navigation */}
+      <header className="fixed top-0 left-0 w-full z-50 bg-white border-b-2 border-foreground">
         <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4 group cursor-pointer">
-            <Logo className="w-8 h-8 text-foreground transition-transform group-hover:scale-110" />
-            <span className="font-display font-black text-lg tracking-tighter uppercase">VibeFello</span>
-          </div>
+          <a 
+            href="/" 
+            className="group cursor-pointer"
+          >
+            <img 
+              src="/img/logo.png" 
+              alt="VibeFello" 
+              className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
+            />
+          </a>
           
           {!showConversion && (
             <div className="hidden md:flex items-center gap-12 text-[11px] font-black uppercase tracking-[0.25em] text-foreground/50">
@@ -687,23 +677,11 @@ export default function App() {
               {lang === 'en' ? 'CN' : 'EN'}
             </button>
             {!showConversion && !showDashboard && (
-              <button 
-                onClick={() => {
-                  setSubmittedEmail("rickysvp@gmail.com");
-                  setShowDashboard(true);
-                }}
-                className="text-[11px] font-black uppercase tracking-widest text-foreground/30 hover:text-foreground transition-colors"
-              >
-                Login
-              </button>
-            )}
-            {!showConversion && !showDashboard && (
               isMember ? (
                 <button 
                   onClick={() => setShowDashboard(true)}
                   className="flex items-center gap-2 bg-accent text-black px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-pop"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
                   Genesis Member
                 </button>
               ) : (
@@ -725,7 +703,7 @@ export default function App() {
             )}
           </div>
         </div>
-      </nav>
+      </header>
 
       <main className="relative z-10">
         {showDashboard ? (
@@ -967,20 +945,11 @@ export default function App() {
 
                       {/* Card Right: Pricing & CTA (White Section) */}
                       <div className="lg:w-1/2 bg-white p-8 md:p-10 flex flex-col justify-center">
-                        {/* Plan Toggle */}
-                        <div className="mb-8 p-1 bg-muted rounded-2xl flex border-2 border-foreground shadow-pop">
-                          <button
-                            onClick={() => setSelectedPlan('lifetime')}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${selectedPlan === 'lifetime' ? 'bg-foreground text-white shadow-lg' : 'text-foreground/40 hover:text-foreground'}`}
-                          >
+                        {/* Plan Indicator */}
+                        <div className="mb-8 p-3 bg-foreground text-white rounded-2xl border-2 border-foreground shadow-pop text-center">
+                          <span className="text-[10px] font-black uppercase tracking-widest">
                             {t.conversion.plans.lifetime.name}
-                          </button>
-                          <button
-                            onClick={() => setSelectedPlan('monthly')}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${selectedPlan === 'monthly' ? 'bg-foreground text-white shadow-lg' : 'text-foreground/40 hover:text-foreground'}`}
-                          >
-                            {t.conversion.plans.monthly.name}
-                          </button>
+                          </span>
                         </div>
 
                         <div className="flex items-center justify-between mb-8">
@@ -1180,19 +1149,12 @@ export default function App() {
 
                   <div className="mt-8 flex items-center gap-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                      <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_10px_rgba(52,239,141,0.5)]" />
                       <span className="text-xs font-black text-foreground/60 uppercase tracking-widest">
                         {(() => {
-                          const startDate = new Date('2026-04-01T00:00:00Z').getTime();
-                          const now = new Date().getTime();
-                          const hoursSinceStart = Math.max(0, Math.floor((now - startDate) / (1000 * 60 * 60)));
-                          const baseOffset = 345;
-                          const hourlyGrowth = 5; // Average of 1-9
-                          const totalFounders = (memberCount || 0) + baseOffset + (hoursSinceStart * hourlyGrowth);
-                          
-                          return t.hero.socialProof.replace(/\[.*?\]/, `[${totalFounders}]`).split(/\[|\]/).map((part, i) => 
+                          return t.hero.socialProof.replace(/\[.*?\]/, `[${waitlistCount}]`).split(/\[|\]/).map((part, i) => 
                             i % 2 === 1 ? (
-                              <span key={i} className="text-indigo-600 text-sm font-black">
+                              <span key={i} className="text-accent text-sm font-black">
                                 {part}
                               </span>
                             ) : part
@@ -1381,6 +1343,14 @@ export default function App() {
                   >
                     {t.solution.highlight}
                   </motion.div>
+                  <motion.p 
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-8 text-base md:text-lg text-foreground/70 max-w-3xl mx-auto leading-relaxed"
+                  >
+                    {t.solution.description}
+                  </motion.p>
                 </div>
                 <div className="grid md:grid-cols-3 gap-8">
                   {t.solution.cards.map((card, idx) => (
@@ -1407,6 +1377,16 @@ export default function App() {
                     </motion.div>
                   ))}
                 </div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-16 text-center"
+                >
+                  <p className="text-lg md:text-xl font-bold text-foreground max-w-3xl mx-auto leading-relaxed">
+                    {t.solution.conclusion}
+                  </p>
+                </motion.div>
               </div>
             </section>
 
@@ -1500,7 +1480,7 @@ export default function App() {
             </section>
 
             {/* Waitlist Section */}
-            <section id="waitlist" className="py-16 px-6 relative overflow-hidden bg-foreground text-background">
+            <section id="waitlist" className="py-24 px-6 relative overflow-hidden bg-foreground text-background">
               {/* Starry background */}
               <div className="absolute inset-0 -z-10">
                 {[...Array(20)].map((_, i) => (
@@ -1525,13 +1505,9 @@ export default function App() {
               </div>
               <div className="absolute inset-0 bg-accent/5 -z-10" />
               <div className="max-w-2xl mx-auto text-center relative z-10">
-                <motion.div 
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="w-16 h-16 flex items-center justify-center mx-auto mb-6"
-                >
-                  <Logo className="w-12 h-12 text-accent" />
-                </motion.div>
+                <div className="flex items-center justify-center mx-auto mb-8">
+                  <img src="/img/logo_light.png" alt="VibeFello Logo" className="h-16 w-auto object-contain" />
+                </div>
                 <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4 tracking-tighter text-white">
                   {t.waitlist.title}
                 </h2>
@@ -1539,7 +1515,7 @@ export default function App() {
 
                 <form 
                   onSubmit={(e) => handleSubmit(e, 'waitlist')} 
-                  className="bg-white p-8 rounded-[2rem] text-left border border-foreground shadow-pop-lg relative text-foreground"
+                  className="bg-white p-8 rounded-[2rem] text-left border border-foreground shadow-pop-lg relative text-foreground max-w-md mx-auto"
                 >
                   {/* Decorative sticker on form */}
                   <div className="absolute -top-4 -right-4 w-20 h-20 bg-accent rounded-full border border-foreground flex items-center justify-center shadow-pop rotate-12 font-display font-black text-black text-center leading-none text-xs p-2 z-10">
@@ -1579,38 +1555,6 @@ export default function App() {
                         )}
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40 ml-2">
-                        {t.waitlist.blockerLabel}
-                      </label>
-                      <div className="relative">
-                        <input 
-                          required
-                          type="text"
-                          value={blocker}
-                          onChange={(e) => {
-                            setBlocker(e.target.value);
-                            if (blockerError) setBlockerError(null);
-                          }}
-                          onBlur={() => {
-                            if (blocker && blocker.trim().length < 10) {
-                              setBlockerError(t.validation.blockerTooShort);
-                            }
-                          }}
-                          placeholder={t.waitlist.placeholderBlocker}
-                          className={`w-full px-4 py-3 rounded-xl bg-muted border ${blockerError ? 'border-red-500' : 'border-foreground/10'} focus:border-accent outline-none transition-bounce font-bold placeholder:text-foreground/30 shadow-sm`}
-                        />
-                        {blockerError && (
-                          <motion.p 
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="absolute -bottom-5 left-2 text-[10px] font-black text-red-500 uppercase tracking-wider"
-                          >
-                            {blockerError}
-                          </motion.p>
-                        )}
-                      </div>
-                    </div>
                   </div>
                   <button 
                     disabled={isSubmitting}
@@ -1636,9 +1580,12 @@ export default function App() {
             <footer className="py-12 px-6 border-t border-foreground/5 bg-white relative overflow-hidden">
               <div className="absolute inset-0 bg-dot-grid opacity-5 pointer-events-none" />
               <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                <div className="flex items-center gap-3 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
-                  <Logo className="w-6 h-6 text-accent" />
-                  <span className="font-display font-black text-sm tracking-tighter uppercase">VibeFello</span>
+                <div className="flex items-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
+                  <img 
+                    src="/img/logo.png" 
+                    alt="VibeFello" 
+                    className="h-6 w-auto object-contain" 
+                  />
                 </div>
                 
                 <div className="text-[10px] font-black text-foreground/30 tracking-[0.3em] uppercase text-center md:text-right">

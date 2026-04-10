@@ -24,11 +24,12 @@ function getStripe(): Stripe {
   return stripeClient;
 }
 
-function getResend(): Resend {
+function getResend(): Resend | null {
   if (!resendClient) {
     const key = process.env.RESEND_API_KEY;
     if (!key) {
-      throw new Error("RESEND_API_KEY environment variable is required");
+      console.log("RESEND_API_KEY not configured, skipping email sending");
+      return null;
     }
     resendClient = new Resend(key);
   }
@@ -61,6 +62,10 @@ async function startServer() {
 async function sendWaitlistEmail(email: string) {
   try {
     const resend = getResend();
+    if (!resend) {
+      console.log(`Skipping waitlist email for ${email} - RESEND_API_KEY not configured`);
+      return;
+    }
     const result = await resend.emails.send({
       from: "VibeFello <feedback@vibefello.com>",
       to: email,
@@ -100,7 +105,6 @@ async function sendWaitlistEmail(email: string) {
     console.log(`Waitlist email sent to ${email}. Result:`, result);
   } catch (err) {
     console.error("Error sending waitlist email:", err);
-    throw err;
   }
 }
 
@@ -134,6 +138,10 @@ async function getMemberCount() {
 async function sendSuccessEmail(email: string) {
   try {
     const resend = getResend();
+    if (!resend) {
+      console.log(`Skipping success email for ${email} - RESEND_API_KEY not configured`);
+      return;
+    }
     const memberCount = await getMemberCount();
     const memberId = `VF-2026-${String(memberCount).padStart(3, '0')}-GEN`;
 
@@ -197,7 +205,6 @@ async function sendSuccessEmail(email: string) {
     console.log(`Success email sent to ${email}. Result:`, result);
   } catch (err) {
     console.error("Error sending success email:", err);
-    throw err;
   }
 }
 

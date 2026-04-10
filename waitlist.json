@@ -3,5 +3,25 @@
     "email": "rickysvp@gmail.com",
     "blocker": "Hero quick signup",
     "timestamp": "2026-04-01T14:31:13.288Z"
+  },
+  {
+    "email": "test@example.com",
+    "blocker": "",
+    "timestamp": "2026-04-10T01:13:10.805Z"
+  },
+  {
+    "email": "test3@example.com",
+    "blocker": "",
+    "timestamp": "2026-04-10T01:17:21.606Z"
+  },
+  {
+    "email": "test2@example.com",
+    "blocker": "",
+    "timestamp": "2026-04-10T01:29:26.152Z"
+  },
+  {
+    "email": "ricky@bitslab.xyz",
+    "blocker": "Hero quick signup",
+    "timestamp": "2026-04-10T04:22:07.009Z"
   }
 ]
