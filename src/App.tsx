@@ -1096,7 +1096,7 @@ export default function App() {
                 
                 {/* Enhanced Geometric Shapes */}
                 <motion.div 
-                  className="absolute top-1/3 right-1/3 w-20 h-20 border-2 border-accent/50 rounded-full"
+                  className="absolute top-1/4 left-1/5 w-20 h-20 border-2 border-accent/50 rounded-full"
                   animate={{ 
                     rotate: 360, 
                     opacity: [0.3, 0.6, 0.3] 
@@ -1108,7 +1108,7 @@ export default function App() {
                   }}
                 />
                 <motion.div 
-                  className="absolute bottom-1/3 left-1/3 w-16 h-16 border-2 border-secondary/50 transform rotate-45"
+                  className="absolute top-2/3 right-1/4 w-16 h-16 border-2 border-secondary/50 transform rotate-45"
                   animate={{ 
                     rotate: [45, 135, 45], 
                     opacity: [0.2, 0.5, 0.2] 
@@ -1120,7 +1120,7 @@ export default function App() {
                   }}
                 />
                 <motion.div 
-                  className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-accent/40 rounded-full"
+                  className="absolute top-1/2 right-1/3 w-32 h-32 border-2 border-accent/40 rounded-full"
                   animate={{ 
                     scale: [1, 1.3, 1], 
                     opacity: [0.2, 0.4, 0.2] 
@@ -1133,7 +1133,7 @@ export default function App() {
                   }}
                 />
                 <motion.div 
-                  className="absolute top-1/4 right-1/4 w-12 h-12 bg-accent/30 rounded-full"
+                  className="absolute top-1/3 right-1/5 w-12 h-12 bg-accent/30 rounded-full"
                   animate={{ 
                     scale: [1, 1.5, 1], 
                     opacity: [0.3, 0.6, 0.3] 
@@ -1145,7 +1145,7 @@ export default function App() {
                   }}
                 />
                 <motion.div 
-                  className="absolute bottom-1/4 left-1/4 w-16 h-16 border-2 border-secondary/40 transform rotate-12"
+                  className="absolute bottom-1/4 left-1/3 w-16 h-16 border-2 border-secondary/40 transform rotate-12"
                   animate={{ 
                     rotate: [12, 72, 12], 
                     opacity: [0.2, 0.4, 0.2] 
@@ -1155,6 +1155,32 @@ export default function App() {
                     duration: 10, 
                     ease: "easeInOut",
                     delay: 0.5 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/3 right-1/6 w-14 h-14 border-2 border-accent/40 transform rotate-30"
+                  animate={{ 
+                    rotate: [30, 90, 30], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 14, 
+                    ease: "easeInOut",
+                    delay: 1 
+                  }}
+                />
+                <motion.div 
+                  className="absolute top-1/6 left-1/3 w-10 h-10 bg-secondary/30 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.4, 1], 
+                    opacity: [0.3, 0.5, 0.3] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 7, 
+                    ease: "easeInOut",
+                    delay: 0.8 
                   }}
                 />
               </div>
