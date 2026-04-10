@@ -1703,7 +1703,7 @@ export default function App() {
             <footer className="py-12 px-6 border-t border-foreground/5 bg-white relative overflow-hidden">
               <div className="absolute inset-0 bg-dot-grid opacity-5 pointer-events-none" />
               <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
-                <div className="flex items-center grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
+                <div className="flex items-center transition-all">
                   <img 
                     src="/img/logo.png" 
                     alt="VibeFello" 
