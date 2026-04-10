@@ -844,24 +844,16 @@ export default function App() {
                           <h1 className="font-display text-5xl md:text-6xl font-black tracking-tighter mb-4 leading-[0.9]">
                             {paymentStatus === 'success' ? "WELCOME TO THE CIRCLE" : "GENESIS MEMBER"}
                           </h1>
-                          <p className="text-lg text-foreground/60 font-bold mb-8 max-w-xl mx-auto lg:mx-0">
+                          <p className="text-lg text-foreground/60 font-bold mb-4 max-w-xl mx-auto lg:mx-0">
                             {paymentStatus === 'success' 
                               ? "You've successfully secured your spot among the first 100 builders of the Vibe Coding era." 
                               : "Your lifetime access to the VibeFello ecosystem is active and ready."}
                           </p>
+                          <p className="text-lg text-accent font-bold mb-8 max-w-xl mx-auto lg:mx-0">
+                            📧 Please check your email for your membership details and next steps
+                          </p>
 
-                          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-
-                            <button 
-                              onClick={() => {
-                                setShowConversion(false);
-                                setPaymentStatus(null);
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }}
-                              className="px-8 py-4 border-2 border-foreground rounded-full font-black uppercase tracking-widest hover:bg-muted transition-all shadow-pop"
-                            >
-                              {t.conversion.successBack}
-                            </button>
+                          <div className="flex justify-center lg:justify-start">
                             <button 
                               onClick={() => {
                                 confetti({
@@ -884,7 +876,7 @@ export default function App() {
                           initial={{ x: 50, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: 0.3 }}
-                          className="w-full max-w-[400px] aspect-[1.6/1] bg-foreground text-white rounded-[2.5rem] p-8 shadow-pop-lg relative overflow-hidden border-4 border-foreground shrink-0"
+                          className="w-full max-w-[400px] aspect-[1.6/1] bg-gradient-to-br from-foreground to-gray-800 text-white rounded-[2.5rem] p-8 shadow-pop-lg relative overflow-hidden border-4 border-foreground shrink-0"
                         >
                           <div className="absolute top-0 right-0 w-40 h-40 bg-accent/20 rounded-full blur-[60px] -mr-20 -mt-20" />
                           <div className="absolute bottom-0 left-0 w-40 h-40 bg-tertiary/20 rounded-full blur-[60px] -ml-20 -mb-20" />
@@ -900,10 +892,10 @@ export default function App() {
                               </div>
                             </div>
 
-                            <div className="space-y-4">
-                              <div>
-                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Member ID</div>
-                                <div className="font-mono text-sm tracking-wider">
+                            <div className="space-y-6">
+                              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Member ID</div>
+                                <div className="font-mono text-lg font-bold tracking-wider text-accent">
                                   {memberCount !== null 
                                     ? `VF-2026-${String(memberCount).padStart(3, '0')}-GEN` 
                                     : `VF-2026-${(submittedEmail?.length || 0) * 7}-GEN`}
@@ -916,7 +908,7 @@ export default function App() {
                                 </div>
                                 <div className="text-right">
                                   <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Status</div>
-                                  <div className="px-3 py-1 bg-accent text-black text-[9px] font-black uppercase rounded-full inline-block">ACTIVE</div>
+                                  <div className="px-4 py-2 bg-accent text-black text-[9px] font-black uppercase rounded-full inline-block shadow-lg shadow-accent/20">ACTIVE</div>
                                 </div>
                               </div>
                             </div>
