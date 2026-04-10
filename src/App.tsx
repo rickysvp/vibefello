@@ -158,6 +158,51 @@ const translations = {
         { q: "What if VibeFello can't fix my issue?", a: "We are so confident in our experts that we offer a 100% money-back guarantee if we cannot solve your technical blocker." }
       ]
     },
+    testimonials: {
+      title: "What Our Clients Say",
+      subtitle: "Hear from founders who have successfully launched with VibeFello",
+      items: [
+        {
+          name: "Sarah Johnson",
+          role: "Founder, AI Startup",
+          quote: "VibeFello helped us solve the technical issues that were holding us back from launch. Their team was incredibly responsive and knowledgeable. We went from stuck to shipping in just two weeks!",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20business%20woman%20headshot%20friendly%20smile&image_size=square"
+        },
+        {
+          name: "David Chen",
+          role: "Solo AI Builder",
+          quote: "As a solo developer, I struggled with deployment and infrastructure. VibeFello took care of all the technical details, allowing me to focus on building features that users love.",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20asian%20man%20headshot%20confident%20expression&image_size=square"
+        },
+        {
+          name: "Alex Rodriguez",
+          role: "CTO, Early-Stage Startup",
+          quote: "The VibeFello team provided exactly the expertise we needed to get our product production-ready. Their attention to detail and problem-solving skills were impressive.",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20hispanic%20man%20headshot%20professional%20expression&image_size=square"
+        }
+      ]
+    },
+    caseStudies: {
+      title: "Success Stories",
+      subtitle: "See how we've helped founders launch their products",
+      items: [
+        {
+          title: "AI-Powered SaaS Platform",
+          description: "Helped a non-technical founder launch their AI-powered SaaS platform by solving deployment issues and integrating payment systems.",
+          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20tech%20office%20with%20product%20dashboard%20on%20screen&image_size=landscape_16_9"
+        },
+        {
+          title: "Mobile App Launch",
+          description: "Assisted a solo developer in launching their mobile app by setting up CI/CD pipelines and resolving infrastructure challenges.",
+          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=mobile%20app%20development%20workspace%20with%20smartphone%20and%20laptop&image_size=landscape_16_9"
+        },
+        {
+          title: "E-Commerce Platform",
+          description: "Helped a startup optimize their e-commerce platform for performance and scalability, resulting in 50% faster load times.",
+          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=e-commerce%20website%20dashboard%20with%20sales%20analytics&image_size=landscape_16_9"
+        }
+      ]
+    },
     footer: {
       copy: "© 2026 VIBEFELLO. BUILT FOR THE VIBE CODING ERA."
     },
@@ -331,6 +376,51 @@ const translations = {
         { q: "你们支持哪些技术栈？", a: "我们支持所有主流全栈环境，包括 Next.js, React, Node.js, Python, Docker 以及主流云平台（AWS, GCP, Vercel）。" },
         { q: "我多久能得到帮助？", a: "我们的目标是在你提交申请后的 2-4 小时内，让资深陪跑专家进入你的工作流。" },
         { q: "如果 VibeFello 无法解决我的问题怎么办？", a: "我们对专家非常有信心，如果我们无法解决你的技术障碍，我们提供 100% 全额退款保证。" }
+      ]
+    },
+    testimonials: {
+      title: "客户评价",
+      subtitle: "听听成功通过 VibeFello 上线产品的创始人怎么说",
+      items: [
+        {
+          name: "Sarah Johnson",
+          role: "AI 创业公司创始人",
+          quote: "VibeFello 帮助我们解决了阻碍上线的技术问题。他们的团队响应迅速，知识渊博。我们在短短两周内从停滞状态到成功上线！",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20business%20woman%20headshot%20friendly%20smile&image_size=square"
+        },
+        {
+          name: "David Chen",
+          role: "独立 AI 构建者",
+          quote: "作为独立开发者，我在部署和基础设施方面遇到了困难。VibeFello 处理了所有技术细节，让我能够专注于构建用户喜爱的功能。",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20asian%20man%20headshot%20confident%20expression&image_size=square"
+        },
+        {
+          name: "Alex Rodriguez",
+          role: "早期创业公司 CTO",
+          quote: "VibeFello 团队提供了我们所需的确切专业知识，使我们的产品达到生产就绪状态。他们对细节的关注和解决问题的能力令人印象深刻。",
+          avatar: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20hispanic%20man%20headshot%20professional%20expression&image_size=square"
+        }
+      ]
+    },
+    caseStudies: {
+      title: "成功案例",
+      subtitle: "了解我们如何帮助创始人成功上线产品",
+      items: [
+        {
+          title: "AI 驱动的 SaaS 平台",
+          description: "帮助非技术创始人上线他们的 AI 驱动 SaaS 平台，解决了部署问题并集成了支付系统。",
+          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20tech%20office%20with%20product%20dashboard%20on%20screen&image_size=landscape_16_9"
+        },
+        {
+          title: "移动应用上线",
+          description: "协助独立开发者上线他们的移动应用，设置了 CI/CD 管道并解决了基础设施挑战。",
+          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=mobile%20app%20development%20workspace%20with%20smartphone%20and%20laptop&image_size=landscape_16_9"
+        },
+        {
+          title: "电子商务平台",
+          description: "帮助创业公司优化他们的电子商务平台，提高性能和可扩展性，使加载时间缩短了 50%。",
+          image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=e-commerce%20website%20dashboard%20with%20sales%20analytics&image_size=landscape_16_9"
+        }
       ]
     },
     footer: {
@@ -1718,6 +1808,92 @@ export default function App() {
                           </motion.div>
                         )}
                       </AnimatePresence>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Testimonials Section */}
+            <section className="py-16 px-6 relative overflow-hidden bg-foreground/5">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                  <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter">
+                    {t.testimonials.title}
+                  </h2>
+                  <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
+                    {t.testimonials.subtitle}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {t.testimonials.items.map((item, idx) => (
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-white p-8 rounded-2xl border-2 border-foreground shadow-pop hover:shadow-pop-lg transition-all duration-300"
+                    >
+                      <div className="mb-6">
+                        <svg className="w-12 h-12 text-accent mb-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M11.9999 3.75C11.9999 3.75 5.49992 5.58333 5.49992 10.4167C5.49992 13.25 7.33325 15.1667 9.58325 15.8333C9.16658 16.3333 8.66658 16.75 8.08325 17.0833C8.08325 17.0833 8.58325 18.5833 11.9999 17.5C15.4166 16.4167 15.9166 15.1667 15.9166 15.1667C18.5833 14.5 19.9999 12.9167 19.9999 10.4167C19.9999 5.58333 13.4999 3.75 11.9999 3.75ZM10.6666 12.5C10.3333 12.5 10.0833 12.25 10.0833 11.9167C10.0833 11.5833 10.3333 11.3333 10.6666 11.3333H12.25C12.5833 11.3333 12.8333 11.5833 12.8333 11.9167C12.8333 12.25 12.5833 12.5 12.25 12.5H10.6666ZM10.6666 9.16667C10.3333 9.16667 10.0833 8.91667 10.0833 8.58333C10.0833 8.25 10.3333 8 10.6666 8H12.25C12.5833 8 12.8333 8.25 12.8333 8.58333C12.8333 8.91667 12.5833 9.16667 12.25 9.16667H10.6666Z" />
+                        </svg>
+                        <p className="text-foreground/80 font-medium leading-relaxed text-base">
+                          "{item.quote}"
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <img 
+                          src={item.avatar} 
+                          alt={item.name} 
+                          className="w-12 h-12 rounded-full object-cover border-2 border-foreground"
+                        />
+                        <div>
+                          <h4 className="font-bold text-foreground">{item.name}</h4>
+                          <p className="text-foreground/60 text-sm">{item.role}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Case Studies Section */}
+            <section className="py-16 px-6 relative overflow-hidden">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                  <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter">
+                    {t.caseStudies.title}
+                  </h2>
+                  <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
+                    {t.caseStudies.subtitle}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {t.caseStudies.items.map((item, idx) => (
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-white rounded-2xl border-2 border-foreground shadow-pop overflow-hidden hover:shadow-pop-lg transition-all duration-300"
+                    >
+                      <div className="h-48 overflow-hidden">
+                        <img 
+                          src={item.image} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="font-bold text-xl mb-3">{item.title}</h3>
+                        <p className="text-foreground/70 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
