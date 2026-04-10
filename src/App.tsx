@@ -777,7 +777,7 @@ export default function App() {
             <motion.img 
               src="/img/logo.png" 
               alt="VibeFello" 
-              className="h-16 w-auto object-contain"
+              className="h-10 w-auto object-contain"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.05, rotate: 2 }}
@@ -2033,7 +2033,7 @@ export default function App() {
                   <img 
                     src="/img/logo.png" 
                     alt="VibeFello" 
-                    className="h-12 w-auto object-contain" 
+                    className="h-6 w-auto object-contain" 
                   />
                 </div>
                 
