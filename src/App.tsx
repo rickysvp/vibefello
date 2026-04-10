@@ -186,16 +186,16 @@ const translations = {
       title: "Trusted by Founders",
       subtitle: "Join the growing community of builders who have launched with VibeFello",
       logos: [
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20abstract%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20line%20art%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20geometric%20clean&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20line%20art%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20abstract%20minimalist&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20line%20art%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square"
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square"
       ]
     },
     footer: {
@@ -401,16 +401,16 @@ const translations = {
       title: "受到创始人信任",
       subtitle: "加入已经通过 VibeFello 成功上线的建设者社区",
       logos: [
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20abstract%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20line%20art%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20geometric%20clean&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20line%20art%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20abstract%20minimalist&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20geometric%20clean&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20line%20art%20simple&image_size=square",
-        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20abstract%20minimalist&image_size=square"
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20company%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20tech%20logo%20text%20only%20letters%20simple&image_size=square",
+        "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=minimal%20modern%20startup%20logo%20text%20only%20typography%20clean&image_size=square"
       ]
     },
     footer: {
@@ -737,10 +737,10 @@ export default function App() {
             <motion.img 
               src="/img/logo.png" 
               alt="VibeFello" 
-              className="h-20 w-auto object-contain"
+              className="h-16 w-auto object-contain"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.1, rotate: 2 }}
+              whileHover={{ scale: 1.05, rotate: 2 }}
               transition={{ duration: 0.3 }}
             />
           </a>
@@ -1864,23 +1864,33 @@ export default function App() {
                     {t.caseStudies.subtitle}
                   </p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-                  {t.caseStudies.logos.map((logo, idx) => (
-                    <motion.div 
-                      key={idx} 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.05, duration: 0.5 }}
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="bg-white p-6 rounded-xl border-2 border-foreground shadow-pop flex items-center justify-center h-24"
-                    >
-                      <img 
-                        src={logo} 
-                        alt={`Client logo ${idx + 1}`} 
-                        className="max-h-16 max-w-full object-contain"
-                      />
-                    </motion.div>
-                  ))}
+                <div className="overflow-hidden">
+                  <motion.div 
+                    className="flex gap-8 py-4"
+                    animate={{ x: [-10, 10, -10] }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 8, 
+                      ease: "easeInOut" 
+                    }}
+                  >
+                    {[...t.caseStudies.logos, ...t.caseStudies.logos].map((logo, idx) => (
+                      <motion.div 
+                        key={idx} 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: idx * 0.05, duration: 0.5 }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        className="bg-white p-6 rounded-xl flex items-center justify-center h-24 min-w-[150px]"
+                      >
+                        <img 
+                          src={logo} 
+                          alt={`Client logo ${idx + 1}`} 
+                          className="max-h-16 max-w-full object-contain grayscale"
+                        />
+                      </motion.div>
+                    ))}
+                  </motion.div>
                 </div>
               </div>
             </section>
