@@ -1054,12 +1054,12 @@ export default function App() {
             <section className="min-h-screen flex items-center pt-20 pb-12 px-6 relative overflow-hidden">
               {/* Background Decorations */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-                {/* Green Glow */}
+                {/* Enhanced Green Glow */}
                 <motion.div 
-                  className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[100px]"
+                  className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/30 rounded-full blur-[150px]"
                   animate={{ 
-                    scale: [1, 1.2, 1], 
-                    opacity: [0.3, 0.5, 0.3] 
+                    scale: [1, 1.3, 1], 
+                    opacity: [0.4, 0.7, 0.4] 
                   }}
                   transition={{ 
                     repeat: Infinity, 
@@ -1068,10 +1068,10 @@ export default function App() {
                   }}
                 />
                 <motion.div 
-                  className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/20 rounded-full blur-[80px]"
+                  className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/30 rounded-full blur-[120px]"
                   animate={{ 
-                    scale: [1, 1.1, 1], 
-                    opacity: [0.2, 0.4, 0.2] 
+                    scale: [1, 1.2, 1], 
+                    opacity: [0.3, 0.6, 0.3] 
                   }}
                   transition={{ 
                     repeat: Infinity, 
@@ -1080,43 +1080,81 @@ export default function App() {
                     delay: 1 
                   }}
                 />
-                
-                {/* Geometric Shapes */}
                 <motion.div 
-                  className="absolute top-1/3 right-1/3 w-16 h-16 border-2 border-accent/30 rounded-full"
+                  className="absolute top-1/2 right-1/4 w-[300px] h-[300px] bg-accent/20 rounded-full blur-[100px]"
                   animate={{ 
-                    rotate: 360, 
-                    opacity: [0.2, 0.4, 0.2] 
-                  }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    duration: 20, 
-                    ease: "linear" 
-                  }}
-                />
-                <motion.div 
-                  className="absolute bottom-1/3 left-1/3 w-12 h-12 border-2 border-secondary/30 transform rotate-45"
-                  animate={{ 
-                    rotate: [45, 135, 45], 
-                    opacity: [0.1, 0.3, 0.1] 
-                  }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    duration: 15, 
-                    ease: "easeInOut" 
-                  }}
-                />
-                <motion.div 
-                  className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-accent/20 rounded-full"
-                  animate={{ 
-                    scale: [1, 1.2, 1], 
-                    opacity: [0.1, 0.2, 0.1] 
+                    scale: [1, 1.1, 1], 
+                    opacity: [0.2, 0.5, 0.2] 
                   }}
                   transition={{ 
                     repeat: Infinity, 
                     duration: 10, 
                     ease: "easeInOut",
                     delay: 2 
+                  }}
+                />
+                
+                {/* Enhanced Geometric Shapes */}
+                <motion.div 
+                  className="absolute top-1/3 right-1/3 w-20 h-20 border-2 border-accent/50 rounded-full"
+                  animate={{ 
+                    rotate: 360, 
+                    opacity: [0.3, 0.6, 0.3] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 15, 
+                    ease: "linear" 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/3 left-1/3 w-16 h-16 border-2 border-secondary/50 transform rotate-45"
+                  animate={{ 
+                    rotate: [45, 135, 45], 
+                    opacity: [0.2, 0.5, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 12, 
+                    ease: "easeInOut" 
+                  }}
+                />
+                <motion.div 
+                  className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-accent/40 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.3, 1], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 8, 
+                    ease: "easeInOut",
+                    delay: 1.5 
+                  }}
+                />
+                <motion.div 
+                  className="absolute top-1/4 right-1/4 w-12 h-12 bg-accent/30 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.5, 1], 
+                    opacity: [0.3, 0.6, 0.3] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 6, 
+                    ease: "easeInOut" 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/4 left-1/4 w-16 h-16 border-2 border-secondary/40 transform rotate-12"
+                  animate={{ 
+                    rotate: [12, 72, 12], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 10, 
+                    ease: "easeInOut",
+                    delay: 0.5 
                   }}
                 />
               </div>
