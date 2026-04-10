@@ -1183,6 +1183,71 @@ export default function App() {
                     delay: 0.8 
                   }}
                 />
+                <motion.div 
+                  className="absolute top-1/2 left-1/4 w-18 h-18 border-2 border-accent/40 transform rotate-15"
+                  animate={{ 
+                    rotate: [15, 75, 15], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 11, 
+                    ease: "easeInOut",
+                    delay: 0.6 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/5 right-1/3 w-12 h-12 bg-secondary/30 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.3, 1], 
+                    opacity: [0.2, 0.5, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 9, 
+                    ease: "easeInOut",
+                    delay: 1.2 
+                  }}
+                />
+                <motion.div 
+                  className="absolute top-1/4 right-1/3 w-16 h-16 border-2 border-accent/40 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.2, 1], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 8, 
+                    ease: "easeInOut",
+                    delay: 0.9 
+                  }}
+                />
+                <motion.div 
+                  className="absolute bottom-1/4 left-1/5 w-14 h-14 border-2 border-secondary/40 transform rotate-45"
+                  animate={{ 
+                    rotate: [45, 135, 45], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 13, 
+                    ease: "easeInOut",
+                    delay: 0.7 
+                  }}
+                />
+                <motion.div 
+                  className="absolute top-2/3 left-1/4 w-10 h-10 bg-accent/30 rounded-full"
+                  animate={{ 
+                    scale: [1, 1.4, 1], 
+                    opacity: [0.2, 0.4, 0.2] 
+                  }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 7, 
+                    ease: "easeInOut",
+                    delay: 1.1 
+                  }}
+                />
               </div>
               
               <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -1601,24 +1666,27 @@ export default function App() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-10 px-6 relative overflow-hidden">
+            <section className="py-16 px-6 relative overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
               <div className="max-w-3xl mx-auto">
-                <h2 className="font-display text-2xl md:text-3xl font-extrabold mb-8 tracking-tighter text-center">
+                <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-12 tracking-tighter text-center">
                   {t.faq.title}
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {t.faq.items.map((item, idx) => (
                     <motion.div 
                       key={idx} 
-                      className={`sticker-card bg-white overflow-hidden p-0 border-2 transition-all duration-500 ${activeFaq === idx ? 'border-accent shadow-pop-lg bg-accent/5' : 'border-foreground shadow-pop'}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className={`bg-white overflow-hidden border-2 rounded-2xl transition-all duration-500 ${activeFaq === idx ? 'border-accent shadow-lg shadow-accent/20 bg-accent/5' : 'border-foreground shadow-pop'}`}
                     >
                       <button 
                         onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                        className="w-full text-left p-4 flex items-center justify-between group"
+                        className="w-full text-left p-6 flex items-center justify-between group"
                       >
-                        <h3 className="text-base md:text-lg font-extrabold tracking-tight leading-tight flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full border-2 border-foreground flex items-center justify-center shrink-0 shadow-pop transition-all duration-500 ${activeFaq === idx ? 'bg-accent scale-110 rotate-12' : 'bg-white group-hover:scale-105 group-hover:-rotate-6'}`}>
+                        <h3 className="text-lg md:text-xl font-extrabold tracking-tight leading-tight flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-full border-2 border-foreground flex items-center justify-center shrink-0 shadow-pop transition-all duration-500 ${activeFaq === idx ? 'bg-accent scale-110 rotate-12' : 'bg-white group-hover:scale-105 group-hover:-rotate-6'}`}>
                             <span className="text-black text-sm font-black">?</span>
                           </div>
                           <span className={`transition-colors duration-300 ${activeFaq === idx ? 'text-foreground' : 'text-foreground/70 group-hover:text-foreground'}`}>{item.q}</span>
@@ -1628,7 +1696,7 @@ export default function App() {
                           transition={{ type: "spring", stiffness: 300, damping: 20 }}
                           className="shrink-0 ml-4"
                         >
-                          <ChevronDown className={`w-5 h-5 transition-colors duration-300 ${activeFaq === idx ? 'text-accent' : 'text-foreground/20'}`} />
+                          <ChevronDown className={`w-6 h-6 transition-colors duration-300 ${activeFaq === idx ? 'text-accent' : 'text-foreground/30'}`} />
                         </motion.div>
                       </button>
                       <AnimatePresence>
@@ -1639,10 +1707,10 @@ export default function App() {
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
                           >
-                            <div className="px-4 pb-6 pt-0">
-                              <div className="pl-8 border-l-4 border-accent relative">
-                                <div className="absolute -left-[10px] top-0 w-4 h-4 bg-accent rounded-full border-2 border-foreground shadow-pop" />
-                                <p className="text-foreground/80 font-medium leading-relaxed text-sm md:text-base">
+                            <div className="px-6 pb-6 pt-0">
+                              <div className="pl-10 border-l-4 border-accent relative">
+                                <div className="absolute -left-[12px] top-0 w-6 h-6 bg-accent rounded-full border-2 border-foreground shadow-pop" />
+                                <p className="text-foreground/80 font-medium leading-relaxed text-base md:text-lg pt-2">
                                   {item.a}
                                 </p>
                               </div>
