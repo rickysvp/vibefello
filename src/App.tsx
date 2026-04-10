@@ -1065,9 +1065,7 @@ export default function App() {
                               <span className="text-sm font-black text-foreground/30 line-through decoration-accent/50 decoration-2">
                                 {t.conversion.plans[selectedPlan].originalPrice}
                               </span>
-                              <span className="text-[10px] font-black text-emerald uppercase tracking-widest">
-                                {selectedPlan === 'lifetime' ? 'Lifetime Access' : 'Monthly Access'}
-                              </span>
+
                             </div>
                           </div>
                         </div>
