@@ -1177,11 +1177,6 @@ export default function App() {
                       className="w-full max-w-xl flex flex-col sm:flex-row gap-4 sm:gap-3"
                     >
                       <div className="flex-1 relative">
-                        <motion.div 
-                          className="absolute -inset-1 bg-gradient-to-r from-accent to-secondary rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity -z-10"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 0.3 }}
-                        />
                         <input 
                           required
                           type="email"
@@ -1349,13 +1344,8 @@ export default function App() {
                           className="flex-1 h-12 bg-muted rounded-full border border-foreground/20 relative group"
                           whileHover={{ scale: 1.02 }}
                           transition={{ duration: 0.2 }}
-                        >
-                          <motion.div 
-                            className="absolute -inset-1 bg-gradient-to-r from-accent to-secondary rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 0.2 }}
-                          />
-                        </motion.div>
+                        />
+
                         <motion.div 
                           className="w-12 h-12 bg-accent rounded-full border border-foreground shadow-pop flex items-center justify-center"
                           whileHover={{ scale: 1.1, rotate: 5 }}
