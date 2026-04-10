@@ -657,7 +657,7 @@ export default function App() {
             <img 
               src="/img/logo.png" 
               alt="VibeFello" 
-              className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
+              className="h-20 w-auto object-contain transition-transform group-hover:scale-105"
             />
           </a>
           
@@ -1829,7 +1829,7 @@ export default function App() {
                   <img 
                     src="/img/logo.png" 
                     alt="VibeFello" 
-                    className="h-6 w-auto object-contain" 
+                    className="h-12 w-auto object-contain" 
                   />
                 </div>
                 
