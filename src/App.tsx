@@ -1896,14 +1896,7 @@ export default function App() {
             <section className="py-16 px-6 relative overflow-hidden bg-foreground/5">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
               <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                  <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter">
-                    {t.caseStudies.title}
-                  </h2>
-                  <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
-                    {t.caseStudies.subtitle}
-                  </p>
-                </div>
+
                 <div className="overflow-hidden">
                   <motion.div 
                     className="flex gap-8 py-4"
