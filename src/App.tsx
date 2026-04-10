@@ -1866,11 +1866,11 @@ export default function App() {
                 </div>
                 <div className="overflow-hidden">
                   <motion.div 
-                    className="flex gap-8 py-4"
-                    animate={{ x: [-10, 10, -10] }}
+                    className="flex gap-12 py-4"
+                    animate={{ x: [-15, 15, -15] }}
                     transition={{ 
                       repeat: Infinity, 
-                      duration: 8, 
+                      duration: 10, 
                       ease: "easeInOut" 
                     }}
                   >
@@ -1881,12 +1881,12 @@ export default function App() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         transition={{ delay: idx * 0.05, duration: 0.5 }}
                         whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="bg-white p-6 rounded-xl flex items-center justify-center h-24 min-w-[150px]"
+                        className="flex items-center justify-center h-24 min-w-[180px]"
                       >
                         <img 
                           src={logo} 
                           alt={`Client logo ${idx + 1}`} 
-                          className="max-h-16 max-w-full object-contain grayscale"
+                          className="h-16 w-auto object-contain grayscale"
                         />
                       </motion.div>
                     ))}
