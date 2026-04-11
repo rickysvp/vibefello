@@ -1,8 +1,4 @@
-export type LeadState = {
-  email: string;
-  paid: boolean;
-  priorityAccess: boolean;
-};
+import type { LeadStore } from "./lead-store";
 
 export type WaitlistResponse = {
   success: boolean;
@@ -11,4 +7,8 @@ export type WaitlistResponse = {
   priorityAccess?: boolean;
   message?: string;
   error?: string;
+};
+
+export type CreateAppDependencies = {
+  leadStore?: LeadStore;
 };
