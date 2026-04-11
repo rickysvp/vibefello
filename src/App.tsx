@@ -255,17 +255,17 @@ const translations = {
       scarcityMessage: "Price doubles every 99 seats filled. Act fast before the next price increase!",
       valueProp: "One successful launch pays for this membership 10x over.",
       opportunityBadge: "Exclusive Genesis Offer",
-      paymentSuccess: "Welcome to the inner circle. Check your email for next steps.",
-      paymentCancel: "Payment paused. This exclusive offer is still available for a limited time.",
-      alreadyMember: "You are already a Genesis Member!",
-      checkEmailReminder: "Please check your email for onboarding instructions and community access.",
-      successTitle: "Welcome to the Genesis Circle",
-      successSubtitle: "You're now a Genesis Member of VibeFello.",
+      paymentSuccess: "Priority access confirmed. Check your email and follow X for updates.",
+      paymentCancel: "Payment paused. Your priority access request is not complete yet.",
+      alreadyMember: "Priority access is already reserved for this email.",
+      checkEmailReminder: "Please check your email and follow x.com/vibefello for updates.",
+      successTitle: "Priority Access Confirmed",
+      successSubtitle: "Your email is now marked for priority follow-up by VibeFello.",
       successNextSteps: "What's Next?",
-      successStep1: "Check your email for the onboarding guide.",
-      successStep2: "Join our exclusive Genesis Discord community.",
-      successStep3: "Schedule your first strategy session.",
-      successCta: "Go to Dashboard",
+      successStep1: "Check your email for confirmation.",
+      successStep2: "Follow x.com/vibefello for updates.",
+      successStep3: "Watch for direct follow-up from our team.",
+      successCta: "Back to Home",
       successBack: "Back to Home",
       membership: {
         title: "Manage Membership",
@@ -490,17 +490,17 @@ const translations = {
       scarcityMessage: "价格将每满 99 个席位价格翻倍。请在下次价格上涨前尽快行动！",
       valueProp: "一次成功的项目上线，即可为你带来 10 倍以上的投资回报。",
       opportunityBadge: "限时 Genesis 优惠",
-      paymentSuccess: "支付成功！欢迎加入核心圈子，请查收邮件获取后续指引。",
-      paymentCancel: "支付已暂停。该专属优惠仍为你保留，请尽快决定。",
-      alreadyMember: "你已经是 Genesis 创始会员了！",
-      checkEmailReminder: "请查收邮件获取入驻指南和社区访问权限。",
-      successTitle: "欢迎加入 Genesis 创始圈子",
-      successSubtitle: "你现在是 VibeFello 的 Genesis 创始成员。",
+      paymentSuccess: "优先权限已确认。请查收邮件并关注 X 获取最新动态。",
+      paymentCancel: "支付已暂停，你的优先权限申请尚未完成。",
+      alreadyMember: "该邮箱已经拥有优先权限标记。",
+      checkEmailReminder: "请查看邮箱，并关注 x.com/vibefello 获取最新动态。",
+      successTitle: "优先权限已确认",
+      successSubtitle: "你的邮箱已经被 VibeFello 标记为优先跟进。",
       successNextSteps: "接下来做什么？",
-      successStep1: "查收邮件获取入驻指南。",
-      successStep2: "加入专属的 Genesis Discord 社区。",
-      successStep3: "预约你的第一次策略咨询。",
-      successCta: "进入控制台",
+      successStep1: "查收确认邮件。",
+      successStep2: "关注 x.com/vibefello 获取最新动态。",
+      successStep3: "等待团队后续联系。",
+      successCta: "返回首页",
       successBack: "返回首页",
       membership: {
         title: "管理会员身份",
@@ -640,7 +640,11 @@ export default function App() {
       setShowConversion(true);
       setIsMember(true);
       localStorage.setItem('vibefello_member', 'true');
-      if (submittedEmail) localStorage.setItem('vibefello_email', submittedEmail);
+      const emailToSave = submittedEmail || savedEmail;
+      if (emailToSave) {
+        setSubmittedEmail(emailToSave);
+        localStorage.setItem('vibefello_email', emailToSave);
+      }
     } else if (params.get('payment') === 'cancel') {
       setPaymentStatus('cancel');
       setShowConversion(true);
@@ -650,41 +654,32 @@ export default function App() {
   const handleStripeCheckout = async () => {
     console.log("Initiating checkout for email:", submittedEmail, "Plan:", selectedPlan);
     
-    // Check for direct payment link first
-    const lifetimeLink = import.meta.env.VITE_STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_5kQeV69qtb3HaB48V0fw400";
-    
-    const paymentLink = lifetimeLink;
-    
-    if (paymentLink) {
-      const url = new URL(paymentLink);
-      if (submittedEmail) url.searchParams.set('prefilled_email', submittedEmail);
-      
-      // Use window.open to avoid iframe blocking issues (X-Frame-Options: DENY)
-      window.open(url.toString(), '_blank');
-      return;
+    // Save email to localStorage before redirect
+    if (submittedEmail) {
+      localStorage.setItem('vibefello_email', submittedEmail);
     }
-
+    
     setIsSubmitting(true);
     try {
+      // First try our own checkout session endpoint
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: submittedEmail }),
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create checkout session');
+      if (response.ok) {
+        const { url } = await response.json();
+        console.log("Checkout session URL created:", url);
+        
+        if (url) {
+          window.location.href = url;
+          return;
+        }
       }
-
-      const { url } = await response.json();
-      console.log("Checkout session URL created:", url);
       
-      if (url) {
-        window.location.href = url;
-      } else {
-        throw new Error("Checkout URL not found in response");
-      }
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.error || 'Failed to create checkout session');
     } catch (err) {
       console.error('Stripe error:', err);
       setError(err instanceof Error ? err.message : t.waitlist.error);
@@ -739,10 +734,11 @@ export default function App() {
       if (!response.ok) throw new Error('Failed to join waitlist');
       
       const data = await response.json();
-      if (data.isMember) {
+      const hasPriorityAccess = Boolean(data.paid || data.priorityAccess);
+      localStorage.setItem('vibefello_email', currentEmail);
+      if (hasPriorityAccess) {
         setIsMember(true);
         localStorage.setItem('vibefello_member', 'true');
-        localStorage.setItem('vibefello_email', currentEmail);
       }
 
       setSubmittedEmail(currentEmail);
@@ -826,126 +822,242 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     className="relative"
                   >
-                    {/* The "Ceremony" Card - No outer border, compact layout */}
-                    <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-pop-lg relative overflow-hidden">
-                      <div className="absolute top-0 left-0 w-full h-3 bg-vibe-gradient" />
+                    {/* Background Effects */}
+                    <div className="absolute -top-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-[120px] -z-10" />
+                    <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-tertiary/20 rounded-full blur-[120px] -z-10" />
+                    
+                    {/* The "Ceremony" Card - Enhanced with more effects */}
+                    <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-pop-lg relative overflow-hidden border-2 border-foreground/10">
+                      {/* Gradient Top Border */}
+                      <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-accent via-emerald to-tertiary" />
+                      
+                      {/* Animated Background Dots */}
+                      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                        {[...Array(20)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{
+                              opacity: [0, 0.3, 0],
+                              scale: [0, 1, 0],
+                              x: [0, Math.random() * 100 - 50],
+                              y: [0, Math.random() * 100 - 50]
+                            }}
+                            transition={{
+                              duration: 3 + Math.random() * 2,
+                              repeat: Infinity,
+                              delay: i * 0.2
+                            }}
+                            className="absolute left-1/2 top-1/2 w-1 h-1 bg-accent rounded-full"
+                          />
+                        ))}
+                      </div>
                       
                       <div className="flex flex-col lg:flex-row gap-12 items-center">
                         <div className="flex-1 text-center lg:text-left">
+                          {/* Celebration Icon */}
                           <motion.div 
                             initial={{ scale: 0, rotate: -20 }}
                             animate={{ scale: 1, rotate: 6 }}
                             transition={{ type: 'spring', damping: 12 }}
-                            className="w-20 h-20 bg-accent border-4 border-foreground rounded-[2rem] flex items-center justify-center mb-8 shadow-pop mx-auto lg:mx-0"
+                            className="w-24 h-24 bg-gradient-to-br from-accent to-emerald border-4 border-foreground rounded-[2.5rem] flex items-center justify-center mb-8 shadow-pop mx-auto lg:mx-0"
                           >
-                            <Sparkles className="w-10 h-10 text-black" strokeWidth={3} />
+                            <Sparkles className="w-12 h-12 text-black" strokeWidth={3} />
                           </motion.div>
 
-                          <h1 className="font-display text-5xl md:text-6xl font-black tracking-tighter mb-4 leading-[0.9]">
-                            {paymentStatus === 'success' ? "WELCOME TO THE CIRCLE" : "GENESIS MEMBER"}
-                          </h1>
-                          <p className="text-lg text-foreground/60 font-bold mb-4 max-w-xl mx-auto lg:mx-0">
+                          {/* Title with Animation */}
+                          <motion.h1 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="font-display text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9]"
+                          >
+                            {paymentStatus === 'success' ? "PRIORITY ACCESS CONFIRMED" : "PRIORITY ACCESS RESERVED"}
+                          </motion.h1>
+                          
+                          {/* Description */}
+                          <motion.p 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-lg text-foreground/60 font-bold mb-6 max-w-xl mx-auto lg:mx-0"
+                          >
                             {paymentStatus === 'success' 
-                              ? "You've successfully secured your spot among the first 100 builders of the Vibe Coding era." 
-                              : "Your lifetime access to the VibeFello ecosystem is active and ready."}
-                          </p>
-                          <p className="text-lg text-accent font-bold mb-8 max-w-xl mx-auto lg:mx-0">
-                            📧 Please check your email for your membership details and next steps
-                          </p>
+                              ? "Your payment is confirmed and your email is now marked for priority follow-up by the VibeFello team." 
+                              : "This email is already marked for priority follow-up in the VibeFello queue."}
+                          </motion.p>
+                          
+                          {/* Email Reminder with Animation */}
+                          <motion.p 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-lg text-accent font-bold mb-10 max-w-xl mx-auto lg:mx-0 flex items-center justify-center lg:justify-start gap-2"
+                          >
+                            <Mail className="w-6 h-6" />
+                            Please check your email and follow x.com/vibefello for the latest updates
+                          </motion.p>
 
-                          <div className="flex justify-center lg:justify-start">
+                          {/* Celebration Button */}
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="flex justify-center lg:justify-start"
+                          >
                             <button 
                               onClick={() => {
                                 confetti({
-                                  particleCount: 150,
-                                  spread: 70,
+                                  particleCount: 200,
+                                  spread: 80,
                                   origin: { y: 0.6 },
-                                  colors: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1A1A1A']
+                                  colors: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1A1A1A', '#FFD700']
                                 });
                               }}
-                              className="w-12 h-12 border-2 border-foreground rounded-full flex items-center justify-center hover:bg-accent transition-all shadow-pop"
+                              className="w-14 h-14 border-2 border-foreground rounded-full flex items-center justify-center hover:bg-accent transition-all shadow-pop hover:scale-110 active:scale-95"
                               title="Celebrate Again!"
                             >
-                              <Sparkles className="w-5 h-5" />
+                              <Sparkles className="w-6 h-6" />
                             </button>
-                          </div>
+                          </motion.div>
                         </div>
 
-                        {/* Membership "Certificate" Card */}
+                        {/* Membership "Certificate" Card - Enhanced Design */}
                         <motion.div 
                           initial={{ x: 50, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.3 }}
-                          className="w-full max-w-[400px] aspect-[1.6/1] bg-gradient-to-br from-foreground to-gray-800 text-white rounded-[2.5rem] p-8 shadow-pop-lg relative overflow-hidden border-4 border-foreground shrink-0"
+                          transition={{ delay: 0.3, type: 'spring', damping: 10 }}
+                          className="w-full max-w-[400px] aspect-[1.6/1] bg-gradient-to-br from-foreground via-gray-900 to-gray-800 text-white rounded-[2.5rem] p-8 shadow-pop-lg relative overflow-hidden border-4 border-accent/50 shrink-0"
                         >
-                          <div className="absolute top-0 right-0 w-40 h-40 bg-accent/20 rounded-full blur-[60px] -mr-20 -mt-20" />
-                          <div className="absolute bottom-0 left-0 w-40 h-40 bg-tertiary/20 rounded-full blur-[60px] -ml-20 -mb-20" />
+                          {/* Background Glows */}
+                          <div className="absolute top-0 right-0 w-40 h-40 bg-accent/30 rounded-full blur-[60px] -mr-20 -mt-20 animate-pulse" />
+                          <div className="absolute bottom-0 left-0 w-40 h-40 bg-emerald/30 rounded-full blur-[60px] -ml-20 -mb-20 animate-pulse" />
+                          <div className="absolute center-0 w-60 h-60 bg-tertiary/10 rounded-full blur-[80px]" />
                           
+                          {/* Card Content */}
                           <div className="relative h-full flex flex-col justify-between">
+                            {/* Header */}
                             <div className="flex justify-between items-start">
                               <div>
                                 <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Membership Tier</div>
-                                <div className="text-2xl font-black text-accent tracking-tight">GENESIS CIRCLE</div>
+                                <motion.div 
+                                  initial={{ opacity: 0, y: -10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 0.5 }}
+                                  className="text-2xl md:text-3xl font-black text-accent tracking-tight"
+                                >
+                                  GENESIS CIRCLE
+                                </motion.div>
                               </div>
-                              <div className="w-12 h-12 border-2 border-white/20 rounded-xl flex items-center justify-center">
-                                <Zap className="w-6 h-6 text-accent" />
-                              </div>
+                              <motion.div 
+                                initial={{ scale: 0, rotate: 0 }}
+                                animate={{ scale: 1, rotate: 360 }}
+                                transition={{ delay: 0.6, duration: 1 }}
+                                className="w-14 h-14 border-2 border-white/20 rounded-xl flex items-center justify-center bg-white/5"
+                              >
+                                <Zap className="w-7 h-7 text-accent" />
+                              </motion.div>
                             </div>
 
-                            <div className="space-y-6">
-                              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                            {/* Member ID Section */}
+                            <motion.div 
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ delay: 0.7 }}
+                              className="space-y-6"
+                            >
+                              <div className="bg-white/5 rounded-xl p-5 border border-white/10 backdrop-blur-sm">
                                 <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Member ID</div>
-                                <div className="font-mono text-lg font-bold tracking-wider text-accent">
+                                <div className="font-mono text-xl font-bold tracking-wider text-accent">
                                   {memberCount !== null 
                                     ? `VF-2026-${String(memberCount).padStart(3, '0')}-GEN` 
                                     : `VF-2026-${(submittedEmail?.length || 0) * 7}-GEN`}
                                 </div>
                               </div>
+                              
+                              {/* Validity and Status */}
                               <div className="flex justify-between items-end">
                                 <div>
                                   <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Valid Until</div>
                                   <div className="text-lg font-black uppercase tracking-widest">LIFETIME</div>
                                 </div>
-                                <div className="text-right">
+                                <motion.div 
+                                  initial={{ opacity: 0, scale: 0.8 }}
+                                  animate={{ opacity: 1, scale: 1 }}
+                                  transition={{ delay: 0.8 }}
+                                  className="text-right"
+                                >
                                   <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Status</div>
-                                  <div className="px-4 py-2 bg-accent text-black text-[9px] font-black uppercase rounded-full inline-block shadow-lg shadow-accent/20">ACTIVE</div>
-                                </div>
+                                  <div className="px-5 py-2 bg-gradient-to-r from-accent to-emerald text-black text-[9px] font-black uppercase rounded-full inline-block shadow-lg shadow-accent/30">ACTIVE</div>
+                                </motion.div>
                               </div>
-                            </div>
+                            </motion.div>
+                            
+                            {/* Bottom Branding */}
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.9 }}
+                              className="mt-6 pt-6 border-t border-white/10"
+                            >
+                              <div className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30 text-center">
+                                VIBEFELLO • GENESIS MEMBERSHIP
+                              </div>
+                            </motion.div>
                           </div>
                         </motion.div>
                       </div>
 
-                      {/* Onboarding Summary - Integrated into the main card for single-screen fit */}
-                      <div className="mt-12 pt-12 border-t-2 border-foreground/5 grid md:grid-cols-3 gap-8">
+                      {/* Onboarding Summary - Enhanced Design */}
+                      <motion.div 
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1 }}
+                        className="mt-16 pt-12 border-t-2 border-foreground/5 grid md:grid-cols-3 gap-8"
+                      >
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 border-2 border-foreground/10">
-                            <CheckCircle2 className="w-5 h-5 text-emerald" />
-                          </div>
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 1.1 }}
+                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-emerald flex items-center justify-center shrink-0 border-2 border-foreground/10 shadow-pop"
+                          >
+                            <CheckCircle2 className="w-6 h-6 text-black" />
+                          </motion.div>
                           <div>
                             <div className="font-black text-xs uppercase tracking-widest mb-1">{t.conversion.successStep1}</div>
                             <p className="text-[10px] text-foreground/40 font-bold leading-tight">Sent to {submittedEmail}</p>
                           </div>
                         </div>
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 border-2 border-foreground/10">
-                            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                          </div>
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 1.2 }}
+                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald to-tertiary flex items-center justify-center shrink-0 border-2 border-foreground/10 shadow-pop"
+                          >
+                            <div className="w-3 h-3 rounded-full bg-black animate-pulse" />
+                          </motion.div>
                           <div>
                             <div className="font-black text-xs uppercase tracking-widest mb-1">{t.conversion.successStep2}</div>
                             <p className="text-[10px] text-foreground/40 font-bold leading-tight">Check your inbox for the link.</p>
                           </div>
                         </div>
                         <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 border-2 border-foreground/10">
-                            <MessageSquare className="w-5 h-5 text-tertiary" />
-                          </div>
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 1.3 }}
+                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-tertiary to-accent flex items-center justify-center shrink-0 border-2 border-foreground/10 shadow-pop"
+                          >
+                            <MessageSquare className="w-6 h-6 text-black" />
+                          </motion.div>
                           <div>
                             <div className="font-black text-xs uppercase tracking-widest mb-1">{t.conversion.successStep3}</div>
                             <p className="text-[10px] text-foreground/40 font-bold leading-tight">Join the private Discord.</p>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     </div>
                   </motion.div>
                 </div>
@@ -955,7 +1067,7 @@ export default function App() {
                   <motion.div 
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative z-10 flex flex-col items-center mt-4 md:mt-8 mb-6 md:mb-10 space-y-3 md:space-y-4 w-full px-4"
+                    className="relative z-10 flex flex-col items-center mt-12 md:mt-16 mb-6 md:mb-10 space-y-3 md:space-y-4 w-full px-4"
                   >
                     <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6 text-center md:text-left max-w-4xl">
                       <div className="w-10 h-10 md:w-12 md:h-12 bg-accent border-2 border-foreground rounded-xl flex items-center justify-center shadow-pop rotate-3 shrink-0">
@@ -1019,11 +1131,6 @@ export default function App() {
                         </div>
 
                         <div className="pt-2 mt-auto space-y-3">
-                          <div className="p-3 bg-accent/10 border border-accent/20 rounded-xl">
-                            <p className="text-[10px] font-black text-emerald uppercase tracking-wider leading-tight">
-                              {t.conversion.plans[selectedPlan].scarcityMessage}
-                            </p>
-                          </div>
                           <div className="text-white/30 text-[9px] font-medium leading-relaxed uppercase tracking-widest">
                             {t.conversion.valueProp}
                           </div>
@@ -1033,11 +1140,7 @@ export default function App() {
                       {/* Card Right: Pricing & CTA (White Section) */}
                       <div className="lg:w-1/2 bg-white p-8 md:p-10 flex flex-col justify-center">
                         {/* Plan Indicator */}
-                        <div className="mb-8 p-3 bg-foreground text-white rounded-2xl border-2 border-foreground shadow-pop text-center">
-                          <span className="text-[10px] font-black uppercase tracking-widest">
-                            {t.conversion.plans.lifetime.name}
-                          </span>
-                        </div>
+
 
                         <div className="flex items-center justify-between mb-8">
                           <div className="px-3 py-1 bg-accent border border-foreground text-black text-[9px] font-black uppercase tracking-widest rounded-full shadow-pop relative overflow-hidden">
@@ -1065,6 +1168,13 @@ export default function App() {
 
                             </div>
                           </div>
+                        </div>
+
+                        {/* Scarcity Message */}
+                        <div className="p-4 bg-accent/10 border border-accent/20 rounded-xl mb-8">
+                          <p className="text-[10px] font-black text-emerald uppercase tracking-wider leading-tight">
+                            {t.conversion.plans[selectedPlan].scarcityMessage}
+                          </p>
                         </div>
 
                         {paymentStatus === 'cancel' && (
@@ -1106,29 +1216,12 @@ export default function App() {
                           )}
                         </button>
 
-                        <div className="mt-8 pt-6 border-t border-foreground/5 flex items-center justify-between">
-                          <div className="flex gap-2">
-                            {[1, 2, 3].map((_, i) => (
-                              <div key={i} className="w-8 h-5 bg-foreground/5 rounded border border-foreground/10" />
-                            ))}
-                          </div>
-                          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-foreground/20">
-                            Secure Payment via Stripe
-                          </span>
-                        </div>
+
                       </div>
                     </div>
                   </motion.div>
 
-                  <div className="mt-8 text-center">
-                    <button 
-                      onClick={() => setShowConversion(false)}
-                      className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground/30 hover:text-foreground transition-colors"
-                    >
-                      <ArrowRight className="w-4 h-4 rotate-180" />
-                      {t.conversion.back}
-                    </button>
-                  </div>
+
                 </>
               )}
             </div>
@@ -1879,7 +1972,7 @@ export default function App() {
             </section>
 
             {/* Waitlist Section */}
-            <section id="waitlist" className="py-24 px-6 relative overflow-hidden bg-foreground text-background">
+            <section id="waitlist" className="py-16 px-6 relative overflow-hidden bg-foreground text-background">
               {/* Starry background */}
               <div className="absolute inset-0 -z-10">
                 {[...Array(20)].map((_, i) => (
@@ -1903,18 +1996,18 @@ export default function App() {
                 ))}
               </div>
               <div className="absolute inset-0 bg-accent/5 -z-10" />
-              <div className="max-w-2xl mx-auto text-center relative z-10">
-                <div className="flex items-center justify-center mx-auto mb-8">
-                  <img src="/img/logo_light.png" alt="VibeFello Logo" className="h-16 w-auto object-contain" />
+              <div className="max-w-2xl mx-auto text-center relative z-10 px-4">
+                <div className="flex items-center justify-center mx-auto mb-6">
+                  <img src="/img/logo_light.png" alt="VibeFello Logo" className="h-14 w-auto object-contain" />
                 </div>
-                <h2 className="font-display text-3xl md:text-5xl font-extrabold mb-4 tracking-tighter text-white">
+                <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter text-white">
                   {t.waitlist.title}
                 </h2>
-                <p className="text-base md:text-lg text-background/60 mb-8 max-w-xl mx-auto font-medium" dangerouslySetInnerHTML={{ __html: t.waitlist.desc }} />
+                <p className="text-base md:text-lg text-background/60 mb-6 max-w-xl mx-auto font-medium" dangerouslySetInnerHTML={{ __html: t.waitlist.desc }} />
 
                 <form 
                   onSubmit={(e) => handleSubmit(e, 'waitlist')} 
-                  className="bg-white p-8 rounded-[2rem] text-left border border-foreground shadow-pop-lg relative text-foreground max-w-md mx-auto"
+                  className="bg-white p-6 md:p-8 rounded-[2rem] text-left border border-foreground shadow-pop-lg relative text-foreground max-w-md mx-auto"
                 >
                   {/* Decorative sticker on form */}
                   <div className="absolute -top-4 -right-4 w-20 h-20 bg-accent rounded-full border border-foreground flex items-center justify-center shadow-pop rotate-12 font-display font-black text-black text-center leading-none text-xs p-2 z-10">
@@ -1971,7 +2064,7 @@ export default function App() {
                       </>
                     )}
                   </button>
-                  {error && <p className="mt-6 text-red-500 text-center font-black uppercase tracking-widest text-sm">{error}</p>}
+                  {error && <p className="mt-4 text-red-500 text-center font-black uppercase tracking-widest text-sm">{error}</p>}
                 </form>
               </div>
             </section>
