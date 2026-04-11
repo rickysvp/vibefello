@@ -1,4 +1,5 @@
 import type { LeadStore } from "./lead-store";
+import type { StripeService } from "./stripe";
 
 export type WaitlistResponse = {
   success: boolean;
@@ -11,4 +12,6 @@ export type WaitlistResponse = {
 
 export type CreateAppDependencies = {
   leadStore?: LeadStore;
+  stripeService?: StripeService;
+  port?: number;
 };

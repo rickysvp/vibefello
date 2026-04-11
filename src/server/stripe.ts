@@ -1,6 +1,16 @@
 import Stripe from "stripe";
+import { getAppUrl } from "./env";
 
 let stripeClient: Stripe | null = null;
+
+export type CheckoutSession = {
+  id: string;
+  url: string;
+};
+
+export type StripeService = {
+  createCheckoutSession: (input: { email: string; port: number }) => Promise<CheckoutSession>;
+};
 
 export function getStripe(): Stripe {
   if (!stripeClient) {
@@ -11,4 +21,46 @@ export function getStripe(): Stripe {
     stripeClient = new Stripe(key);
   }
   return stripeClient;
+}
+
+export function createStripeService(): StripeService {
+  return {
+    async createCheckoutSession({ email, port }) {
+      const stripe = getStripe();
+      const appUrl = getAppUrl(port);
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        customer_email: email,
+        metadata: {
+          email,
+          source: "landing_page",
+        },
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: "VibeFello Priority Access",
+                description: "Priority access request for manual VibeFello follow-up.",
+              },
+              unit_amount: 99900,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: `${appUrl}?payment=success`,
+        cancel_url: `${appUrl}?payment=cancel`,
+      });
+
+      if (!session.url) {
+        throw new Error("Stripe checkout session did not include a URL");
+      }
+
+      return {
+        id: session.id,
+        url: session.url,
+      };
+    },
+  };
 }

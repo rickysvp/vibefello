@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import { createLeadStore } from "./lead-store";
+import { createStripeService } from "./stripe";
 import type { CreateAppDependencies } from "./types";
 
 function isValidEmail(email: string) {
@@ -14,6 +15,8 @@ function isValidBlocker(blocker?: string) {
 export function createApp(dependencies: CreateAppDependencies = {}) {
   const app = express();
   const leadStore = dependencies.leadStore ?? createLeadStore();
+  const stripeService = dependencies.stripeService ?? createStripeService();
+  const port = dependencies.port ?? 3000;
 
   app.use(
     cors({
@@ -55,6 +58,41 @@ export function createApp(dependencies: CreateAppDependencies = {}) {
     } catch (error) {
       console.error("Failed to upsert waitlist lead:", error);
       return res.status(500).json({ error: "Failed to save your request. Please try again." });
+    }
+  });
+
+  app.post("/api/create-checkout-session", async (req, res) => {
+    const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
+    }
+
+    try {
+      const lead = await leadStore.getLeadByEmail(email);
+
+      if (!lead) {
+        return res.status(400).json({ error: "Please submit your request before checkout." });
+      }
+
+      if (lead.paid) {
+        return res.status(409).json({ error: "Priority access already granted for this email." });
+      }
+
+      const session = await stripeService.createCheckoutSession({ email, port });
+      const checkoutStartedAt = new Date().toISOString();
+
+      await leadStore.recordCheckoutSession({
+        email,
+        checkoutSessionId: session.id,
+        checkoutStatus: "created",
+        checkoutStartedAt,
+      });
+
+      return res.json({ url: session.url });
+    } catch (error) {
+      console.error("Failed to create checkout session:", error);
+      return res.status(500).json({ error: "Failed to create checkout session." });
     }
   });
 
