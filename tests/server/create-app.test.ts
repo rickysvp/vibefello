@@ -2,29 +2,41 @@ import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createApp } from "../../src/server/create-app";
 import type { LeadStore, StoredLead } from "../../src/server/lead-store";
-import type { StripeService } from "../../src/server/stripe";
+import type { EmailService } from "../../src/server/email";
+import type { StripeEvent, StripeService } from "../../src/server/stripe";
 
 function createLeadStoreMock(): LeadStore {
   return {
     upsertLead: vi.fn(),
     getLeadByEmail: vi.fn(),
     recordCheckoutSession: vi.fn(),
+    findLeadForWebhook: vi.fn(),
+    markLeadPaid: vi.fn(),
   };
 }
 
 function createStripeServiceMock(): StripeService {
   return {
     createCheckoutSession: vi.fn(),
+    constructWebhookEvent: vi.fn(),
+  };
+}
+
+function createEmailServiceMock(): EmailService {
+  return {
+    sendPriorityAccessEmail: vi.fn(),
   };
 }
 
 describe("createApp", () => {
   let leadStore: LeadStore;
   let stripeService: StripeService;
+  let emailService: EmailService;
 
   beforeEach(() => {
     leadStore = createLeadStoreMock();
     stripeService = createStripeServiceMock();
+    emailService = createEmailServiceMock();
   });
 
   it("returns ok from /api/health", async () => {
@@ -41,7 +53,7 @@ describe("createApp", () => {
       priorityAccess: false,
     });
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/waitlist")
       .send({ email: "founder@example.com", blocker: "Stripe checkout keeps failing" });
@@ -63,7 +75,7 @@ describe("createApp", () => {
       priorityAccess: true,
     });
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/waitlist")
       .send({ email: "founder@example.com", blocker: "Need better launch support" });
@@ -78,7 +90,7 @@ describe("createApp", () => {
   });
 
   it("returns 400 for invalid email", async () => {
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/waitlist")
       .send({ email: "not-an-email", blocker: "Stripe webhook issue" });
@@ -88,7 +100,7 @@ describe("createApp", () => {
   });
 
   it("returns 400 for invalid blocker payload", async () => {
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/waitlist")
       .send({ email: "founder@example.com", blocker: "short" });
@@ -100,7 +112,7 @@ describe("createApp", () => {
   it("returns 500 when the lead store write fails", async () => {
     vi.mocked(leadStore.upsertLead).mockRejectedValue(new Error("supabase offline"));
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/waitlist")
       .send({ email: "founder@example.com", blocker: "Stripe checkout keeps failing" });
@@ -112,7 +124,7 @@ describe("createApp", () => {
   it("rejects checkout when no lead exists", async () => {
     vi.mocked(leadStore.getLeadByEmail).mockResolvedValue(null);
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/create-checkout-session")
       .send({ email: "founder@example.com" });
@@ -132,7 +144,7 @@ describe("createApp", () => {
       url: "https://checkout.stripe.test/session/cs_test_123",
     });
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/create-checkout-session")
       .send({ email: "founder@example.com" });
@@ -156,7 +168,7 @@ describe("createApp", () => {
       priorityAccess: true,
     } satisfies StoredLead);
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/create-checkout-session")
       .send({ email: "founder@example.com" });
@@ -173,12 +185,117 @@ describe("createApp", () => {
     } satisfies StoredLead);
     vi.mocked(stripeService.createCheckoutSession).mockRejectedValue(new Error("stripe offline"));
 
-    const app = createApp({ leadStore, stripeService });
+    const app = createApp({ leadStore, stripeService, emailService });
     const response = await request(app)
       .post("/api/create-checkout-session")
       .send({ email: "founder@example.com" });
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: "Failed to create checkout session." });
+  });
+
+  it("marks a matching lead as paid and priority_access true", async () => {
+    vi.mocked(stripeService.constructWebhookEvent).mockReturnValue({
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_123",
+          customer_details: { email: "founder@example.com" },
+          metadata: { email: "founder@example.com" },
+        },
+      },
+    } satisfies StripeEvent);
+    vi.mocked(leadStore.findLeadForWebhook).mockResolvedValue({
+      email: "founder@example.com",
+      paid: false,
+      priorityAccess: false,
+    });
+
+    const app = createApp({ leadStore, stripeService, emailService });
+    const response = await request(app)
+      .post("/api/webhook")
+      .set("stripe-signature", "sig_test")
+      .set("content-type", "application/json")
+      .send(Buffer.from("{}"));
+
+    expect(response.status).toBe(200);
+    expect(leadStore.markLeadPaid).toHaveBeenCalledWith({
+      email: "founder@example.com",
+      paidAt: expect.any(String),
+      prioritySource: "stripe_checkout",
+      checkoutStatus: "completed",
+      checkoutSessionId: "cs_test_123",
+    });
+    expect(emailService.sendPriorityAccessEmail).toHaveBeenCalledWith("founder@example.com");
+  });
+
+  it("falls back to email match when session id was overwritten", async () => {
+    vi.mocked(stripeService.constructWebhookEvent).mockReturnValue({
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_old",
+          customer_details: { email: "founder@example.com" },
+          metadata: { email: "founder@example.com" },
+        },
+      },
+    } satisfies StripeEvent);
+    vi.mocked(leadStore.findLeadForWebhook).mockResolvedValue({
+      email: "founder@example.com",
+      paid: false,
+      priorityAccess: false,
+    });
+
+    const app = createApp({ leadStore, stripeService, emailService });
+    const response = await request(app)
+      .post("/api/webhook")
+      .set("stripe-signature", "sig_test")
+      .set("content-type", "application/json")
+      .send(Buffer.from("{}"));
+
+    expect(response.status).toBe(200);
+    expect(leadStore.markLeadPaid).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns 400 for invalid webhook signatures", async () => {
+    vi.mocked(stripeService.constructWebhookEvent).mockImplementation(() => {
+      throw new Error("invalid signature");
+    });
+
+    const app = createApp({ leadStore, stripeService, emailService });
+    const response = await request(app)
+      .post("/api/webhook")
+      .set("stripe-signature", "bad_sig")
+      .set("content-type", "application/json")
+      .send(Buffer.from("{}"));
+
+    expect(response.status).toBe(400);
+  });
+
+  it("logs unmatched webhook events without mutating state", async () => {
+    const logSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    vi.mocked(stripeService.constructWebhookEvent).mockReturnValue({
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_123",
+          customer_details: { email: "founder@example.com" },
+          metadata: { email: "founder@example.com" },
+        },
+      },
+    } satisfies StripeEvent);
+    vi.mocked(leadStore.findLeadForWebhook).mockResolvedValue(null);
+
+    const app = createApp({ leadStore, stripeService, emailService });
+    const response = await request(app)
+      .post("/api/webhook")
+      .set("stripe-signature", "sig_test")
+      .set("content-type", "application/json")
+      .send(Buffer.from("{}"));
+
+    expect(response.status).toBe(200);
+    expect(leadStore.markLeadPaid).not.toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
   });
 });

@@ -16,6 +16,17 @@ export type LeadStore = {
     checkoutStatus: string;
     checkoutStartedAt: string;
   }) => Promise<void>;
+  findLeadForWebhook: (input: {
+    checkoutSessionId: string;
+    email: string;
+  }) => Promise<StoredLead | null>;
+  markLeadPaid: (input: {
+    email: string;
+    paidAt: string;
+    prioritySource: string;
+    checkoutStatus: string;
+    checkoutSessionId: string;
+  }) => Promise<void>;
 };
 
 export type StoredLead = LeadState;
@@ -117,6 +128,68 @@ export function createLeadStore(): LeadStore {
             checkout_session_id: input.checkoutSessionId,
             checkout_status: input.checkoutStatus,
             updated_at: input.checkoutStartedAt,
+          },
+          { onConflict: "email" },
+        );
+
+      if (error) {
+        throw error;
+      }
+    },
+    async findLeadForWebhook(input) {
+      if (!config) {
+        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+      }
+
+      const supabase = createClient(config.url, config.key);
+      const { data: sessionMatch, error: sessionError } = await supabase
+        .from("waitlist")
+        .select("email, paid, priority_access")
+        .eq("checkout_session_id", input.checkoutSessionId)
+        .maybeSingle<WaitlistRow>();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      const row = sessionMatch?.email
+        ? sessionMatch
+        : (
+            await supabase
+              .from("waitlist")
+              .select("email, paid, priority_access")
+              .eq("email", input.email)
+              .maybeSingle<WaitlistRow>()
+          ).data;
+
+      if (!row?.email) {
+        return null;
+      }
+
+      return {
+        email: row.email,
+        paid: Boolean(row.paid),
+        priorityAccess: Boolean(row.priority_access),
+      };
+    },
+    async markLeadPaid(input) {
+      if (!config) {
+        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+      }
+
+      const supabase = createClient(config.url, config.key);
+      const { error } = await supabase
+        .from("waitlist")
+        .upsert(
+          {
+            email: input.email,
+            paid: true,
+            paid_at: input.paidAt,
+            priority_access: true,
+            priority_source: input.prioritySource,
+            checkout_status: input.checkoutStatus,
+            checkout_session_id: input.checkoutSessionId,
+            updated_at: input.paidAt,
           },
           { onConflict: "email" },
         );

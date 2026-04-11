@@ -16,3 +16,11 @@ export function getSupabaseConfig() {
 
   return { url, key };
 }
+
+export function getResendApiKey() {
+  return process.env.RESEND_API_KEY || null;
+}
+
+export function getStripeWebhookSecret() {
+  return process.env.STRIPE_WEBHOOK_SECRET || null;
+}

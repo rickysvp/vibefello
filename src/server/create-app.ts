@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { createEmailService } from "./email";
 import { createLeadStore } from "./lead-store";
 import { createStripeService } from "./stripe";
 import type { CreateAppDependencies } from "./types";
@@ -16,6 +17,7 @@ export function createApp(dependencies: CreateAppDependencies = {}) {
   const app = express();
   const leadStore = dependencies.leadStore ?? createLeadStore();
   const stripeService = dependencies.stripeService ?? createStripeService();
+  const emailService = dependencies.emailService ?? createEmailService();
   const port = dependencies.port ?? 3000;
 
   app.use(
@@ -25,6 +27,58 @@ export function createApp(dependencies: CreateAppDependencies = {}) {
       allowedHeaders: ["Content-Type", "Authorization", "stripe-signature"],
     }),
   );
+
+  app.post("/api/webhook", express.raw({ type: "application/json" }), async (req, res) => {
+    const signature = req.headers["stripe-signature"];
+
+    if (typeof signature !== "string") {
+      return res.status(400).send("Webhook Error: Missing signature");
+    }
+
+    try {
+      const event = stripeService.constructWebhookEvent({
+        body: req.body as Buffer,
+        signature,
+      });
+
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object;
+        const email = session.customer_details?.email || session.metadata?.email;
+
+        if (email) {
+          const lead = await leadStore.findLeadForWebhook({
+            checkoutSessionId: session.id,
+            email,
+          });
+
+          if (!lead) {
+            console.warn("No lead matched webhook event", {
+              checkoutSessionId: session.id,
+              email,
+            });
+            return res.json({ received: true });
+          }
+
+          if (!lead.paid) {
+            const paidAt = new Date().toISOString();
+            await leadStore.markLeadPaid({
+              email: lead.email,
+              paidAt,
+              prioritySource: "stripe_checkout",
+              checkoutStatus: "completed",
+              checkoutSessionId: session.id,
+            });
+            await emailService.sendPriorityAccessEmail(lead.email);
+          }
+        }
+      }
+
+      return res.json({ received: true });
+    } catch (error) {
+      console.error("Webhook verification failed:", error);
+      return res.status(400).send("Webhook Error");
+    }
+  });
 
   app.use(express.json());
 
