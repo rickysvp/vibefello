@@ -1,5 +1,5 @@
-import { handleHealthRequest } from "../src/server/route-handlers";
-import { sendVercelResult } from "../src/server/vercel";
+import { handleHealthRequest } from "./_lib/route-handlers";
+import { sendVercelResult } from "./_lib/vercel";
 
 export default async function handler(_req: any, res: any) {
   const result = await handleHealthRequest();
