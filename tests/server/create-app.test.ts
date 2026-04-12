@@ -29,6 +29,7 @@ function createStripeServiceMock(): StripeService {
 
 function createEmailServiceMock(): EmailService {
   return {
+    sendWaitlistConfirmationEmail: vi.fn(),
     sendPriorityAccessEmail: vi.fn(),
   };
 }
@@ -83,6 +84,7 @@ describe("server handlers", () => {
         message: "Lead captured",
       },
     });
+    expect(emailService.sendWaitlistConfirmationEmail).toHaveBeenCalledWith("founder@example.com");
   });
 
   it("preserves paid and priority flags on repeat submission", async () => {
@@ -111,6 +113,7 @@ describe("server handlers", () => {
       email: "founder@example.com",
       blocker: "Need better launch support",
     });
+    expect(emailService.sendWaitlistConfirmationEmail).not.toHaveBeenCalled();
   });
 
   it("returns 400 for invalid email", async () => {

@@ -87,6 +87,7 @@ describe("App waitlist flow", () => {
       expect(localStorage.getItem("vibefello_member")).toBe("true");
     });
 
-    expect(await screen.findByText(/PRIORITY ACCESS/i)).toBeInTheDocument();
+    expect(await screen.findByText(/FOUNDING MEMBER ACTIVE/i)).toBeInTheDocument();
+    expect(screen.getByText(/payment for this email was already confirmed/i)).toBeInTheDocument();
   });
 });

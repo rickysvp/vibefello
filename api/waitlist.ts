@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { createClient } from "@supabase/supabase-js";
+import { Resend } from "resend";
 
 const WAITLIST_BOOTSTRAP_SQL = `
 create table if not exists public.waitlist (
@@ -152,6 +153,39 @@ function getSupabaseServerConfig() {
   return null;
 }
 
+function buildWaitlistConfirmationEmailHtml(email: string) {
+  return `
+    <div style="font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 24px; color: #111827;">
+      <h1 style="font-size: 28px; margin: 0 0 16px;">You're on the VibeFello waitlist.</h1>
+      <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+        We saved <strong>${email}</strong> to the VibeFello waitlist.
+      </p>
+      <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
+        We'll reach out as we open more access and share launch updates.
+      </p>
+      <p style="font-size: 16px; line-height: 1.6; margin: 0;">
+        If you decide to join the founding member club later, you'll receive a separate payment confirmation email.
+      </p>
+    </div>
+  `;
+}
+
+async function sendWaitlistConfirmationEmail(email: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    return;
+  }
+
+  const resend = new Resend(apiKey);
+  await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL || "VibeFello <feedback@vibefello.com>",
+    to: email,
+    subject: "You're on the VibeFello waitlist",
+    html: buildWaitlistConfirmationEmailHtml(email),
+  });
+}
+
 export default async function handler(req: any, res: any) {
   const body = req.body ?? (await readJsonBody(req));
   const email = typeof body?.email === "string" ? body.email.trim() : "";
@@ -191,6 +225,10 @@ export default async function handler(req: any, res: any) {
         [email, blocker?.trim() || null],
       );
       const row = result.rows[0];
+
+      if (!row.paid && !row.priority_access) {
+        await sendWaitlistConfirmationEmail(row.email);
+      }
 
       return res.status(200).json({
         success: true,
@@ -233,6 +271,10 @@ export default async function handler(req: any, res: any) {
 
     if (upsertError) {
       throw upsertError;
+    }
+
+    if (!existing?.paid && !existing?.priority_access) {
+      await sendWaitlistConfirmationEmail(email);
     }
 
     return res.status(200).json({

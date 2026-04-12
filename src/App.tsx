@@ -758,6 +758,8 @@ export default function App() {
 
   const toggleLang = () => setLang(l => l === 'en' ? 'cn' : 'en');
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+  const hasConfirmedMembership = paymentStatus === 'success' || isMember;
+  const isReturningPaidMember = paymentStatus !== 'success' && isMember;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-accent/30 font-sans transition-colors duration-300 overflow-x-hidden">
@@ -819,7 +821,7 @@ export default function App() {
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-accent/10 rounded-full blur-[100px] -z-10" />
               <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px] -z-10" />
 
-              {paymentStatus === 'success' || isMember ? (
+              {hasConfirmedMembership ? (
                 <div className="w-full max-w-6xl mx-auto">
                   <motion.div 
                     initial={{ opacity: 0, y: 40 }}
@@ -876,7 +878,9 @@ export default function App() {
                             transition={{ delay: 0.2 }}
                             className="font-display text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9]"
                           >
-                            {paymentStatus === 'success' ? "PRIORITY ACCESS CONFIRMED" : "PRIORITY ACCESS RESERVED"}
+                            {paymentStatus === 'success'
+                              ? "FOUNDING MEMBER CONFIRMED"
+                              : "FOUNDING MEMBER ACTIVE"}
                           </motion.h1>
                           
                           {/* Description */}
@@ -886,9 +890,9 @@ export default function App() {
                             transition={{ delay: 0.3 }}
                             className="text-lg text-foreground/60 font-bold mb-6 max-w-xl mx-auto lg:mx-0"
                           >
-                            {paymentStatus === 'success' 
-                              ? "Your payment is confirmed and your email is now marked for priority follow-up by the VibeFello team." 
-                              : "This email is already marked for priority follow-up in the VibeFello queue."}
+                            {paymentStatus === 'success'
+                              ? "Your payment is confirmed and your email is now marked for founding member follow-up by the VibeFello team."
+                              : "Payment for this email was already confirmed, and this founding member account is already active."}
                           </motion.p>
                           
                           {/* Email Reminder with Animation */}
@@ -899,7 +903,9 @@ export default function App() {
                             className="text-lg text-accent font-bold mb-10 max-w-xl mx-auto lg:mx-0 flex items-center justify-center lg:justify-start gap-2"
                           >
                             <Mail className="w-6 h-6" />
-                            Please check your email and follow x.com/vibefello for the latest updates
+                            {isReturningPaidMember
+                              ? "Check your paid member email again and follow x.com/vibefello for the latest updates"
+                              : "Please check your email and follow x.com/vibefello for the latest updates"}
                           </motion.p>
 
                           {/* Celebration Button */}

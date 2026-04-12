@@ -119,9 +119,9 @@ async function readRawBody(req: AsyncIterable<Buffer | string>) {
 function buildPriorityAccessEmailHtml(email: string) {
   return `
     <div style="font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; border: 1px solid #e5e7eb; border-radius: 24px; color: #111827;">
-      <h1 style="font-size: 28px; margin: 0 0 16px;">You're marked for priority access.</h1>
+      <h1 style="font-size: 28px; margin: 0 0 16px;">Your founding member access is confirmed.</h1>
       <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
-        Thanks for securing priority access with VibeFello. We've marked <strong>${email}</strong> for manual priority follow-up from our team.
+        Thanks for joining the VibeFello founding member club. We've marked <strong>${email}</strong> for manual priority follow-up from our team.
       </p>
       <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
         Please follow our official X account for the latest product updates and launch news:
@@ -302,7 +302,7 @@ export default async function handler(req: any, res: any) {
             await resend.emails.send({
               from: process.env.RESEND_FROM_EMAIL || "VibeFello <feedback@vibefello.com>",
               to: lead.email,
-              subject: "Your VibeFello priority access is confirmed",
+              subject: "Your VibeFello founding member access is confirmed",
               html: buildPriorityAccessEmailHtml(lead.email),
             });
           }

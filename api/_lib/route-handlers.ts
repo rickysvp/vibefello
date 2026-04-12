@@ -66,6 +66,11 @@ export async function handleWaitlistRequest(
 
   try {
     const lead = await dependencies.leadStore.upsertLead({ email, blocker });
+
+    if (!lead.paid && !lead.priorityAccess) {
+      await dependencies.emailService.sendWaitlistConfirmationEmail(lead.email);
+    }
+
     return {
       status: 200,
       json: {
