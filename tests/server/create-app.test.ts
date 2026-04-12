@@ -1,8 +1,13 @@
-import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createApp } from "../../src/server/create-app";
-import type { LeadStore, StoredLead } from "../../src/server/lead-store";
 import type { EmailService } from "../../src/server/email";
+import type { LeadStore, StoredLead } from "../../src/server/lead-store";
+import {
+  createRuntimeDependencies,
+  handleCreateCheckoutSessionRequest,
+  handleHealthRequest,
+  handleWaitlistRequest,
+  handleWebhookRequest,
+} from "../../src/server/route-handlers";
 import type { StripeEvent, StripeService } from "../../src/server/stripe";
 
 function createLeadStoreMock(): LeadStore {
@@ -28,7 +33,7 @@ function createEmailServiceMock(): EmailService {
   };
 }
 
-describe("createApp", () => {
+describe("server handlers", () => {
   let leadStore: LeadStore;
   let stripeService: StripeService;
   let emailService: EmailService;
@@ -39,11 +44,21 @@ describe("createApp", () => {
     emailService = createEmailServiceMock();
   });
 
+  function createDeps() {
+    return createRuntimeDependencies({
+      leadStore,
+      stripeService,
+      emailService,
+      port: 3000,
+    });
+  }
+
   it("returns ok from /api/health", async () => {
-    const app = createApp();
-    const response = await request(app).get("/api/health");
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: "ok" });
+    const response = await handleHealthRequest();
+    expect(response).toEqual({
+      status: 200,
+      json: { status: "ok" },
+    });
   });
 
   it("upserts a lead and returns normalized status", async () => {
@@ -53,18 +68,20 @@ describe("createApp", () => {
       priorityAccess: false,
     });
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/waitlist")
-      .send({ email: "founder@example.com", blocker: "Stripe checkout keeps failing" });
+    const response = await handleWaitlistRequest(
+      { email: "founder@example.com", blocker: "Stripe checkout keeps failing" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      success: true,
-      email: "founder@example.com",
-      paid: false,
-      priorityAccess: false,
-      message: "Lead captured",
+    expect(response).toEqual({
+      status: 200,
+      json: {
+        success: true,
+        email: "founder@example.com",
+        paid: false,
+        priorityAccess: false,
+        message: "Lead captured",
+      },
     });
   });
 
@@ -75,14 +92,21 @@ describe("createApp", () => {
       priorityAccess: true,
     });
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/waitlist")
-      .send({ email: "founder@example.com", blocker: "Need better launch support" });
+    const response = await handleWaitlistRequest(
+      { email: "founder@example.com", blocker: "Need better launch support" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(200);
-    expect(response.body.paid).toBe(true);
-    expect(response.body.priorityAccess).toBe(true);
+    expect(response).toEqual({
+      status: 200,
+      json: {
+        success: true,
+        email: "founder@example.com",
+        paid: true,
+        priorityAccess: true,
+        message: "Lead captured",
+      },
+    });
     expect(leadStore.upsertLead).toHaveBeenCalledWith({
       email: "founder@example.com",
       blocker: "Need better launch support",
@@ -90,47 +114,55 @@ describe("createApp", () => {
   });
 
   it("returns 400 for invalid email", async () => {
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/waitlist")
-      .send({ email: "not-an-email", blocker: "Stripe webhook issue" });
+    const response = await handleWaitlistRequest(
+      { email: "not-an-email", blocker: "Stripe webhook issue" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: "Please enter a valid email address." });
+    expect(response).toEqual({
+      status: 400,
+      json: { error: "Please enter a valid email address." },
+    });
   });
 
   it("returns 400 for invalid blocker payload", async () => {
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/waitlist")
-      .send({ email: "founder@example.com", blocker: "short" });
+    const response = await handleWaitlistRequest(
+      { email: "founder@example.com", blocker: "short" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: "Please provide a bit more detail (min 10 characters)." });
+    expect(response).toEqual({
+      status: 400,
+      json: { error: "Please provide a bit more detail (min 10 characters)." },
+    });
   });
 
   it("returns 500 when the lead store write fails", async () => {
     vi.mocked(leadStore.upsertLead).mockRejectedValue(new Error("supabase offline"));
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/waitlist")
-      .send({ email: "founder@example.com", blocker: "Stripe checkout keeps failing" });
+    const response = await handleWaitlistRequest(
+      { email: "founder@example.com", blocker: "Stripe checkout keeps failing" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: "Failed to save your request. Please try again." });
+    expect(response).toEqual({
+      status: 500,
+      json: { error: "Failed to save your request. Please try again." },
+    });
   });
 
   it("rejects checkout when no lead exists", async () => {
     vi.mocked(leadStore.getLeadByEmail).mockResolvedValue(null);
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/create-checkout-session")
-      .send({ email: "founder@example.com" });
+    const response = await handleCreateCheckoutSessionRequest(
+      { email: "founder@example.com" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: "Please submit your request before checkout." });
+    expect(response).toEqual({
+      status: 400,
+      json: { error: "Please submit your request before checkout." },
+    });
   });
 
   it("creates checkout for an existing unpaid lead and stores the session id", async () => {
@@ -144,14 +176,16 @@ describe("createApp", () => {
       url: "https://checkout.stripe.test/session/cs_test_123",
     });
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/create-checkout-session")
-      .send({ email: "founder@example.com" });
+    const response = await handleCreateCheckoutSessionRequest(
+      { email: "founder@example.com" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      url: "https://checkout.stripe.test/session/cs_test_123",
+    expect(response).toEqual({
+      status: 200,
+      json: {
+        url: "https://checkout.stripe.test/session/cs_test_123",
+      },
     });
     expect(leadStore.recordCheckoutSession).toHaveBeenCalledWith({
       email: "founder@example.com",
@@ -168,13 +202,15 @@ describe("createApp", () => {
       priorityAccess: true,
     } satisfies StoredLead);
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/create-checkout-session")
-      .send({ email: "founder@example.com" });
+    const response = await handleCreateCheckoutSessionRequest(
+      { email: "founder@example.com" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(409);
-    expect(response.body).toEqual({ error: "Priority access already granted for this email." });
+    expect(response).toEqual({
+      status: 409,
+      json: { error: "Priority access already granted for this email." },
+    });
   });
 
   it("returns 500 when stripe session creation fails", async () => {
@@ -185,13 +221,15 @@ describe("createApp", () => {
     } satisfies StoredLead);
     vi.mocked(stripeService.createCheckoutSession).mockRejectedValue(new Error("stripe offline"));
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/create-checkout-session")
-      .send({ email: "founder@example.com" });
+    const response = await handleCreateCheckoutSessionRequest(
+      { email: "founder@example.com" },
+      createDeps(),
+    );
 
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: "Failed to create checkout session." });
+    expect(response).toEqual({
+      status: 500,
+      json: { error: "Failed to create checkout session." },
+    });
   });
 
   it("marks a matching lead as paid and priority_access true", async () => {
@@ -211,14 +249,16 @@ describe("createApp", () => {
       priorityAccess: false,
     });
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/webhook")
-      .set("stripe-signature", "sig_test")
-      .set("content-type", "application/json")
-      .send(Buffer.from("{}"));
+    const response = await handleWebhookRequest(
+      Buffer.from("{}"),
+      "sig_test",
+      createDeps(),
+    );
 
-    expect(response.status).toBe(200);
+    expect(response).toEqual({
+      status: 200,
+      json: { received: true },
+    });
     expect(leadStore.markLeadPaid).toHaveBeenCalledWith({
       email: "founder@example.com",
       paidAt: expect.any(String),
@@ -246,14 +286,16 @@ describe("createApp", () => {
       priorityAccess: false,
     });
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/webhook")
-      .set("stripe-signature", "sig_test")
-      .set("content-type", "application/json")
-      .send(Buffer.from("{}"));
+    const response = await handleWebhookRequest(
+      Buffer.from("{}"),
+      "sig_test",
+      createDeps(),
+    );
 
-    expect(response.status).toBe(200);
+    expect(response).toEqual({
+      status: 200,
+      json: { received: true },
+    });
     expect(leadStore.markLeadPaid).toHaveBeenCalledTimes(1);
   });
 
@@ -262,14 +304,16 @@ describe("createApp", () => {
       throw new Error("invalid signature");
     });
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/webhook")
-      .set("stripe-signature", "bad_sig")
-      .set("content-type", "application/json")
-      .send(Buffer.from("{}"));
+    const response = await handleWebhookRequest(
+      Buffer.from("{}"),
+      "bad_sig",
+      createDeps(),
+    );
 
-    expect(response.status).toBe(400);
+    expect(response).toEqual({
+      status: 400,
+      text: "Webhook Error",
+    });
   });
 
   it("logs unmatched webhook events without mutating state", async () => {
@@ -286,14 +330,16 @@ describe("createApp", () => {
     } satisfies StripeEvent);
     vi.mocked(leadStore.findLeadForWebhook).mockResolvedValue(null);
 
-    const app = createApp({ leadStore, stripeService, emailService });
-    const response = await request(app)
-      .post("/api/webhook")
-      .set("stripe-signature", "sig_test")
-      .set("content-type", "application/json")
-      .send(Buffer.from("{}"));
+    const response = await handleWebhookRequest(
+      Buffer.from("{}"),
+      "sig_test",
+      createDeps(),
+    );
 
-    expect(response.status).toBe(200);
+    expect(response).toEqual({
+      status: 200,
+      json: { received: true },
+    });
     expect(leadStore.markLeadPaid).not.toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalled();
     logSpy.mockRestore();

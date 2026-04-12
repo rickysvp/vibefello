@@ -1,0 +1,11 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0F172A"/>
+  <circle cx="193" cy="133" r="180" fill="#22C55E" fill-opacity="0.22"/>
+  <circle cx="1013" cy="507" r="210" fill="#F59E0B" fill-opacity="0.18"/>
+  <rect x="78" y="82" width="1044" height="466" rx="32" fill="#111827" stroke="#E5E7EB" stroke-opacity="0.1"/>
+  <text x="118" y="180" fill="#86EFAC" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">VibeFello</text>
+  <text x="118" y="278" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="800">Stop Vibing,</text>
+  <text x="118" y="360" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="800">Start Shipping</text>
+  <text x="118" y="434" fill="#D1D5DB" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="500">Priority launch support for founders shipping AI-built products.</text>
+  <text x="118" y="500" fill="#86EFAC" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">www.vibefello.com</text>
+</svg>

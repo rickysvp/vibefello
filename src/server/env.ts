@@ -8,7 +8,7 @@ export function isProduction() {
 
 export function getSupabaseConfig() {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
     return null;
@@ -19,6 +19,10 @@ export function getSupabaseConfig() {
 
 export function getResendApiKey() {
   return process.env.RESEND_API_KEY || null;
+}
+
+export function getResendFromEmail() {
+  return process.env.RESEND_FROM_EMAIL || "VibeFello <feedback@vibefello.com>";
 }
 
 export function getStripeWebhookSecret() {

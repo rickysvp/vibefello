@@ -219,7 +219,9 @@ const translations = {
       ]
     },
     footer: {
-      copy: "© 2026 VIBEFELLO. BUILT FOR THE VIBE CODING ERA."
+      copy: "© 2026 VIBEFELLO. BUILT FOR THE VIBE CODING ERA.",
+      privacy: "Privacy",
+      terms: "Terms"
     },
     conversion: {
       title: "Waitlist Confirmed!",
@@ -454,7 +456,9 @@ const translations = {
       ]
     },
     footer: {
-      copy: "© 2026 VIBEFELLO. 为 VIBE CODING 时代而生。"
+      copy: "© 2026 VIBEFELLO. 为 VIBE CODING 时代而生。",
+      privacy: "隐私政策",
+      terms: "服务条款"
     },
     conversion: {
       title: "候补申请已确认！",
@@ -2085,13 +2089,27 @@ export default function App() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                  <a 
+                    href="/privacy.html"
+                    className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors"
+                  >
+                    {t.footer.privacy}
+                  </a>
+                  <a 
+                    href="/terms.html"
+                    className="text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground transition-colors"
+                  >
+                    {t.footer.terms}
+                  </a>
                   {[
-                    { icon: Twitter, href: "#" },
-                    { icon: Github, href: "#" }
+                    { icon: Twitter, href: "https://x.com/vibefello" },
+                    { icon: Github, href: "https://github.com/rickysvp/vibefello" }
                   ].map((social, i) => ( social.icon && (
                     <a 
                       key={i}
                       href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
                       className="w-10 h-10 bg-white border border-foreground/10 rounded-full flex items-center justify-center shadow-sm hover:bg-accent hover:border-foreground transition-all"
                     >
                       <social.icon className="w-4 h-4 text-foreground" strokeWidth={2.5} />
@@ -2103,112 +2121,64 @@ export default function App() {
           </>
         )}
       </main>
-      {/* Developer Tools Drawer */}
-      <div className="fixed bottom-4 right-4 z-[9999]">
-        <motion.div 
-          initial={false}
-          animate={{ width: emailStatus ? 'auto' : 'auto' }}
-          className="bg-white border-2 border-foreground rounded-2xl shadow-pop p-4 flex flex-col gap-3 min-w-[200px]"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Developer Panel</div>
-            <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-          </div>
-          
-          <div className="grid grid-cols-1 gap-2">
-            <button 
-              onClick={() => {
-                setPaymentStatus('success');
-                setShowConversion(true);
-                setSubmittedEmail(heroEmail || 'rickysvp@gmail.com');
-                fetch('/api/member-count')
-                  .then(res => res.json())
-                  .then(data => setMemberCount(data.count))
-                  .catch(() => setMemberCount(42));
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="px-3 py-2 bg-muted border border-foreground/10 rounded-lg text-[10px] font-black uppercase tracking-tighter text-foreground/60 hover:text-accent hover:border-accent transition-all text-left flex items-center justify-between"
-            >
-              Test Success Page
-              <ArrowRight className="w-3 h-3" />
-            </button>
+      {import.meta.env.DEV && (
+        <div className="fixed bottom-4 right-4 z-[9999]">
+          <motion.div 
+            initial={false}
+            animate={{ width: emailStatus ? 'auto' : 'auto' }}
+            className="bg-white border-2 border-foreground rounded-2xl shadow-pop p-4 flex flex-col gap-3 min-w-[200px]"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Developer Panel</div>
+              <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+            </div>
             
-            <div className="flex gap-2">
+            <div className="grid grid-cols-1 gap-2">
               <button 
-                disabled={emailStatus?.type === 'loading'}
-                onClick={async () => {
-                  const email = heroEmail || "rickysvp@gmail.com";
-                  setEmailStatus({ type: 'loading', message: 'Sending...' });
-                  try {
-                    const res = await fetch('/api/test-email', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email, type: 'waitlist' })
-                    });
-                    const data = await res.json();
-                    if (res.ok) setEmailStatus({ type: 'success', message: 'Waitlist Sent' });
-                    else setEmailStatus({ type: 'error', message: data.error || 'Failed' });
-                  } catch (e) {
-                    setEmailStatus({ type: 'error', message: 'Network error' });
-                  }
-                  setTimeout(() => setEmailStatus(null), 3000);
+                onClick={() => {
+                  setPaymentStatus('success');
+                  setShowConversion(true);
+                  setSubmittedEmail(heroEmail || 'rickysvp@gmail.com');
+                  fetch('/api/member-count')
+                    .then(res => res.json())
+                    .then(data => setMemberCount(data.count))
+                    .catch(() => setMemberCount(42));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="flex-1 px-3 py-2 bg-blue-500/10 text-blue-600 text-[10px] font-black uppercase tracking-tighter rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition-all disabled:opacity-50"
+                className="px-3 py-2 bg-muted border border-foreground/10 rounded-lg text-[10px] font-black uppercase tracking-tighter text-foreground/60 hover:text-accent hover:border-accent transition-all text-left flex items-center justify-between"
               >
-                Waitlist Email
+                Test Success Page
+                <ArrowRight className="w-3 h-3" />
               </button>
+
               <button 
-                disabled={emailStatus?.type === 'loading'}
-                onClick={async () => {
-                  const email = heroEmail || "rickysvp@gmail.com";
-                  setEmailStatus({ type: 'loading', message: 'Sending...' });
-                  try {
-                    const res = await fetch('/api/test-email', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ email, type: 'success' })
-                    });
-                    const data = await res.json();
-                    if (res.ok) setEmailStatus({ type: 'success', message: 'Success Sent' });
-                    else setEmailStatus({ type: 'error', message: data.error || 'Failed' });
-                  } catch (e) {
-                    setEmailStatus({ type: 'error', message: 'Network error' });
-                  }
+                onClick={() => {
+                  const webhookUrl = `${window.location.origin}/api/webhook`;
+                  navigator.clipboard.writeText(webhookUrl);
+                  setEmailStatus({ type: 'success', message: 'URL Copied!' });
                   setTimeout(() => setEmailStatus(null), 3000);
                 }}
-                className="flex-1 px-3 py-2 bg-purple-500/10 text-purple-600 text-[10px] font-black uppercase tracking-tighter rounded-lg border border-purple-500/20 hover:bg-purple-500/20 transition-all disabled:opacity-50"
+                className="px-3 py-2 bg-muted border border-foreground/10 rounded-lg text-[10px] font-black uppercase tracking-tighter text-foreground/60 hover:text-accent hover:border-accent transition-all text-left"
               >
-                Success Email
+                Copy Webhook URL
               </button>
             </div>
 
-            <button 
-              onClick={() => {
-                const webhookUrl = `${window.location.origin}/api/webhook`;
-                navigator.clipboard.writeText(webhookUrl);
-                setEmailStatus({ type: 'success', message: 'URL Copied!' });
-                setTimeout(() => setEmailStatus(null), 3000);
-              }}
-              className="px-3 py-2 bg-muted border border-foreground/10 rounded-lg text-[10px] font-black uppercase tracking-tighter text-foreground/60 hover:text-accent hover:border-accent transition-all text-left"
-            >
-              Copy Webhook URL
-            </button>
-          </div>
-
-          {emailStatus && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className={`text-[10px] font-bold uppercase tracking-widest pt-2 border-t border-foreground/5 ${
-                emailStatus.type === 'success' ? 'text-emerald' : 
-                emailStatus.type === 'error' ? 'text-destructive' : 'text-foreground/40'
-              }`}
-            >
-              {emailStatus.message}
-            </motion.div>
-          )}
-        </motion.div>
-      </div>
+            {emailStatus && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className={`text-[10px] font-bold uppercase tracking-widest pt-2 border-t border-foreground/5 ${
+                  emailStatus.type === 'success' ? 'text-emerald' : 
+                  emailStatus.type === 'error' ? 'text-destructive' : 'text-foreground/40'
+                }`}
+              >
+                {emailStatus.message}
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

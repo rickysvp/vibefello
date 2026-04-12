@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { getResendApiKey } from "./env";
+import { getResendApiKey, getResendFromEmail } from "./env";
 
 export type EmailService = {
   sendPriorityAccessEmail: (email: string) => Promise<void>;
@@ -34,7 +34,7 @@ export function createEmailService(): EmailService {
 
       const resend = new Resend(apiKey);
       await resend.emails.send({
-        from: "VibeFello <feedback@vibefello.com>",
+        from: getResendFromEmail(),
         to: email,
         subject: "Your VibeFello priority access is confirmed",
         html: buildPriorityAccessEmailHtml(email),

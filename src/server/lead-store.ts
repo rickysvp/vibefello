@@ -44,7 +44,7 @@ export function createLeadStore(): LeadStore {
   return {
     async upsertLead(input) {
       if (!config) {
-        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+        throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
 
       const supabase = createClient(config.url, config.key);
@@ -89,7 +89,7 @@ export function createLeadStore(): LeadStore {
     },
     async getLeadByEmail(email) {
       if (!config) {
-        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+        throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
 
       const supabase = createClient(config.url, config.key);
@@ -115,7 +115,7 @@ export function createLeadStore(): LeadStore {
     },
     async recordCheckoutSession(input) {
       if (!config) {
-        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+        throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
 
       const supabase = createClient(config.url, config.key);
@@ -138,7 +138,7 @@ export function createLeadStore(): LeadStore {
     },
     async findLeadForWebhook(input) {
       if (!config) {
-        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+        throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
 
       const supabase = createClient(config.url, config.key);
@@ -174,7 +174,7 @@ export function createLeadStore(): LeadStore {
     },
     async markLeadPaid(input) {
       if (!config) {
-        throw new Error("SUPABASE_URL and SUPABASE_ANON_KEY are required");
+        throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
 
       const supabase = createClient(config.url, config.key);
