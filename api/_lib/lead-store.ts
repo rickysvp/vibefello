@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { getSupabaseConfig } from "./env";
+import { ensureWaitlistSchema, getPostgresPool } from "./postgres";
 
 export type LeadState = {
   email: string;
@@ -40,9 +41,36 @@ type WaitlistRow = {
 
 export function createLeadStore(): LeadStore {
   const config = getSupabaseConfig();
+  const pool = getPostgresPool();
 
   return {
     async upsertLead(input) {
+      if (pool) {
+        await ensureWaitlistSchema(pool);
+        const result = await pool.query<{
+          email: string;
+          paid: boolean | null;
+          priority_access: boolean | null;
+        }>(
+          `
+            insert into public.waitlist (email, blocker, created_at, updated_at)
+            values ($1, $2, now(), now())
+            on conflict (email) do update
+              set blocker = coalesce(excluded.blocker, public.waitlist.blocker),
+                  updated_at = excluded.updated_at
+            returning email, paid, priority_access
+          `,
+          [input.email, input.blocker?.trim() || null],
+        );
+
+        const row = result.rows[0];
+        return {
+          email: row.email,
+          paid: Boolean(row.paid),
+          priorityAccess: Boolean(row.priority_access),
+        };
+      }
+
       if (!config) {
         throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
@@ -88,6 +116,34 @@ export function createLeadStore(): LeadStore {
       };
     },
     async getLeadByEmail(email) {
+      if (pool) {
+        await ensureWaitlistSchema(pool);
+        const result = await pool.query<{
+          email: string;
+          paid: boolean | null;
+          priority_access: boolean | null;
+        }>(
+          `
+            select email, paid, priority_access
+            from public.waitlist
+            where email = $1
+            limit 1
+          `,
+          [email],
+        );
+
+        const row = result.rows[0];
+        if (!row?.email) {
+          return null;
+        }
+
+        return {
+          email: row.email,
+          paid: Boolean(row.paid),
+          priorityAccess: Boolean(row.priority_access),
+        };
+      }
+
       if (!config) {
         throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
@@ -114,6 +170,34 @@ export function createLeadStore(): LeadStore {
       };
     },
     async recordCheckoutSession(input) {
+      if (pool) {
+        await ensureWaitlistSchema(pool);
+        await pool.query(
+          `
+            insert into public.waitlist (
+              email,
+              checkout_started_at,
+              checkout_session_id,
+              checkout_status,
+              updated_at
+            )
+            values ($1, $2, $3, $4, $2)
+            on conflict (email) do update
+              set checkout_started_at = excluded.checkout_started_at,
+                  checkout_session_id = excluded.checkout_session_id,
+                  checkout_status = excluded.checkout_status,
+                  updated_at = excluded.updated_at
+          `,
+          [
+            input.email,
+            input.checkoutStartedAt,
+            input.checkoutSessionId,
+            input.checkoutStatus,
+          ],
+        );
+        return;
+      }
+
       if (!config) {
         throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
@@ -137,6 +221,51 @@ export function createLeadStore(): LeadStore {
       }
     },
     async findLeadForWebhook(input) {
+      if (pool) {
+        await ensureWaitlistSchema(pool);
+        const sessionMatch = await pool.query<{
+          email: string;
+          paid: boolean | null;
+          priority_access: boolean | null;
+        }>(
+          `
+            select email, paid, priority_access
+            from public.waitlist
+            where checkout_session_id = $1
+            limit 1
+          `,
+          [input.checkoutSessionId],
+        );
+
+        const row = sessionMatch.rows[0]?.email
+          ? sessionMatch.rows[0]
+          : (
+              await pool.query<{
+                email: string;
+                paid: boolean | null;
+                priority_access: boolean | null;
+              }>(
+                `
+                  select email, paid, priority_access
+                  from public.waitlist
+                  where email = $1
+                  limit 1
+                `,
+                [input.email],
+              )
+            ).rows[0];
+
+        if (!row?.email) {
+          return null;
+        }
+
+        return {
+          email: row.email,
+          paid: Boolean(row.paid),
+          priorityAccess: Boolean(row.priority_access),
+        };
+      }
+
       if (!config) {
         throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }
@@ -173,6 +302,41 @@ export function createLeadStore(): LeadStore {
       };
     },
     async markLeadPaid(input) {
+      if (pool) {
+        await ensureWaitlistSchema(pool);
+        await pool.query(
+          `
+            insert into public.waitlist (
+              email,
+              paid,
+              paid_at,
+              priority_access,
+              priority_source,
+              checkout_status,
+              checkout_session_id,
+              updated_at
+            )
+            values ($1, true, $2, true, $3, $4, $5, $2)
+            on conflict (email) do update
+              set paid = true,
+                  paid_at = excluded.paid_at,
+                  priority_access = true,
+                  priority_source = excluded.priority_source,
+                  checkout_status = excluded.checkout_status,
+                  checkout_session_id = excluded.checkout_session_id,
+                  updated_at = excluded.updated_at
+          `,
+          [
+            input.email,
+            input.paidAt,
+            input.prioritySource,
+            input.checkoutStatus,
+            input.checkoutSessionId,
+          ],
+        );
+        return;
+      }
+
       if (!config) {
         throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
       }

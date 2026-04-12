@@ -1,6 +1,104 @@
+import { Pool } from "pg";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import Stripe from "stripe";
+
+const WAITLIST_BOOTSTRAP_SQL = `
+create table if not exists public.waitlist (
+  email text primary key,
+  blocker text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  checkout_started_at timestamptz,
+  checkout_session_id text,
+  checkout_status text,
+  priority_access boolean not null default false,
+  paid boolean not null default false,
+  paid_at timestamptz,
+  priority_source text,
+  notes text
+);
+
+alter table public.waitlist
+  add column if not exists blocker text,
+  add column if not exists created_at timestamptz not null default now(),
+  add column if not exists updated_at timestamptz not null default now(),
+  add column if not exists checkout_started_at timestamptz,
+  add column if not exists checkout_session_id text,
+  add column if not exists checkout_status text,
+  add column if not exists priority_access boolean not null default false,
+  add column if not exists paid boolean not null default false,
+  add column if not exists paid_at timestamptz,
+  add column if not exists priority_source text,
+  add column if not exists notes text;
+
+create unique index if not exists waitlist_email_key on public.waitlist (email);
+`;
+
+type GlobalDatabaseState = typeof globalThis & {
+  __vibefelloWaitlistPool?: Pool;
+  __vibefelloWaitlistSchemaPromise?: Promise<void>;
+};
+
+function getGlobalState(): GlobalDatabaseState {
+  return globalThis as GlobalDatabaseState;
+}
+
+function getDatabaseConnectionString() {
+  const candidates = [
+    process.env.DATABASE_URL,
+    process.env.POSTGRES_URL,
+    process.env.DATABASE_URL_UNPOOLED,
+    process.env.POSTGRES_URL_NON_POOLING,
+    process.env.POSTGRES_URL_NO_SSL,
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function getPostgresPool() {
+  const connectionString = getDatabaseConnectionString();
+
+  if (!connectionString) {
+    return null;
+  }
+
+  const state = getGlobalState();
+
+  if (!state.__vibefelloWaitlistPool) {
+    state.__vibefelloWaitlistPool = new Pool({
+      connectionString,
+      ssl: connectionString.includes("sslmode=disable")
+        ? undefined
+        : { rejectUnauthorized: false },
+      max: 1,
+    });
+  }
+
+  return state.__vibefelloWaitlistPool;
+}
+
+async function ensureWaitlistSchema(pool: Pool) {
+  const state = getGlobalState();
+
+  if (!state.__vibefelloWaitlistSchemaPromise) {
+    state.__vibefelloWaitlistSchemaPromise = pool
+      .query(WAITLIST_BOOTSTRAP_SQL)
+      .then(() => undefined)
+      .catch((error) => {
+        state.__vibefelloWaitlistSchemaPromise = undefined;
+        throw error;
+      });
+  }
+
+  await state.__vibefelloWaitlistSchemaPromise;
+}
 
 export const config = {
   api: {
@@ -58,7 +156,10 @@ function getSupabaseServerConfig() {
 
   for (const candidate of candidates) {
     if (candidate.url && candidate.key) {
-      return candidate;
+      return {
+        url: candidate.url.startsWith("http") ? candidate.url : `https://${candidate.url}`,
+        key: candidate.key,
+      };
     }
   }
 
@@ -76,11 +177,12 @@ export default async function handler(req: any, res: any) {
     return res.status(400).send("Webhook Error: Missing signature");
   }
 
-  const supabase = getSupabaseServerConfig();
+  const pool = getPostgresPool();
+  const supabase = !pool ? getSupabaseServerConfig() : null;
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!supabase || !stripeKey || !webhookSecret) {
+  if ((!pool && !supabase) || !stripeKey || !webhookSecret) {
     return res.status(500).json({ error: "Server configuration is incomplete." });
   }
 
@@ -93,47 +195,105 @@ export default async function handler(req: any, res: any) {
       const email = session.customer_details?.email || session.metadata?.email;
 
       if (email && session.id) {
-        const client = createClient(supabase.url, supabase.key);
-        const { data: sessionMatch, error: sessionError } = await client
-          .from("waitlist")
-          .select("email, paid")
-          .eq("checkout_session_id", session.id)
-          .maybeSingle<{ email: string; paid?: boolean | null }>();
+        let lead: { email: string; paid?: boolean | null } | null = null;
 
-        if (sessionError) {
-          throw sessionError;
+        if (pool) {
+          await ensureWaitlistSchema(pool);
+          const sessionMatch = await pool.query<{ email: string; paid: boolean | null }>(
+            `
+              select email, paid
+              from public.waitlist
+              where checkout_session_id = $1
+              limit 1
+            `,
+            [session.id],
+          );
+
+          lead = sessionMatch.rows[0]?.email
+            ? sessionMatch.rows[0]
+            : (
+                await pool.query<{ email: string; paid: boolean | null }>(
+                  `
+                    select email, paid
+                    from public.waitlist
+                    where email = $1
+                    limit 1
+                  `,
+                  [email],
+                )
+              ).rows[0] ?? null;
+        } else {
+          const client = createClient(supabase!.url, supabase!.key);
+          const sessionMatch = await client
+            .from("waitlist")
+            .select("email, paid")
+            .eq("checkout_session_id", session.id)
+            .maybeSingle<{ email: string; paid?: boolean | null }>();
+
+          if (sessionMatch.error) {
+            throw sessionMatch.error;
+          }
+
+          lead = sessionMatch.data?.email
+            ? sessionMatch.data
+            : (
+                await client
+                  .from("waitlist")
+                  .select("email, paid")
+                  .eq("email", email)
+                  .maybeSingle<{ email: string; paid?: boolean | null }>()
+              ).data;
         }
-
-        const lead = sessionMatch?.email
-          ? sessionMatch
-          : (
-              await client
-                .from("waitlist")
-                .select("email, paid")
-                .eq("email", email)
-                .maybeSingle<{ email: string; paid?: boolean | null }>()
-            ).data;
 
         if (lead?.email && !lead.paid) {
           const paidAt = new Date().toISOString();
-          const { error: upsertError } = await client
-            .from("waitlist")
-            .upsert(
-              {
-                email: lead.email,
-                paid: true,
-                paid_at: paidAt,
-                priority_access: true,
-                priority_source: "stripe_checkout",
-                checkout_status: "completed",
-                checkout_session_id: session.id,
-                updated_at: paidAt,
-              },
-              { onConflict: "email" },
-            );
 
-          if (upsertError) {
-            throw upsertError;
+          if (pool) {
+            await pool.query(
+              `
+                insert into public.waitlist (
+                  email,
+                  paid,
+                  paid_at,
+                  priority_access,
+                  priority_source,
+                  checkout_status,
+                  checkout_session_id,
+                  updated_at
+                )
+                values ($1, true, $2, true, $3, $4, $5, $2)
+                on conflict (email) do update
+                  set paid = true,
+                      paid_at = excluded.paid_at,
+                      priority_access = true,
+                      priority_source = excluded.priority_source,
+                      checkout_status = excluded.checkout_status,
+                      checkout_session_id = excluded.checkout_session_id,
+                      updated_at = excluded.updated_at
+              `,
+              [lead.email, paidAt, "stripe_checkout", "completed", session.id],
+            );
+          } else {
+            const client = createClient(supabase!.url, supabase!.key);
+            const { error: upsertError } = await client
+              .from("waitlist")
+              .upsert(
+                {
+                  email: lead.email,
+                  paid: true,
+                  paid_at: paidAt,
+                  priority_access: true,
+                  priority_source: "stripe_checkout",
+                  checkout_status: "completed",
+                  checkout_session_id: session.id,
+                  updated_at: paidAt,
+                },
+                { onConflict: "email" },
+              );
+
+            if (upsertError) {
+              throw upsertError;
+            }
           }
 
           const resendKey = process.env.RESEND_API_KEY;
