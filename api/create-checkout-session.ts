@@ -20,15 +20,32 @@ async function readJsonBody(req: AsyncIterable<Buffer | string>) {
 }
 
 function getSupabaseServerConfig() {
-  const url = process.env.SUPABASE_URL || process.env.VIBEFELLO_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VIBEFELLO_SUPABASE_SERVICE_ROLE_KEY;
+  const candidates = [
+    {
+      url: process.env.SUPABASE_URL,
+      key: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    },
+    {
+      url: process.env.VITE_SUPABASE_URL,
+      key: process.env.VITE_SUPABASE_ANON_KEY,
+    },
+    {
+      url: process.env.VIBEFELLO_VITE_PUBLIC_SUPABASE_URL,
+      key: process.env.VIBEFELLO_VITE_PUBLIC_SUPABASE_ANON_KEY,
+    },
+    {
+      url: process.env.VIBEFELLO_SUPABASE_URL,
+      key: process.env.VIBEFELLO_SUPABASE_SERVICE_ROLE_KEY,
+    },
+  ];
 
-  if (!url || !key) {
-    return null;
+  for (const candidate of candidates) {
+    if (candidate.url && candidate.key) {
+      return candidate;
+    }
   }
 
-  return { url, key };
+  return null;
 }
 
 export default async function handler(req: any, res: any) {
