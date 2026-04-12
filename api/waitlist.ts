@@ -22,6 +22,18 @@ async function readJsonBody(req: AsyncIterable<Buffer | string>) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
+function getSupabaseServerConfig() {
+  const url = process.env.SUPABASE_URL || process.env.VIBEFELLO_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VIBEFELLO_SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    return null;
+  }
+
+  return { url, key };
+}
+
 export default async function handler(req: any, res: any) {
   const body = req.body ?? (await readJsonBody(req));
   const email = typeof body?.email === "string" ? body.email.trim() : "";
@@ -35,18 +47,17 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: "Please provide a bit more detail (min 10 characters)." });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabase = getSupabaseServerConfig();
 
-  if (!supabaseUrl || !supabaseKey) {
+  if (!supabase) {
     return res.status(500).json({ error: "Server configuration is incomplete." });
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const client = createClient(supabase.url, supabase.key);
     const now = new Date().toISOString();
 
-    const { data: existing, error: selectError } = await supabase
+    const { data: existing, error: selectError } = await client
       .from("waitlist")
       .select("email, paid, priority_access")
       .eq("email", email)
@@ -69,7 +80,7 @@ export default async function handler(req: any, res: any) {
       payload.blocker = blocker.trim();
     }
 
-    const { error: upsertError } = await supabase
+    const { error: upsertError } = await client
       .from("waitlist")
       .upsert(payload, { onConflict: "email" });
 

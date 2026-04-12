@@ -19,6 +19,18 @@ async function readJsonBody(req: AsyncIterable<Buffer | string>) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
+function getSupabaseServerConfig() {
+  const url = process.env.SUPABASE_URL || process.env.VIBEFELLO_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VIBEFELLO_SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    return null;
+  }
+
+  return { url, key };
+}
+
 export default async function handler(req: any, res: any) {
   const body = req.body ?? (await readJsonBody(req));
   const email = typeof body?.email === "string" ? body.email.trim() : "";
@@ -27,19 +39,18 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: "Please enter a valid email address." });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabase = getSupabaseServerConfig();
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const appUrl = process.env.APP_URL || "https://vibefello.com";
 
-  if (!supabaseUrl || !supabaseKey || !stripeKey) {
+  if (!supabase || !stripeKey) {
     return res.status(500).json({ error: "Server configuration is incomplete." });
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const client = createClient(supabase.url, supabase.key);
     const stripe = new Stripe(stripeKey);
-    const { data: lead, error: leadError } = await supabase
+    const { data: lead, error: leadError } = await client
       .from("waitlist")
       .select("email, paid")
       .eq("email", email)
@@ -87,7 +98,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const checkoutStartedAt = new Date().toISOString();
-    const { error: upsertError } = await supabase
+    const { error: upsertError } = await client
       .from("waitlist")
       .upsert(
         {

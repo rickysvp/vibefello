@@ -36,6 +36,18 @@ function buildPriorityAccessEmailHtml(email: string) {
   `;
 }
 
+function getSupabaseServerConfig() {
+  const url = process.env.SUPABASE_URL || process.env.VIBEFELLO_SUPABASE_URL;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VIBEFELLO_SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    return null;
+  }
+
+  return { url, key };
+}
+
 export default async function handler(req: any, res: any) {
   const rawBody = await readRawBody(req);
   const signature =
@@ -47,12 +59,11 @@ export default async function handler(req: any, res: any) {
     return res.status(400).send("Webhook Error: Missing signature");
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabase = getSupabaseServerConfig();
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!supabaseUrl || !supabaseKey || !stripeKey || !webhookSecret) {
+  if (!supabase || !stripeKey || !webhookSecret) {
     return res.status(500).json({ error: "Server configuration is incomplete." });
   }
 
@@ -65,8 +76,8 @@ export default async function handler(req: any, res: any) {
       const email = session.customer_details?.email || session.metadata?.email;
 
       if (email && session.id) {
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        const { data: sessionMatch, error: sessionError } = await supabase
+        const client = createClient(supabase.url, supabase.key);
+        const { data: sessionMatch, error: sessionError } = await client
           .from("waitlist")
           .select("email, paid")
           .eq("checkout_session_id", session.id)
@@ -79,7 +90,7 @@ export default async function handler(req: any, res: any) {
         const lead = sessionMatch?.email
           ? sessionMatch
           : (
-              await supabase
+              await client
                 .from("waitlist")
                 .select("email, paid")
                 .eq("email", email)
@@ -88,7 +99,7 @@ export default async function handler(req: any, res: any) {
 
         if (lead?.email && !lead.paid) {
           const paidAt = new Date().toISOString();
-          const { error: upsertError } = await supabase
+          const { error: upsertError } = await client
             .from("waitlist")
             .upsert(
               {
