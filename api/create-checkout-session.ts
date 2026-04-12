@@ -149,6 +149,10 @@ function getSupabaseServerConfig() {
   return null;
 }
 
+function getStripeFoundingMemberPriceId() {
+  return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || null;
+}
+
 export default async function handler(req: any, res: any) {
   const body = req.body ?? (await readJsonBody(req));
   const email = typeof body?.email === "string" ? body.email.trim() : "";
@@ -205,6 +209,7 @@ export default async function handler(req: any, res: any) {
     }
 
     const stripe = new Stripe(stripeKey);
+    const foundingMemberPriceId = getStripeFoundingMemberPriceId();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       customer_email: email,
@@ -212,19 +217,21 @@ export default async function handler(req: any, res: any) {
         email,
         source: "landing_page",
       },
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "VibeFello Priority Access",
-              description: "Priority access request for manual VibeFello follow-up.",
+      line_items: foundingMemberPriceId
+        ? [{ price: foundingMemberPriceId, quantity: 1 }]
+        : [
+            {
+              price_data: {
+                currency: "usd",
+                product_data: {
+                  name: "VibeFello Priority Access",
+                  description: "Priority access request for manual VibeFello follow-up.",
+                },
+                unit_amount: 99900,
+              },
+              quantity: 1,
             },
-            unit_amount: 99900,
-          },
-          quantity: 1,
-        },
-      ],
+          ],
       mode: "payment",
       success_url: `${appUrl}?payment=success`,
       cancel_url: `${appUrl}?payment=cancel`,

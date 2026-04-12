@@ -1,5 +1,9 @@
 import Stripe from "stripe";
-import { getAppUrl, getStripeWebhookSecret } from "./env";
+import {
+  getAppUrl,
+  getStripeFoundingMemberPriceId,
+  getStripeWebhookSecret,
+} from "./env";
 
 let stripeClient: Stripe | null = null;
 
@@ -42,6 +46,7 @@ export function createStripeService(): StripeService {
     async createCheckoutSession({ email, port }) {
       const stripe = getStripe();
       const appUrl = getAppUrl(port);
+      const foundingMemberPriceId = getStripeFoundingMemberPriceId();
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         customer_email: email,
@@ -49,19 +54,21 @@ export function createStripeService(): StripeService {
           email,
           source: "landing_page",
         },
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: "VibeFello Priority Access",
-                description: "Priority access request for manual VibeFello follow-up.",
+        line_items: foundingMemberPriceId
+          ? [{ price: foundingMemberPriceId, quantity: 1 }]
+          : [
+              {
+                price_data: {
+                  currency: "usd",
+                  product_data: {
+                    name: "VibeFello Priority Access",
+                    description: "Priority access request for manual VibeFello follow-up.",
+                  },
+                  unit_amount: 99900,
+                },
+                quantity: 1,
               },
-              unit_amount: 99900,
-            },
-            quantity: 1,
-          },
-        ],
+            ],
         mode: "payment",
         success_url: `${appUrl}?payment=success`,
         cancel_url: `${appUrl}?payment=cancel`,

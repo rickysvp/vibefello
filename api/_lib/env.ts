@@ -46,3 +46,7 @@ export function getResendFromEmail() {
 export function getStripeWebhookSecret() {
   return process.env.STRIPE_WEBHOOK_SECRET || null;
 }
+
+export function getStripeFoundingMemberPriceId() {
+  return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || null;
+}
