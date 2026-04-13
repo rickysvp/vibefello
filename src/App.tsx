@@ -843,15 +843,15 @@ export default function App() {
             href="/" 
             className="group cursor-pointer"
           >
-            <motion.img 
-              src="/logo.png" 
-              alt="VibeFello" 
+            <motion.div 
               className="h-10 w-auto object-contain"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.05, rotate: 2 }}
               transition={{ duration: 0.3 }}
-            />
+            >
+              <Logo className="h-10 w-auto" />
+            </motion.div>
           </a>
           
           {!showConversion && (
@@ -2061,7 +2061,7 @@ export default function App() {
               <div className="absolute inset-0 bg-accent/5 -z-10" />
               <div className="max-w-2xl mx-auto text-center relative z-10 px-4">
                 <div className="flex items-center justify-center mx-auto mb-6">
-                  <img src="/logo_light.png" alt="VibeFello Logo" className="h-14 w-auto object-contain" />
+                  <Logo className="h-14 w-auto text-white" />
                 </div>
                 <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter text-white">
                   {t.waitlist.title}
@@ -2136,11 +2136,7 @@ export default function App() {
               <div className="absolute inset-0 bg-dot-grid opacity-5 pointer-events-none" />
               <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div className="flex items-center transition-all">
-                  <img 
-                    src="/logo.png" 
-                    alt="VibeFello" 
-                    className="h-6 w-auto object-contain" 
-                  />
+                  <Logo className="h-6 w-auto" />
                 </div>
                 
                 <div className="text-[10px] font-black text-foreground/30 tracking-[0.3em] uppercase text-center md:text-right">
