@@ -153,6 +153,10 @@ function getStripeFoundingMemberPriceId() {
   return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || null;
 }
 
+function getStripeStatementDescriptorSuffix() {
+  return process.env.STRIPE_STATEMENT_DESCRIPTOR_SUFFIX || "VIBEFELLO";
+}
+
 export default async function handler(req: any, res: any) {
   const body = req.body ?? (await readJsonBody(req));
   const email = typeof body?.email === "string" ? body.email.trim() : "";
@@ -210,12 +214,16 @@ export default async function handler(req: any, res: any) {
 
     const stripe = new Stripe(stripeKey);
     const foundingMemberPriceId = getStripeFoundingMemberPriceId();
+    const statementDescriptorSuffix = getStripeStatementDescriptorSuffix();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       customer_email: email,
       metadata: {
         email,
         source: "landing_page",
+      },
+      payment_intent_data: {
+        statement_descriptor_suffix: statementDescriptorSuffix,
       },
       line_items: foundingMemberPriceId
         ? [{ price: foundingMemberPriceId, quantity: 1 }]

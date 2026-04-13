@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import {
   getAppUrl,
   getStripeFoundingMemberPriceId,
+  getStripeStatementDescriptorSuffix,
   getStripeWebhookSecret,
 } from "./env";
 
@@ -47,12 +48,16 @@ export function createStripeService(): StripeService {
       const stripe = getStripe();
       const appUrl = getAppUrl(port);
       const foundingMemberPriceId = getStripeFoundingMemberPriceId();
+      const statementDescriptorSuffix = getStripeStatementDescriptorSuffix();
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         customer_email: email,
         metadata: {
           email,
           source: "landing_page",
+        },
+        payment_intent_data: {
+          statement_descriptor_suffix: statementDescriptorSuffix,
         },
         line_items: foundingMemberPriceId
           ? [{ price: foundingMemberPriceId, quantity: 1 }]

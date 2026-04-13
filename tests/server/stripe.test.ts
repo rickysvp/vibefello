@@ -24,6 +24,7 @@ describe("createStripeService", () => {
     process.env.STRIPE_SECRET_KEY = "sk_test_example";
     process.env.APP_URL = "https://www.vibefello.com";
     delete process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID;
+    delete process.env.STRIPE_STATEMENT_DESCRIPTOR_SUFFIX;
   });
 
   it("uses the configured Stripe price id for founding member checkout", async () => {
@@ -47,6 +48,9 @@ describe("createStripeService", () => {
         mode: "payment",
         success_url: "https://www.vibefello.com?payment=success",
         cancel_url: "https://www.vibefello.com?payment=cancel",
+        payment_intent_data: {
+          statement_descriptor_suffix: "VIBEFELLO",
+        },
         line_items: [{ price: "price_live_hkd_1", quantity: 1 }],
       }),
     );

@@ -50,3 +50,7 @@ export function getStripeWebhookSecret() {
 export function getStripeFoundingMemberPriceId() {
   return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || null;
 }
+
+export function getStripeStatementDescriptorSuffix() {
+  return process.env.STRIPE_STATEMENT_DESCRIPTOR_SUFFIX || "VIBEFELLO";
+}
