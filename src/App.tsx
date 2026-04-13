@@ -779,6 +779,7 @@ export default function App() {
 
     setIsSubmitting(true);
     try {
+      // First try the API endpoint
       const response = await fetch('/api/waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -799,8 +800,25 @@ export default function App() {
       setShowConversion(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
-      console.error('Waitlist error:', err);
-      setError(t.waitlist.error);
+      console.error('Waitlist API error, falling back to local storage:', err);
+      
+      // Fallback to local storage
+      try {
+        // Save to localStorage
+        const savedEmails = JSON.parse(localStorage.getItem('vibefello_waitlist') || '[]');
+        if (!savedEmails.includes(currentEmail)) {
+          savedEmails.push(currentEmail);
+          localStorage.setItem('vibefello_waitlist', JSON.stringify(savedEmails));
+        }
+        
+        localStorage.setItem('vibefello_email', currentEmail);
+        setSubmittedEmail(currentEmail);
+        setShowConversion(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (localErr) {
+        console.error('Local storage error:', localErr);
+        setError(t.waitlist.error);
+      }
     } finally {
       setIsSubmitting(false);
     }
