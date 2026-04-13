@@ -763,7 +763,7 @@ export default function App() {
     setHeroEmailError(null);
 
     const currentEmail = source === 'hero' ? heroEmail : email;
-    const currentBlocker = source === 'hero' ? 'Hero quick signup' : blocker;
+    const currentBlocker = source === 'hero' ? 'Hero quick signup' : (blocker.trim() ? blocker : undefined);
 
     let hasError = false;
 
