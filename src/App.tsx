@@ -291,6 +291,31 @@ const translations = {
         resource4: "Beta Feature Access",
         support: "Priority Support",
         supportDesc: "Direct line to senior companions."
+      },
+      successPage: {
+        paymentConfirmed: "Payment Confirmed",
+        alreadyActive: "Already Active",
+        welcomeTitle: "WELCOME TO GENESIS",
+        activeTitle: "MEMBERSHIP ACTIVE",
+        successDesc: "You've secured your spot in the Genesis Circle. Our team will reach out to you shortly.",
+        activeDesc: "Your founding member account is already active and ready.",
+        confirmationSent: "Confirmation sent to",
+        celebrate: "Celebrate",
+        followUpdates: "Follow Updates",
+        memberId: "Member ID",
+        status: "Status",
+        access: "Access",
+        active: "ACTIVE",
+        lifetime: "LIFETIME",
+        prioritySupport: "Priority Support",
+        earlyAccess: "Early Access",
+        exclusiveUpdates: "Exclusive Updates",
+        checkEmail: "Check Email",
+        waitForContact: "Wait for Contact",
+        getStarted: "Get Started",
+        confirmationSentDesc: "Confirmation sent",
+        teamReachOutDesc: "Team will reach out",
+        beginJourneyDesc: "Begin your journey"
       }
     },
     validation: {
@@ -528,6 +553,31 @@ const translations = {
         resource4: "测试功能优先体验",
         support: "优先技术支持",
         supportDesc: "直连资深陪跑专家。"
+      },
+      successPage: {
+        paymentConfirmed: "支付确认",
+        alreadyActive: "已激活",
+        welcomeTitle: "欢迎加入创始圈",
+        activeTitle: "会员身份已激活",
+        successDesc: "你已成功锁定 Genesis 创始圈席位。我们的团队将很快与你联系。",
+        activeDesc: "你的创始会员账户已经激活并准备就绪。",
+        confirmationSent: "确认邮件已发送至",
+        celebrate: "庆祝",
+        followUpdates: "关注动态",
+        memberId: "会员 ID",
+        status: "状态",
+        access: "访问权限",
+        active: "已激活",
+        lifetime: "终身",
+        prioritySupport: "优先支持",
+        earlyAccess: "早期访问",
+        exclusiveUpdates: "独家更新",
+        checkEmail: "查收邮件",
+        waitForContact: "等待联系",
+        getStarted: "开始使用",
+        confirmationSentDesc: "已发送确认邮件",
+        teamReachOutDesc: "团队将联系你",
+        beginJourneyDesc: "开始你的旅程"
       }
     },
     validation: {
@@ -815,257 +865,242 @@ export default function App() {
 
       <main className="relative z-10">
         {showConversion ? (
-          <div className="min-h-screen flex items-center justify-center p-4 md:p-8 pt-6 md:pt-12 overflow-x-hidden">
+          <div className="min-h-screen flex items-center justify-center p-4 md:p-8 pt-20 md:pt-24 overflow-x-hidden">
             <div className="max-w-5xl mx-auto w-full relative pb-20">
               {/* Background Accents */}
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-accent/10 rounded-full blur-[100px] -z-10" />
               <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px] -z-10" />
 
               {hasConfirmedMembership ? (
-                <div className="w-full max-w-6xl mx-auto">
+                <div className="w-full max-w-5xl mx-auto">
                   <motion.div 
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="relative"
                   >
-                    {/* Background Effects */}
-                    <div className="absolute -top-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-[120px] -z-10" />
-                    <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-tertiary/20 rounded-full blur-[120px] -z-10" />
+                    {/* Background Effects - Matching Hero Style */}
+                    <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-accent/30 rounded-full blur-[150px] -z-10" />
+                    <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-secondary/30 rounded-full blur-[120px] -z-10" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-tertiary/20 rounded-full blur-[100px] -z-10" />
                     
-                    {/* The "Ceremony" Card - Enhanced with more effects */}
-                    <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-pop-lg relative overflow-hidden border-2 border-foreground/10">
-                      {/* Gradient Top Border */}
-                      <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-accent via-emerald to-tertiary" />
+                    {/* Main Success Card - Dark Theme Matching Hero */}
+                    <div className="bg-foreground rounded-[2.5rem] p-8 md:p-12 shadow-pop-lg relative overflow-hidden">
+                      {/* Top Gradient Line */}
+                      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-accent via-emerald to-tertiary" />
                       
-                      {/* Animated Background Dots */}
+                      {/* Animated Particles */}
                       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                        {[...Array(20)].map((_, i) => (
+                        {[...Array(15)].map((_, i) => (
                           <motion.div
                             key={i}
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{
-                              opacity: [0, 0.3, 0],
+                              opacity: [0, 0.6, 0],
                               scale: [0, 1, 0],
-                              x: [0, Math.random() * 100 - 50],
-                              y: [0, Math.random() * 100 - 50]
+                              x: [0, (Math.random() - 0.5) * 200],
+                              y: [0, (Math.random() - 0.5) * 200]
                             }}
                             transition={{
-                              duration: 3 + Math.random() * 2,
+                              duration: 4 + Math.random() * 2,
                               repeat: Infinity,
-                              delay: i * 0.2
+                              delay: i * 0.3
                             }}
-                            className="absolute left-1/2 top-1/2 w-1 h-1 bg-accent rounded-full"
+                            className="absolute left-1/2 top-1/2 w-1.5 h-1.5 bg-accent rounded-full"
                           />
                         ))}
                       </div>
                       
-                      <div className="flex flex-col lg:flex-row gap-12 items-center">
-                        <div className="flex-1 text-center lg:text-left">
-                          {/* Celebration Icon */}
-                          <motion.div 
-                            initial={{ scale: 0, rotate: -20 }}
-                            animate={{ scale: 1, rotate: 6 }}
-                            transition={{ type: 'spring', damping: 12 }}
-                            className="w-24 h-24 bg-gradient-to-br from-accent to-emerald border-4 border-foreground rounded-[2.5rem] flex items-center justify-center mb-8 shadow-pop mx-auto lg:mx-0"
-                          >
-                            <Sparkles className="w-12 h-12 text-black" strokeWidth={3} />
-                          </motion.div>
-
-                          {/* Title with Animation */}
+                      {/* Success Badge */}
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', damping: 12 }}
+                        className="flex justify-center mb-8"
+                      >
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/20 border border-accent/30 rounded-full">
+                          <CheckCircle2 className="w-5 h-5 text-accent" />
+                          <span className="text-sm font-black text-accent uppercase tracking-wider">
+                            {paymentStatus === 'success' ? t.conversion.successPage.paymentConfirmed : t.conversion.successPage.alreadyActive}
+                          </span>
+                        </div>
+                      </motion.div>
+                      
+                      {/* Main Content Grid */}
+                      <div className="grid lg:grid-cols-2 gap-10 items-center">
+                        {/* Left: Text Content */}
+                        <div className="text-center lg:text-left">
                           <motion.h1 
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="font-display text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9]"
+                            className="font-display text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter mb-6 leading-[0.95] text-white"
                           >
                             {paymentStatus === 'success'
-                              ? "FOUNDING MEMBER CONFIRMED"
-                              : "FOUNDING MEMBER ACTIVE"}
+                              ? t.conversion.successPage.welcomeTitle
+                              : t.conversion.successPage.activeTitle}
                           </motion.h1>
                           
-                          {/* Description */}
                           <motion.p 
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="text-lg text-foreground/60 font-bold mb-6 max-w-xl mx-auto lg:mx-0"
+                            className="text-lg text-white/60 font-medium mb-8 max-w-md mx-auto lg:mx-0"
                           >
                             {paymentStatus === 'success'
-                              ? "Your payment is confirmed and your email is now marked for founding member follow-up by the VibeFello team."
-                              : "Payment for this email was already confirmed, and this founding member account is already active."}
+                              ? t.conversion.successPage.successDesc
+                              : t.conversion.successPage.activeDesc}
                           </motion.p>
                           
-                          {/* Email Reminder with Animation */}
-                          <motion.p 
+                          {/* Email Info Card */}
+                          <motion.div 
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="text-lg text-accent font-bold mb-10 max-w-xl mx-auto lg:mx-0 flex items-center justify-center lg:justify-start gap-2"
+                            className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-8"
                           >
-                            <Mail className="w-6 h-6" />
-                            {isReturningPaidMember
-                              ? "Check your paid member email again and follow x.com/vibefello for the latest updates"
-                              : "Please check your email and follow x.com/vibefello for the latest updates"}
-                          </motion.p>
-
-                          {/* Celebration Button */}
+                            <div className="flex items-center gap-3 text-white/80">
+                              <Mail className="w-5 h-5 text-accent shrink-0" />
+                              <div className="text-left">
+                                <div className="text-xs font-black uppercase tracking-wider text-white/40 mb-1">{t.conversion.successPage.confirmationSent}</div>
+                                <div className="font-mono text-sm">{submittedEmail}</div>
+                              </div>
+                            </div>
+                          </motion.div>
+                          
+                          {/* Action Buttons */}
                           <motion.div 
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
-                            className="flex justify-center lg:justify-start"
+                            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                           >
                             <button 
                               onClick={() => {
                                 confetti({
-                                  particleCount: 200,
-                                  spread: 80,
+                                  particleCount: 150,
+                                  spread: 70,
                                   origin: { y: 0.6 },
-                                  colors: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1A1A1A', '#FFD700']
+                                  colors: ['#FFD700', '#000000', '#FFFFFF', '#FF6321']
                                 });
                               }}
-                              className="w-14 h-14 border-2 border-foreground rounded-full flex items-center justify-center hover:bg-accent transition-all shadow-pop hover:scale-110 active:scale-95"
-                              title="Celebrate Again!"
+                              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-black font-black text-sm uppercase tracking-wider rounded-full hover:bg-accent/90 transition-all shadow-pop"
                             >
-                              <Sparkles className="w-6 h-6" />
+                              <Sparkles className="w-4 h-4" />
+                              {t.conversion.successPage.celebrate}
                             </button>
+                            <a 
+                              href="https://x.com/vibefello"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white font-black text-sm uppercase tracking-wider rounded-full hover:bg-white/20 transition-all border border-white/20"
+                            >
+                              <Twitter className="w-4 h-4" />
+                              {t.conversion.successPage.followUpdates}
+                            </a>
                           </motion.div>
                         </div>
 
-                        {/* Membership "Certificate" Card - Enhanced Design */}
+                        {/* Right: Membership Card */}
                         <motion.div 
-                          initial={{ x: 50, opacity: 0 }}
+                          initial={{ x: 30, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.3, type: 'spring', damping: 10 }}
-                          className="w-full max-w-[400px] aspect-[1.6/1] bg-gradient-to-br from-foreground via-gray-900 to-gray-800 text-white rounded-[2.5rem] p-8 shadow-pop-lg relative overflow-hidden border-4 border-accent/50 shrink-0"
+                          transition={{ delay: 0.4, type: 'spring', damping: 15 }}
+                          className="relative"
                         >
-                          {/* Background Glows */}
-                          <div className="absolute top-0 right-0 w-40 h-40 bg-accent/30 rounded-full blur-[60px] -mr-20 -mt-20 animate-pulse" />
-                          <div className="absolute bottom-0 left-0 w-40 h-40 bg-emerald/30 rounded-full blur-[60px] -ml-20 -mb-20 animate-pulse" />
-                          <div className="absolute center-0 w-60 h-60 bg-tertiary/10 rounded-full blur-[80px]" />
+                          {/* Card Glow */}
+                          <div className="absolute -inset-4 bg-accent/20 rounded-[2.5rem] blur-2xl" />
                           
-                          {/* Card Content */}
-                          <div className="relative h-full flex flex-col justify-between">
-                            {/* Header */}
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Membership Tier</div>
-                                <motion.div 
-                                  initial={{ opacity: 0, y: -10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: 0.5 }}
-                                  className="text-2xl md:text-3xl font-black text-accent tracking-tight"
-                                >
-                                  GENESIS CIRCLE
-                                </motion.div>
-                              </div>
-                              <motion.div 
-                                initial={{ scale: 0, rotate: 0 }}
-                                animate={{ scale: 1, rotate: 360 }}
-                                transition={{ delay: 0.6, duration: 1 }}
-                                className="w-14 h-14 border-2 border-white/20 rounded-xl flex items-center justify-center bg-white/5"
-                              >
-                                <Zap className="w-7 h-7 text-accent" />
-                              </motion.div>
-                            </div>
-
-                            {/* Member ID Section */}
-                            <motion.div 
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: 0.7 }}
-                              className="space-y-6"
-                            >
-                              <div className="bg-white/5 rounded-xl p-5 border border-white/10 backdrop-blur-sm">
-                                <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-2">Member ID</div>
-                                <div className="font-mono text-xl font-bold tracking-wider text-accent">
-                                  {memberCount !== null 
-                                    ? `VF-2026-${String(memberCount).padStart(3, '0')}-GEN` 
-                                    : `VF-2026-${(submittedEmail?.length || 0) * 7}-GEN`}
+                          {/* Membership Card */}
+                          <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-[2rem] p-8 shadow-pop-lg border-2 border-white">
+                            {/* Card Header */}
+                            <div className="flex items-center justify-between mb-8">
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 bg-foreground rounded-xl flex items-center justify-center">
+                                  <Zap className="w-6 h-6 text-accent" />
                                 </div>
-                              </div>
-                              
-                              {/* Validity and Status */}
-                              <div className="flex justify-between items-end">
                                 <div>
-                                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Valid Until</div>
-                                  <div className="text-lg font-black uppercase tracking-widest">LIFETIME</div>
+                                  <div className="text-xs font-black text-foreground/40 uppercase tracking-wider">VIBEFELLO</div>
+                                  <div className="text-lg font-black text-foreground">GENESIS</div>
                                 </div>
-                                <motion.div 
-                                  initial={{ opacity: 0, scale: 0.8 }}
-                                  animate={{ opacity: 1, scale: 1 }}
-                                  transition={{ delay: 0.8 }}
-                                  className="text-right"
-                                >
-                                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">Status</div>
-                                  <div className="px-5 py-2 bg-gradient-to-r from-accent to-emerald text-black text-[9px] font-black uppercase rounded-full inline-block shadow-lg shadow-accent/30">ACTIVE</div>
-                                </motion.div>
                               </div>
-                            </motion.div>
+                              <div className="px-3 py-1 bg-accent text-black text-[10px] font-black uppercase tracking-wider rounded-full">
+                                 GENESIS
+                               </div>
+                            </div>
                             
-                            {/* Bottom Branding */}
-                            <motion.div 
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.9 }}
-                              className="mt-6 pt-6 border-t border-white/10"
-                            >
-                              <div className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30 text-center">
-                                VIBEFELLO • GENESIS MEMBERSHIP
+                            {/* Member ID */}
+                            <div className="bg-foreground rounded-xl p-5 mb-6">
+                              <div className="text-[10px] font-black text-white/40 uppercase tracking-wider mb-2">{t.conversion.successPage.memberId}</div>
+                              <div className="font-mono text-2xl font-black text-accent tracking-wider">
+                                {memberCount !== null 
+                                  ? `VF-2026-${String(memberCount).padStart(3, '0')}` 
+                                  : `VF-2026-${String((submittedEmail?.length || 0) * 7).padStart(3, '0')}`}
                               </div>
-                            </motion.div>
+                            </div>
+                            
+                            {/* Details Grid */}
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                              <div className="bg-gray-100 rounded-xl p-4">
+                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-wider mb-1">{t.conversion.successPage.status}</div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-emerald rounded-full animate-pulse" />
+                                  <span className="font-black text-foreground text-sm">{t.conversion.successPage.active}</span>
+                                </div>
+                              </div>
+                              <div className="bg-gray-100 rounded-xl p-4">
+                                <div className="text-[10px] font-black text-foreground/40 uppercase tracking-wider mb-1">{t.conversion.successPage.access}</div>
+                                <span className="font-black text-foreground text-sm">{t.conversion.successPage.lifetime}</span>
+                              </div>
+                            </div>
+                            
+                            {/* Benefits List */}
+                            <div className="space-y-3">
+                              {[
+                                t.conversion.successPage.prioritySupport,
+                                t.conversion.successPage.earlyAccess,
+                                t.conversion.successPage.exclusiveUpdates
+                              ].map((benefit, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                  <div className="w-5 h-5 bg-accent/20 rounded-full flex items-center justify-center">
+                                    <CheckCircle2 className="w-3 h-3 text-accent" />
+                                  </div>
+                                  <span className="text-sm font-bold text-foreground/80">{benefit}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </motion.div>
                       </div>
-
-                      {/* Onboarding Summary - Enhanced Design */}
+                      
+                      {/* Bottom Steps */}
                       <motion.div 
-                        initial={{ opacity: 0, y: 40 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 1 }}
-                        className="mt-16 pt-12 border-t-2 border-foreground/5 grid md:grid-cols-3 gap-8"
+                        transition={{ delay: 0.6 }}
+                        className="mt-12 pt-10 border-t border-white/10"
                       >
-                        <div className="flex gap-4">
-                          <motion.div 
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 1.1 }}
-                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-emerald flex items-center justify-center shrink-0 border-2 border-foreground/10 shadow-pop"
-                          >
-                            <CheckCircle2 className="w-6 h-6 text-black" />
-                          </motion.div>
-                          <div>
-                            <div className="font-black text-xs uppercase tracking-widest mb-1">{t.conversion.successStep1}</div>
-                            <p className="text-[10px] text-foreground/40 font-bold leading-tight">Sent to {submittedEmail}</p>
-                          </div>
-                        </div>
-                        <div className="flex gap-4">
-                          <motion.div 
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 1.2 }}
-                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald to-tertiary flex items-center justify-center shrink-0 border-2 border-foreground/10 shadow-pop"
-                          >
-                            <div className="w-3 h-3 rounded-full bg-black animate-pulse" />
-                          </motion.div>
-                          <div>
-                            <div className="font-black text-xs uppercase tracking-widest mb-1">{t.conversion.successStep2}</div>
-                            <p className="text-[10px] text-foreground/40 font-bold leading-tight">Check your inbox for the link.</p>
-                          </div>
-                        </div>
-                        <div className="flex gap-4">
-                          <motion.div 
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 1.3 }}
-                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-tertiary to-accent flex items-center justify-center shrink-0 border-2 border-foreground/10 shadow-pop"
-                          >
-                            <MessageSquare className="w-6 h-6 text-black" />
-                          </motion.div>
-                          <div>
-                            <div className="font-black text-xs uppercase tracking-widest mb-1">{t.conversion.successStep3}</div>
-                            <p className="text-[10px] text-foreground/40 font-bold leading-tight">Join the private Discord.</p>
-                          </div>
+                        <div className="grid md:grid-cols-3 gap-6">
+                          {[
+                            { icon: Mail, title: t.conversion.successPage.checkEmail, desc: t.conversion.successPage.confirmationSentDesc },
+                            { icon: Clock, title: t.conversion.successPage.waitForContact, desc: t.conversion.successPage.teamReachOutDesc },
+                            { icon: Sparkles, title: t.conversion.successPage.getStarted, desc: t.conversion.successPage.beginJourneyDesc }
+                          ].map((step, i) => (
+                            <motion.div 
+                              key={i}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.7 + i * 0.1 }}
+                              className="flex items-start gap-4"
+                            >
+                              <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center shrink-0">
+                                <step.icon className="w-5 h-5 text-accent" />
+                              </div>
+                              <div>
+                                <div className="font-black text-sm text-white mb-1">{step.title}</div>
+                                <div className="text-xs text-white/40 font-medium">{step.desc}</div>
+                              </div>
+                            </motion.div>
+                          ))}
                         </div>
                       </motion.div>
                     </div>
