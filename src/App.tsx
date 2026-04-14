@@ -850,7 +850,7 @@ export default function App() {
               whileHover={{ scale: 1.05, rotate: 2 }}
               transition={{ duration: 0.3 }}
             >
-              <Logo className="h-10 w-auto" />
+              <img src="/logo.png" alt="VibeFello" className="h-10 w-auto object-contain" />
             </motion.div>
           </a>
           
@@ -1906,6 +1906,91 @@ export default function App() {
               </div>
             </section>
 
+            {/* Testimonials Section */}
+            <section className="py-16 px-6 relative overflow-hidden bg-foreground/5">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                  <h2 className="font-display text-4xl md:text-5xl font-extrabold mb-4 tracking-tighter">
+                    {t.testimonials.title}
+                  </h2>
+                  <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
+                    {t.testimonials.subtitle}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {t.testimonials.items.map((item, idx) => (
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-white p-8 rounded-2xl border-2 border-foreground shadow-pop hover:shadow-pop-lg transition-all duration-300"
+                    >
+                      <div className="mb-6">
+                        <p className="text-foreground/80 font-medium leading-relaxed text-base">
+                          "{item.quote}"
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <img 
+                          src={item.avatar} 
+                          alt={item.name} 
+                          className="w-12 h-12 rounded-full object-cover border-2 border-foreground"
+                        />
+                        <div>
+                          <h4 className="font-bold text-foreground">{item.name}</h4>
+                          <p className="text-foreground/60 text-sm">{item.role}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Case Studies Section */}
+            <section className="py-16 px-6 relative overflow-hidden bg-black">
+              <div className="absolute inset-0 bg-dot-grid opacity-5 -z-10" />
+              <div className="max-w-6xl mx-auto">
+                
+                <motion.div 
+                  className="text-center mb-12"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <h2 className="font-display text-3xl md:text-4xl font-black tracking-tighter text-white mb-4">
+                    Trusted by Founders
+                  </h2>
+                  <p className="text-white/60 text-sm font-medium">
+                    Join 100+ teams shipping with VibeFello
+                  </p>
+                </motion.div>
+
+                <div className="flex flex-wrap gap-4 justify-center items-center py-8">
+                  {Array.from({ length: 24 }, (_, i) => i + 1)
+                    .sort(() => Math.random() - 0.5)
+                    .map((num, idx) => (
+                    <motion.div 
+                      key={num} 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.03, duration: 0.4 }}
+                      whileHover={{ scale: 1.1, rotate: 3 }}
+                      className="flex items-center justify-center h-28 w-28 p-3"
+                    >
+                      <img 
+                        src={`/${num}.png`}
+                        alt={`Partner ${num}`}
+                        className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
             {/* FAQ Section */}
             <section className="py-16 px-6 relative overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
@@ -1965,75 +2050,6 @@ export default function App() {
               </div>
             </section>
 
-            {/* Testimonials Section */}
-            <section className="py-16 px-6 relative overflow-hidden bg-foreground/5">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
-              <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                  <h2 className="font-display text-4xl md:text-5xl font-extrabold mb-4 tracking-tighter">
-                    {t.testimonials.title}
-                  </h2>
-                  <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
-                    {t.testimonials.subtitle}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {t.testimonials.items.map((item, idx) => (
-                    <motion.div 
-                      key={idx} 
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="bg-white p-8 rounded-2xl border-2 border-foreground shadow-pop hover:shadow-pop-lg transition-all duration-300"
-                    >
-                      <div className="mb-6">
-                        <p className="text-foreground/80 font-medium leading-relaxed text-base">
-                          "{item.quote}"
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <img 
-                          src={item.avatar} 
-                          alt={item.name} 
-                          className="w-12 h-12 rounded-full object-cover border-2 border-foreground"
-                        />
-                        <div>
-                          <h4 className="font-bold text-foreground">{item.name}</h4>
-                          <p className="text-foreground/60 text-sm">{item.role}</p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Case Studies Section */}
-            <section className="py-16 px-6 relative overflow-hidden bg-foreground/5">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-dot-grid opacity-10 -z-10" />
-              <div className="max-w-6xl mx-auto">
-
-                <div className="flex flex-wrap gap-4 justify-center items-center py-8">
-                  {t.caseStudies.logos.map((logo, idx) => (
-                    <motion.div 
-                      key={idx} 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.05, duration: 0.5 }}
-                      whileHover={{ scale: 1.1, rotate: 5 }}
-                      className="flex items-center justify-center h-24 min-w-[180px]"
-                    >
-                      <img 
-                        src={logo} 
-                        alt={`Client logo ${idx + 1}`} 
-                        className="h-16 w-auto object-contain grayscale"
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
             {/* Waitlist Section */}
             <section id="waitlist" className="py-16 px-6 relative overflow-hidden bg-foreground text-background">
               {/* Starry background */}
@@ -2061,7 +2077,7 @@ export default function App() {
               <div className="absolute inset-0 bg-accent/5 -z-10" />
               <div className="max-w-2xl mx-auto text-center relative z-10 px-4">
                 <div className="flex items-center justify-center mx-auto mb-6">
-                  <Logo className="h-14 w-auto text-white" />
+                  <img src="/logo.png" alt="VibeFello" className="h-14 w-auto object-contain brightness-0 invert" />
                 </div>
                 <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter text-white">
                   {t.waitlist.title}
@@ -2136,7 +2152,7 @@ export default function App() {
               <div className="absolute inset-0 bg-dot-grid opacity-5 pointer-events-none" />
               <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div className="flex items-center transition-all">
-                  <Logo className="h-6 w-auto" />
+                  <img src="/logo.png" alt="VibeFello" className="h-6 w-auto object-contain" />
                 </div>
                 
                 <div className="text-[10px] font-black text-foreground/30 tracking-[0.3em] uppercase text-center md:text-right">
