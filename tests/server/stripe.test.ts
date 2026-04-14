@@ -46,7 +46,7 @@ describe("createStripeService", () => {
       expect.objectContaining({
         customer_email: "founder@example.com",
         mode: "payment",
-        success_url: "https://www.vibefello.com?payment=success",
+        success_url: "https://www.vibefello.com?payment=success&session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "https://www.vibefello.com?payment=cancel",
         payment_intent_data: {
           statement_descriptor_suffix: "VIBEFELLO",

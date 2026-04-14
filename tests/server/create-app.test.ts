@@ -5,6 +5,7 @@ import {
   createRuntimeDependencies,
   handleCreateCheckoutSessionRequest,
   handleHealthRequest,
+  handleMemberStatusRequest,
   handleWaitlistRequest,
   handleWebhookRequest,
 } from "../../src/server/route-handlers";
@@ -14,6 +15,7 @@ function createLeadStoreMock(): LeadStore {
   return {
     upsertLead: vi.fn(),
     getLeadByEmail: vi.fn(),
+    getLeadByCheckoutSession: vi.fn(),
     recordCheckoutSession: vi.fn(),
     findLeadForWebhook: vi.fn(),
     markLeadPaid: vi.fn(),
@@ -65,6 +67,7 @@ describe("server handlers", () => {
   it("upserts a lead and returns normalized status", async () => {
     vi.mocked(leadStore.upsertLead).mockResolvedValue({
       email: "founder@example.com",
+      memberId: null,
       paid: false,
       priorityAccess: false,
     });
@@ -79,6 +82,7 @@ describe("server handlers", () => {
       json: {
         success: true,
         email: "founder@example.com",
+        memberId: null,
         paid: false,
         priorityAccess: false,
         message: "Lead captured",
@@ -90,6 +94,7 @@ describe("server handlers", () => {
   it("preserves paid and priority flags on repeat submission", async () => {
     vi.mocked(leadStore.upsertLead).mockResolvedValue({
       email: "founder@example.com",
+      memberId: "VF-2026-AB12CD34",
       paid: true,
       priorityAccess: true,
     });
@@ -104,6 +109,7 @@ describe("server handlers", () => {
       json: {
         success: true,
         email: "founder@example.com",
+        memberId: "VF-2026-AB12CD34",
         paid: true,
         priorityAccess: true,
         message: "Lead captured",
@@ -171,6 +177,7 @@ describe("server handlers", () => {
   it("creates checkout for an existing unpaid lead and stores the session id", async () => {
     vi.mocked(leadStore.getLeadByEmail).mockResolvedValue({
       email: "founder@example.com",
+      memberId: null,
       paid: false,
       priorityAccess: false,
     } satisfies StoredLead);
@@ -198,9 +205,35 @@ describe("server handlers", () => {
     });
   });
 
+  it("returns persisted member status for a completed checkout session", async () => {
+    vi.mocked(leadStore.getLeadByCheckoutSession).mockResolvedValue({
+      email: "founder@example.com",
+      memberId: "VF-2026-AB12CD34",
+      paid: true,
+      priorityAccess: true,
+    } satisfies StoredLead);
+
+    const response = await handleMemberStatusRequest(
+      { session_id: "cs_live_member_123" },
+      createDeps(),
+    );
+
+    expect(response).toEqual({
+      status: 200,
+      json: {
+        email: "founder@example.com",
+        memberId: "VF-2026-AB12CD34",
+        paid: true,
+        priorityAccess: true,
+      },
+    });
+    expect(leadStore.getLeadByCheckoutSession).toHaveBeenCalledWith("cs_live_member_123");
+  });
+
   it("does not create a new session for a paid lead", async () => {
     vi.mocked(leadStore.getLeadByEmail).mockResolvedValue({
       email: "founder@example.com",
+      memberId: null,
       paid: true,
       priorityAccess: true,
     } satisfies StoredLead);
@@ -219,6 +252,7 @@ describe("server handlers", () => {
   it("returns 500 when stripe session creation fails", async () => {
     vi.mocked(leadStore.getLeadByEmail).mockResolvedValue({
       email: "founder@example.com",
+      memberId: null,
       paid: false,
       priorityAccess: false,
     } satisfies StoredLead);
@@ -248,6 +282,7 @@ describe("server handlers", () => {
     } satisfies StripeEvent);
     vi.mocked(leadStore.findLeadForWebhook).mockResolvedValue({
       email: "founder@example.com",
+      memberId: null,
       paid: false,
       priorityAccess: false,
     });
@@ -285,6 +320,7 @@ describe("server handlers", () => {
     } satisfies StripeEvent);
     vi.mocked(leadStore.findLeadForWebhook).mockResolvedValue({
       email: "founder@example.com",
+      memberId: null,
       paid: false,
       priorityAccess: false,
     });

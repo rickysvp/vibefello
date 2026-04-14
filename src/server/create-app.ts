@@ -4,6 +4,7 @@ import {
   createRuntimeDependencies,
   handleCreateCheckoutSessionRequest,
   handleHealthRequest,
+  handleMemberStatusRequest,
   handleWaitlistRequest,
   handleWebhookRequest,
   type HandlerResult,
@@ -46,6 +47,11 @@ export function createApp(overrides: RuntimeDependencies = {}) {
 
   app.get("/api/health", (_req, res) => {
     handleHealthRequest().then((result) => sendHandlerResult(res, result));
+  });
+
+  app.get("/api/member-status", async (req, res) => {
+    const result = await handleMemberStatusRequest(req.query, dependencies);
+    return sendHandlerResult(res, result);
   });
 
   app.post("/api/waitlist", async (req, res) => {

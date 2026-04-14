@@ -4,6 +4,7 @@ const WAITLIST_BOOTSTRAP_SQL = `
 create table if not exists public.waitlist (
   email text primary key,
   blocker text,
+  member_id text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   checkout_started_at timestamptz,
@@ -18,6 +19,7 @@ create table if not exists public.waitlist (
 
 alter table public.waitlist
   add column if not exists blocker text,
+  add column if not exists member_id text,
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now(),
   add column if not exists checkout_started_at timestamptz,
@@ -30,6 +32,7 @@ alter table public.waitlist
   add column if not exists notes text;
 
 create unique index if not exists waitlist_email_key on public.waitlist (email);
+create unique index if not exists waitlist_member_id_key on public.waitlist (member_id) where member_id is not null;
 `;
 
 type GlobalPostgresState = typeof globalThis & {

@@ -4,6 +4,7 @@ import { ensureWaitlistSchema, getPostgresPool } from "./postgres";
 
 export type LeadState = {
   email: string;
+  memberId: string | null;
   paid: boolean;
   priorityAccess: boolean;
 };
@@ -17,6 +18,7 @@ export type LeadStore = {
     checkoutStatus: string;
     checkoutStartedAt: string;
   }) => Promise<void>;
+  getLeadByCheckoutSession: (checkoutSessionId: string) => Promise<StoredLead | null>;
   findLeadForWebhook: (input: {
     checkoutSessionId: string;
     email: string;
@@ -35,9 +37,103 @@ export type StoredLead = LeadState;
 type WaitlistRow = {
   email: string;
   blocker?: string | null;
+  member_id?: string | null;
   paid?: boolean | null;
+  paid_at?: string | null;
   priority_access?: boolean | null;
+  checkout_session_id?: string | null;
 };
+
+export function buildMemberId(input: {
+  paidAt: string;
+  checkoutSessionId: string;
+}) {
+  const year = new Date(input.paidAt).getUTCFullYear();
+  const rawSuffix = input.checkoutSessionId
+    .replace(/^cs_(live|test)_/i, "")
+    .replace(/[^a-z0-9]/gi, "")
+    .toUpperCase();
+  const suffix = rawSuffix.slice(-8).padStart(8, "0");
+
+  return `VF-${year}-${suffix}`;
+}
+
+function normalizeLead(row: WaitlistRow): StoredLead {
+  return {
+    email: row.email,
+    memberId: row.member_id ?? null,
+    paid: Boolean(row.paid),
+    priorityAccess: Boolean(row.priority_access),
+  };
+}
+
+async function maybeBackfillMemberId(
+  row: WaitlistRow,
+  options: {
+    pool?: ReturnType<typeof getPostgresPool>;
+    supabase?: any;
+  },
+) {
+  if (
+    !row.email ||
+    row.member_id ||
+    !row.paid ||
+    !row.paid_at ||
+    !row.checkout_session_id
+  ) {
+    return row.member_id ?? null;
+  }
+
+  const memberId = buildMemberId({
+    paidAt: row.paid_at,
+    checkoutSessionId: row.checkout_session_id,
+  });
+
+  if (options.pool) {
+    await options.pool.query(
+      `
+        update public.waitlist
+        set member_id = $2,
+            updated_at = now()
+        where email = $1
+          and member_id is null
+      `,
+      [row.email, memberId],
+    );
+    return memberId;
+  }
+
+  if (options.supabase) {
+    const { error } = await options.supabase
+      .from("waitlist")
+      .update({
+        member_id: memberId,
+        updated_at: new Date().toISOString(),
+      } as never)
+      .eq("email", row.email)
+      .is("member_id", null);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  return memberId;
+}
+
+async function normalizeStoredLead(
+  row: WaitlistRow,
+  options: {
+    pool?: ReturnType<typeof getPostgresPool>;
+    supabase?: any;
+  },
+): Promise<StoredLead> {
+  const memberId = await maybeBackfillMemberId(row, options);
+  return normalizeLead({
+    ...row,
+    member_id: memberId,
+  });
+}
 
 export function createLeadStore(): LeadStore {
   const config = getSupabaseConfig();
@@ -49,8 +145,11 @@ export function createLeadStore(): LeadStore {
         await ensureWaitlistSchema(pool);
         const result = await pool.query<{
           email: string;
+          member_id: string | null;
           paid: boolean | null;
+          paid_at: string | null;
           priority_access: boolean | null;
+          checkout_session_id: string | null;
         }>(
           `
             insert into public.waitlist (email, blocker, created_at, updated_at)
@@ -58,17 +157,12 @@ export function createLeadStore(): LeadStore {
             on conflict (email) do update
               set blocker = coalesce(excluded.blocker, public.waitlist.blocker),
                   updated_at = excluded.updated_at
-            returning email, paid, priority_access
+            returning email, member_id, paid, paid_at, priority_access, checkout_session_id
           `,
           [input.email, input.blocker?.trim() || null],
         );
 
-        const row = result.rows[0];
-        return {
-          email: row.email,
-          paid: Boolean(row.paid),
-          priorityAccess: Boolean(row.priority_access),
-        };
+        return normalizeStoredLead(result.rows[0], { pool });
       }
 
       if (!config) {
@@ -80,7 +174,7 @@ export function createLeadStore(): LeadStore {
 
       const { data: existing, error: selectError } = await supabase
         .from("waitlist")
-        .select("email, paid, priority_access")
+        .select("email, member_id, paid, paid_at, priority_access, checkout_session_id")
         .eq("email", input.email)
         .maybeSingle<WaitlistRow>();
 
@@ -109,22 +203,28 @@ export function createLeadStore(): LeadStore {
         throw upsertError;
       }
 
-      return {
+      return normalizeStoredLead({
         email: input.email,
-        paid: Boolean(existing?.paid),
-        priorityAccess: Boolean(existing?.priority_access),
-      };
+        member_id: existing?.member_id,
+        paid: existing?.paid,
+        paid_at: existing?.paid_at,
+        priority_access: existing?.priority_access,
+        checkout_session_id: existing?.checkout_session_id,
+      }, { supabase });
     },
     async getLeadByEmail(email) {
       if (pool) {
         await ensureWaitlistSchema(pool);
         const result = await pool.query<{
           email: string;
+          member_id: string | null;
           paid: boolean | null;
+          paid_at: string | null;
           priority_access: boolean | null;
+          checkout_session_id: string | null;
         }>(
           `
-            select email, paid, priority_access
+            select email, member_id, paid, paid_at, priority_access, checkout_session_id
             from public.waitlist
             where email = $1
             limit 1
@@ -137,11 +237,7 @@ export function createLeadStore(): LeadStore {
           return null;
         }
 
-        return {
-          email: row.email,
-          paid: Boolean(row.paid),
-          priorityAccess: Boolean(row.priority_access),
-        };
+        return normalizeStoredLead(row, { pool });
       }
 
       if (!config) {
@@ -151,7 +247,7 @@ export function createLeadStore(): LeadStore {
       const supabase = createClient(config.url, config.key);
       const { data, error } = await supabase
         .from("waitlist")
-        .select("email, paid, priority_access")
+        .select("email, member_id, paid, paid_at, priority_access, checkout_session_id")
         .eq("email", email)
         .maybeSingle<WaitlistRow>();
 
@@ -163,11 +259,7 @@ export function createLeadStore(): LeadStore {
         return null;
       }
 
-      return {
-        email: data.email,
-        paid: Boolean(data.paid),
-        priorityAccess: Boolean(data.priority_access),
-      };
+      return normalizeStoredLead(data, { supabase });
     },
     async recordCheckoutSession(input) {
       if (pool) {
@@ -225,11 +317,14 @@ export function createLeadStore(): LeadStore {
         await ensureWaitlistSchema(pool);
         const sessionMatch = await pool.query<{
           email: string;
+          member_id: string | null;
           paid: boolean | null;
+          paid_at: string | null;
           priority_access: boolean | null;
+          checkout_session_id: string | null;
         }>(
           `
-            select email, paid, priority_access
+            select email, member_id, paid, paid_at, priority_access, checkout_session_id
             from public.waitlist
             where checkout_session_id = $1
             limit 1
@@ -242,11 +337,14 @@ export function createLeadStore(): LeadStore {
           : (
               await pool.query<{
                 email: string;
+                member_id: string | null;
                 paid: boolean | null;
+                paid_at: string | null;
                 priority_access: boolean | null;
+                checkout_session_id: string | null;
               }>(
                 `
-                  select email, paid, priority_access
+                  select email, member_id, paid, paid_at, priority_access, checkout_session_id
                   from public.waitlist
                   where email = $1
                   limit 1
@@ -259,11 +357,7 @@ export function createLeadStore(): LeadStore {
           return null;
         }
 
-        return {
-          email: row.email,
-          paid: Boolean(row.paid),
-          priorityAccess: Boolean(row.priority_access),
-        };
+        return normalizeStoredLead(row, { pool });
       }
 
       if (!config) {
@@ -273,7 +367,7 @@ export function createLeadStore(): LeadStore {
       const supabase = createClient(config.url, config.key);
       const { data: sessionMatch, error: sessionError } = await supabase
         .from("waitlist")
-        .select("email, paid, priority_access")
+        .select("email, member_id, paid, paid_at, priority_access, checkout_session_id")
         .eq("checkout_session_id", input.checkoutSessionId)
         .maybeSingle<WaitlistRow>();
 
@@ -284,30 +378,73 @@ export function createLeadStore(): LeadStore {
       const row = sessionMatch?.email
         ? sessionMatch
         : (
-            await supabase
-              .from("waitlist")
-              .select("email, paid, priority_access")
-              .eq("email", input.email)
-              .maybeSingle<WaitlistRow>()
+              await supabase
+                .from("waitlist")
+                .select("email, member_id, paid, paid_at, priority_access, checkout_session_id")
+                .eq("email", input.email)
+                .maybeSingle<WaitlistRow>()
           ).data;
 
       if (!row?.email) {
         return null;
       }
 
-      return {
-        email: row.email,
-        paid: Boolean(row.paid),
-        priorityAccess: Boolean(row.priority_access),
-      };
+      return normalizeStoredLead(row, { supabase });
+    },
+    async getLeadByCheckoutSession(checkoutSessionId) {
+      if (pool) {
+        await ensureWaitlistSchema(pool);
+        const result = await pool.query<{
+          email: string;
+          member_id: string | null;
+          paid: boolean | null;
+          paid_at: string | null;
+          priority_access: boolean | null;
+          checkout_session_id: string | null;
+        }>(
+          `
+            select email, member_id, paid, paid_at, priority_access, checkout_session_id
+            from public.waitlist
+            where checkout_session_id = $1
+            limit 1
+          `,
+          [checkoutSessionId],
+        );
+
+        const row = result.rows[0];
+        return row?.email ? normalizeStoredLead(row, { pool }) : null;
+      }
+
+      if (!config) {
+        throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
+      }
+
+      const supabase = createClient(config.url, config.key);
+      const { data, error } = await supabase
+        .from("waitlist")
+        .select("email, member_id, paid, paid_at, priority_access, checkout_session_id")
+        .eq("checkout_session_id", checkoutSessionId)
+        .maybeSingle<WaitlistRow>();
+
+      if (error) {
+        throw error;
+      }
+
+      return data?.email ? normalizeStoredLead(data, { supabase }) : null;
     },
     async markLeadPaid(input) {
+      const memberId = buildMemberId({
+        paidAt: input.paidAt,
+        checkoutSessionId: input.checkoutSessionId,
+      });
+
       if (pool) {
         await ensureWaitlistSchema(pool);
         await pool.query(
           `
             insert into public.waitlist (
               email,
+              member_id,
               paid,
               paid_at,
               priority_access,
@@ -316,9 +453,10 @@ export function createLeadStore(): LeadStore {
               checkout_session_id,
               updated_at
             )
-            values ($1, true, $2, true, $3, $4, $5, $2)
+            values ($1, $6, true, $2, true, $3, $4, $5, $2)
             on conflict (email) do update
               set paid = true,
+                  member_id = coalesce(public.waitlist.member_id, excluded.member_id),
                   paid_at = excluded.paid_at,
                   priority_access = true,
                   priority_source = excluded.priority_source,
@@ -332,6 +470,7 @@ export function createLeadStore(): LeadStore {
             input.prioritySource,
             input.checkoutStatus,
             input.checkoutSessionId,
+            memberId,
           ],
         );
         return;
@@ -347,6 +486,7 @@ export function createLeadStore(): LeadStore {
         .upsert(
           {
             email: input.email,
+            member_id: memberId,
             paid: true,
             paid_at: input.paidAt,
             priority_access: true,

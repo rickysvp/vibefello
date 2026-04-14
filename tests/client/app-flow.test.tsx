@@ -3,6 +3,8 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../../src/App";
 
+let fetchMock: ReturnType<typeof vi.fn>;
+
 vi.mock("canvas-confetti", () => ({
   default: vi.fn(),
 }));
@@ -35,12 +37,13 @@ describe("App waitlist flow", () => {
     vi.restoreAllMocks();
     localStorage.clear();
     window.scrollTo = vi.fn();
-    vi.stubGlobal("fetch", vi.fn());
+    fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
     window.history.replaceState({}, "", "/");
   });
 
   it("shows the paid conversion state after a successful lead submission", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
         success: true,
@@ -63,11 +66,12 @@ describe("App waitlist flow", () => {
   });
 
   it("stores the submitted email and respects priority state returned by the api", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
+    fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
         success: true,
         email: "founder@example.com",
+        memberId: "VF-2026-AB12CD34",
         paid: true,
         priorityAccess: true,
         message: "Lead captured",
@@ -85,9 +89,33 @@ describe("App waitlist flow", () => {
     await waitFor(() => {
       expect(localStorage.getItem("vibefello_email")).toBe("founder@example.com");
       expect(localStorage.getItem("vibefello_member")).toBe("true");
+      expect(localStorage.getItem("vibefello_member_id")).toBe("VF-2026-AB12CD34");
     });
 
-    expect(await screen.findByText(/FOUNDING MEMBER ACTIVE/i)).toBeInTheDocument();
-    expect(screen.getByText(/payment for this email was already confirmed/i)).toBeInTheDocument();
+    expect(await screen.findByText(/MEMBERSHIP ACTIVE/i)).toBeInTheDocument();
+    expect(screen.getByText("VF-2026-AB12CD34")).toBeInTheDocument();
+  });
+
+  it("loads the persisted member id after Stripe redirects back with a checkout session id", async () => {
+    localStorage.setItem("vibefello_email", "founder@example.com");
+    localStorage.setItem("vibefello_member", "true");
+    window.history.replaceState({}, "", "/?payment=success&session_id=cs_live_member_123");
+
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        email: "founder@example.com",
+        memberId: "VF-2026-AB12CD34",
+        paid: true,
+        priorityAccess: true,
+      }),
+    } as Response);
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith("/api/member-status?session_id=cs_live_member_123");
+    });
+    expect((await screen.findAllByText("VF-2026-AB12CD34")).length).toBeGreaterThan(0);
   });
 });

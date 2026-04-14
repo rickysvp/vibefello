@@ -303,6 +303,7 @@ const translations = {
         celebrate: "Celebrate",
         followUpdates: "Follow Updates",
         memberId: "Member ID",
+        memberIdPending: "Syncing member ID...",
         status: "Status",
         access: "Access",
         active: "ACTIVE",
@@ -565,6 +566,7 @@ const translations = {
         celebrate: "庆祝",
         followUpdates: "关注动态",
         memberId: "会员 ID",
+        memberIdPending: "正在同步会员 ID...",
         status: "状态",
         access: "访问权限",
         active: "已激活",
@@ -626,10 +628,11 @@ export default function App() {
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'cancel' | null>(null);
   const [activeScenario, setActiveScenario] = useState(0);
   const [submittedEmail, setSubmittedEmail] = useState('');
+  const [checkoutSessionId, setCheckoutSessionId] = useState('');
   const [isMember, setIsMember] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{type: 'success' | 'error' | 'loading', message: string} | null>(null);
-  const [memberCount, setMemberCount] = useState<number | null>(null);
-  const [waitlistCount, setWaitlistCount] = useState(1);
+  const [memberId, setMemberId] = useState<string | null>(null);
+  const [waitlistCount, setWaitlistCount] = useState(6);
 
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -646,15 +649,35 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Update waitlist count every 20 minutes
+  // Fetch waitlist count from server on mount
   useEffect(() => {
-    const updateWaitlistCount = () => {
-      const randomIncrease = Math.floor(Math.random() * 3) + 1; // 1-3
-      setWaitlistCount(prev => prev + randomIncrease);
+    const fetchCount = async () => {
+      try {
+        const response = await fetch('/api/waitlist-count');
+        if (response.ok) {
+          const data = await response.json();
+          setWaitlistCount(data.count);
+        }
+      } catch (err) {
+        console.error('Failed to fetch waitlist count:', err);
+      }
     };
+    fetchCount();
+  }, []);
 
-    // Initial update
-    updateWaitlistCount();
+  // Update waitlist count every 20 minutes via server
+  useEffect(() => {
+    const updateWaitlistCount = async () => {
+      try {
+        const response = await fetch('/api/waitlist-count', { method: 'POST' });
+        if (response.ok) {
+          const data = await response.json();
+          setWaitlistCount(data.count);
+        }
+      } catch (err) {
+        console.error('Failed to update waitlist count:', err);
+      }
+    };
 
     // Set interval for 20 minutes (1200000 ms)
     const interval = setInterval(updateWaitlistCount, 1200000);
@@ -670,12 +693,6 @@ export default function App() {
         origin: { y: 0.6 },
         colors: ['#FFD700', '#000000', '#FFFFFF', '#FF6321']
       });
-      
-      // Fetch accurate member count
-      fetch('/api/member-count')
-        .then(res => res.json())
-        .then(data => setMemberCount(data.count))
-        .catch(err => console.error("Error fetching count:", err));
     }
   }, [paymentStatus]);
 
@@ -683,10 +700,20 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     const savedMember = localStorage.getItem('vibefello_member') === 'true';
     const savedEmail = localStorage.getItem('vibefello_email') || '';
-    
+    const savedMemberId = localStorage.getItem('vibefello_member_id') || '';
+    const sessionId = params.get('session_id') || '';
+
     if (savedMember) {
       setIsMember(true);
       setSubmittedEmail(savedEmail);
+    }
+
+    if (savedMemberId) {
+      setMemberId(savedMemberId);
+    }
+
+    if (sessionId) {
+      setCheckoutSessionId(sessionId);
     }
 
     if (params.get('payment') === 'success') {
@@ -694,7 +721,7 @@ export default function App() {
       setShowConversion(true);
       setIsMember(true);
       localStorage.setItem('vibefello_member', 'true');
-      const emailToSave = submittedEmail || savedEmail;
+      const emailToSave = savedEmail;
       if (emailToSave) {
         setSubmittedEmail(emailToSave);
         localStorage.setItem('vibefello_email', emailToSave);
@@ -703,7 +730,55 @@ export default function App() {
       setPaymentStatus('cancel');
       setShowConversion(true);
     }
-  }, [submittedEmail]);
+  }, []);
+
+  useEffect(() => {
+    if (paymentStatus !== 'success' || !checkoutSessionId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const syncMemberStatus = async () => {
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        try {
+          const response = await fetch(`/api/member-status?session_id=${encodeURIComponent(checkoutSessionId)}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (cancelled) {
+              return;
+            }
+
+            if (data.email) {
+              setSubmittedEmail(data.email);
+              localStorage.setItem('vibefello_email', data.email);
+            }
+
+            if (data.paid || data.priorityAccess) {
+              setIsMember(true);
+              localStorage.setItem('vibefello_member', 'true');
+            }
+
+            if (data.memberId) {
+              setMemberId(data.memberId);
+              localStorage.setItem('vibefello_member_id', data.memberId);
+              return;
+            }
+          }
+        } catch (err) {
+          console.error('Failed to sync member status:', err);
+        }
+
+        await new Promise((resolve) => window.setTimeout(resolve, 1000));
+      }
+    };
+
+    void syncMemberStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [checkoutSessionId, paymentStatus]);
 
   const handleStripeCheckout = async () => {
     console.log("Initiating checkout for email:", submittedEmail, "Plan:", selectedPlan);
@@ -794,6 +869,10 @@ export default function App() {
       if (hasPriorityAccess) {
         setIsMember(true);
         localStorage.setItem('vibefello_member', 'true');
+      }
+      if (data.memberId) {
+        setMemberId(data.memberId);
+        localStorage.setItem('vibefello_member_id', data.memberId);
       }
 
       setSubmittedEmail(currentEmail);
@@ -992,28 +1071,25 @@ export default function App() {
                             transition={{ delay: 0.5 }}
                             className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
                           >
-                            <button 
-                              onClick={() => {
-                                confetti({
-                                  particleCount: 150,
-                                  spread: 70,
-                                  origin: { y: 0.6 },
-                                  colors: ['#FFD700', '#000000', '#FFFFFF', '#FF6321']
-                                });
-                              }}
-                              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-black font-black text-sm uppercase tracking-wider rounded-full hover:bg-accent/90 transition-all shadow-pop"
-                            >
-                              <Sparkles className="w-4 h-4" />
-                              {t.conversion.successPage.celebrate}
-                            </button>
                             <a 
                               href="https://x.com/vibefello"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white font-black text-sm uppercase tracking-wider rounded-full hover:bg-white/20 transition-all border border-white/20"
+                              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-black font-black text-sm uppercase tracking-wider rounded-full hover:bg-accent/90 transition-all shadow-pop"
                             >
                               <Twitter className="w-4 h-4" />
-                              {t.conversion.successPage.followUpdates}
+                              FOLLOW X
+                            </a>
+                            <a 
+                              href="https://t.me/vibefello"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 text-white font-black text-sm uppercase tracking-wider rounded-full hover:bg-white/20 transition-all border border-white/20"
+                            >
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                              </svg>
+                              Telegram
                             </a>
                           </motion.div>
                         </div>
@@ -1033,13 +1109,7 @@ export default function App() {
                             {/* Card Header */}
                             <div className="flex items-center justify-between mb-8">
                               <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-foreground rounded-xl flex items-center justify-center">
-                                  <Zap className="w-6 h-6 text-accent" />
-                                </div>
-                                <div>
-                                  <div className="text-xs font-black text-foreground/40 uppercase tracking-wider">VIBEFELLO</div>
-                                  <div className="text-lg font-black text-foreground">GENESIS</div>
-                                </div>
+                                <img src="/logo.png" alt="VibeFello" className="h-12 w-auto object-contain" />
                               </div>
                               <div className="px-3 py-1 bg-accent text-black text-[10px] font-black uppercase tracking-wider rounded-full">
                                  GENESIS
@@ -1050,9 +1120,7 @@ export default function App() {
                             <div className="bg-foreground rounded-xl p-5 mb-6">
                               <div className="text-[10px] font-black text-white/40 uppercase tracking-wider mb-2">{t.conversion.successPage.memberId}</div>
                               <div className="font-mono text-2xl font-black text-accent tracking-wider">
-                                {memberCount !== null 
-                                  ? `VF-2026-${String(memberCount).padStart(3, '0')}` 
-                                  : `VF-2026-${String((submittedEmail?.length || 0) * 7).padStart(3, '0')}`}
+                                {memberId ?? t.conversion.successPage.memberIdPending}
                               </div>
                             </div>
                             
@@ -2210,10 +2278,7 @@ export default function App() {
                   setPaymentStatus('success');
                   setShowConversion(true);
                   setSubmittedEmail(heroEmail || 'rickysvp@gmail.com');
-                  fetch('/api/member-count')
-                    .then(res => res.json())
-                    .then(data => setMemberCount(data.count))
-                    .catch(() => setMemberCount(42));
+                  setMemberId(localStorage.getItem('vibefello_member_id') || 'VF-2026-DEMO');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="px-3 py-2 bg-muted border border-foreground/10 rounded-lg text-[10px] font-black uppercase tracking-tighter text-foreground/60 hover:text-accent hover:border-accent transition-all text-left flex items-center justify-between"

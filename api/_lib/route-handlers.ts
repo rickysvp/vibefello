@@ -76,6 +76,7 @@ export async function handleWaitlistRequest(
       json: {
         success: true,
         email: lead.email,
+        memberId: lead.memberId ?? null,
         paid: lead.paid,
         priorityAccess: lead.priorityAccess,
         message: "Lead captured",
@@ -86,6 +87,49 @@ export async function handleWaitlistRequest(
     return {
       status: 500,
       json: { error: "Failed to save your request. Please try again." },
+    };
+  }
+}
+
+export async function handleMemberStatusRequest(
+  query: unknown,
+  dependencies: Required<RuntimeDependencies>,
+): Promise<HandlerResult> {
+  const checkoutSessionId = typeof (query as { session_id?: unknown })?.session_id === "string"
+    ? ((query as { session_id: string }).session_id).trim()
+    : "";
+
+  if (!checkoutSessionId) {
+    return {
+      status: 400,
+      json: { error: "Missing checkout session id." },
+    };
+  }
+
+  try {
+    const lead = await dependencies.leadStore.getLeadByCheckoutSession(checkoutSessionId);
+
+    if (!lead) {
+      return {
+        status: 404,
+        json: { error: "Member status not found." },
+      };
+    }
+
+    return {
+      status: 200,
+      json: {
+        email: lead.email,
+        memberId: lead.memberId ?? null,
+        paid: lead.paid,
+        priorityAccess: lead.priorityAccess,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to fetch member status:", error);
+    return {
+      status: 500,
+      json: { error: "Failed to load member status." },
     };
   }
 }
