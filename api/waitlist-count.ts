@@ -2,6 +2,21 @@ import { getPostgresPool } from './_lib/postgres.js';
 import { createClient } from '@supabase/supabase-js';
 import { getSupabaseConfig } from './_lib/env.js';
 
+async function ensureWaitlistCounterTable(pool: { query: (sql: string, params?: unknown[]) => Promise<unknown> }) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS public.waitlist_counter (
+      id INTEGER PRIMARY KEY DEFAULT 1,
+      count INTEGER NOT NULL DEFAULT 6,
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    INSERT INTO public.waitlist_counter (id, count) VALUES (1, 6)
+    ON CONFLICT (id) DO NOTHING
+  `);
+}
+
 export default async function handler(req: any, res: any) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,6 +36,7 @@ export default async function handler(req: any, res: any) {
       let count = 6; // default
 
       if (pool) {
+        await ensureWaitlistCounterTable(pool);
         const result = await pool.query(
           `SELECT count FROM public.waitlist_counter WHERE id = 1`
         );
@@ -49,21 +65,8 @@ export default async function handler(req: any, res: any) {
       let newCount = 6 + increase;
 
       if (pool) {
-        // Ensure table exists
-        await pool.query(`
-          CREATE TABLE IF NOT EXISTS public.waitlist_counter (
-            id INTEGER PRIMARY KEY DEFAULT 1,
-            count INTEGER NOT NULL DEFAULT 6,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-          )
-        `);
-        
-        // Insert default if not exists
-        await pool.query(`
-          INSERT INTO public.waitlist_counter (id, count) VALUES (1, 6)
-          ON CONFLICT (id) DO NOTHING
-        `);
-        
+        await ensureWaitlistCounterTable(pool);
+
         // Increment
         const result = await pool.query(
           `UPDATE public.waitlist_counter 
