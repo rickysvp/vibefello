@@ -1,6 +1,6 @@
-import { createEmailService, type EmailService } from "./email";
-import { createLeadStore, type LeadStore } from "./lead-store";
-import { createStripeService, type StripeService } from "./stripe";
+import { createEmailService, type EmailService } from "./email.js";
+import { createLeadStore, type LeadStore } from "./lead-store.js";
+import { createStripeService, type StripeService } from "./stripe.js";
 
 export type RuntimeDependencies = {
   leadStore?: LeadStore;

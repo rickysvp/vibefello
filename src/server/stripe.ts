@@ -1,1 +1,1 @@
-export * from "../../api/_lib/stripe";
+export * from "../../api/_lib/stripe.js";

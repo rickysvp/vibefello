@@ -1,1 +1,1 @@
-export * from "../../api/_lib/route-handlers";
+export * from "../../api/_lib/route-handlers.js";

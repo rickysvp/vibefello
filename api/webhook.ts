@@ -1,5 +1,5 @@
-import { createRuntimeDependencies, handleWebhookRequest } from "./_lib/route-handlers";
-import { readRawBody, sendVercelResult } from "./_lib/vercel";
+import { createRuntimeDependencies, handleWebhookRequest } from "./_lib/route-handlers.js";
+import { readRawBody, sendVercelResult } from "./_lib/vercel.js";
 
 export const config = {
   api: {

@@ -1,1 +1,1 @@
-export * from "../../api/_lib/lead-store";
+export * from "../../api/_lib/lead-store.js";

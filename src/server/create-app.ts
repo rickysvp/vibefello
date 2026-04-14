@@ -9,7 +9,7 @@ import {
   handleWebhookRequest,
   type HandlerResult,
   type RuntimeDependencies,
-} from "./route-handlers";
+} from "./route-handlers.js";
 
 function sendHandlerResult(res: express.Response, result: HandlerResult) {
   if ("text" in result) {

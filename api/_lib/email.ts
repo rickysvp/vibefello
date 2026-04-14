@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { getResendApiKey, getResendFromEmail } from "./env";
+import { getResendApiKey, getResendFromEmail } from "./env.js";
 
 export type EmailService = {
   sendWaitlistConfirmationEmail: (email: string) => Promise<void>;

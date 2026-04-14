@@ -1,1 +1,1 @@
-export * from "../../api/_lib/email";
+export * from "../../api/_lib/email.js";

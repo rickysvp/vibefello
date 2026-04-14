@@ -4,7 +4,7 @@ import {
   getStripeFoundingMemberPriceId,
   getStripeStatementDescriptorSuffix,
   getStripeWebhookSecret,
-} from "./env";
+} from "./env.js";
 
 let stripeClient: Stripe | null = null;
 

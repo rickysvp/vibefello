@@ -1,6 +1,6 @@
-import { getPostgresPool } from './_lib/postgres';
+import { getPostgresPool } from './_lib/postgres.js';
 import { createClient } from '@supabase/supabase-js';
-import { getSupabaseConfig } from './_lib/env';
+import { getSupabaseConfig } from './_lib/env.js';
 
 export default async function handler(req: any, res: any) {
   // Set CORS headers

@@ -1,1 +1,1 @@
-export * from "../../api/_lib/vercel";
+export * from "../../api/_lib/vercel.js";

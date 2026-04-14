@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import { getSupabaseConfig } from "./env";
-import { ensureWaitlistSchema, getPostgresPool } from "./postgres";
+import { getSupabaseConfig } from "./env.js";
+import { ensureWaitlistSchema, getPostgresPool } from "./postgres.js";
 
 export type LeadState = {
   email: string;
