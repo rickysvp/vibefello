@@ -26,6 +26,7 @@ function createStripeServiceMock(): StripeService {
   return {
     createCheckoutSession: vi.fn(),
     constructWebhookEvent: vi.fn(),
+    retrieveCheckoutSession: vi.fn(),
   };
 }
 
@@ -228,6 +229,52 @@ describe("server handlers", () => {
       },
     });
     expect(leadStore.getLeadByCheckoutSession).toHaveBeenCalledWith("cs_live_member_123");
+  });
+
+  it("backfills member status from Stripe when the checkout is paid but webhook has not updated the lead yet", async () => {
+    vi.mocked(leadStore.getLeadByCheckoutSession)
+      .mockResolvedValueOnce({
+        email: "founder@example.com",
+        memberId: null,
+        paid: false,
+        priorityAccess: false,
+      } satisfies StoredLead)
+      .mockResolvedValueOnce({
+        email: "founder@example.com",
+        memberId: "VF-2026-AB12CD34",
+        paid: true,
+        priorityAccess: true,
+      } satisfies StoredLead);
+    vi.mocked(stripeService.retrieveCheckoutSession).mockResolvedValue({
+      id: "cs_live_member_123",
+      paymentStatus: "paid",
+      status: "complete",
+      customerEmail: "founder@example.com",
+    });
+
+    const response = await handleMemberStatusRequest(
+      { session_id: "cs_live_member_123" },
+      createDeps(),
+    );
+
+    expect(stripeService.retrieveCheckoutSession).toHaveBeenCalledWith("cs_live_member_123");
+    expect(leadStore.markLeadPaid).toHaveBeenCalledWith({
+      email: "founder@example.com",
+      paidAt: expect.any(String),
+      prioritySource: "stripe_checkout",
+      checkoutStatus: "completed",
+      checkoutSessionId: "cs_live_member_123",
+    });
+    expect(emailService.sendPriorityAccessEmail).toHaveBeenCalledWith("founder@example.com");
+    expect(response).toEqual({
+      status: 200,
+      json: {
+        email: "founder@example.com",
+        memberId: "VF-2026-AB12CD34",
+        paid: true,
+        priorityAccess: true,
+      },
+    });
   });
 
   it("does not create a new session for a paid lead", async () => {

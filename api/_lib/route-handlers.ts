@@ -107,7 +107,7 @@ export async function handleMemberStatusRequest(
   }
 
   try {
-    const lead = await dependencies.leadStore.getLeadByCheckoutSession(checkoutSessionId);
+    let lead = await dependencies.leadStore.getLeadByCheckoutSession(checkoutSessionId);
 
     if (!lead) {
       return {
@@ -116,13 +116,33 @@ export async function handleMemberStatusRequest(
       };
     }
 
+    if (!lead.paid || !lead.memberId) {
+      const session = await dependencies.stripeService.retrieveCheckoutSession(checkoutSessionId);
+
+      if (
+        session.paymentStatus === "paid" &&
+        session.status === "complete" &&
+        session.customerEmail
+      ) {
+        await dependencies.leadStore.markLeadPaid({
+          email: session.customerEmail,
+          paidAt: new Date().toISOString(),
+          prioritySource: "stripe_checkout",
+          checkoutStatus: "completed",
+          checkoutSessionId,
+        });
+        await dependencies.emailService.sendPriorityAccessEmail(session.customerEmail);
+        lead = await dependencies.leadStore.getLeadByCheckoutSession(checkoutSessionId);
+      }
+    }
+
     return {
       status: 200,
       json: {
-        email: lead.email,
-        memberId: lead.memberId ?? null,
-        paid: lead.paid,
-        priorityAccess: lead.priorityAccess,
+        email: lead?.email,
+        memberId: lead?.memberId ?? null,
+        paid: Boolean(lead?.paid),
+        priorityAccess: Boolean(lead?.priorityAccess),
       },
     };
   } catch (error) {

@@ -15,7 +15,15 @@ export type CheckoutSession = {
 
 export type StripeService = {
   createCheckoutSession: (input: { email: string; port: number }) => Promise<CheckoutSession>;
+  retrieveCheckoutSession: (checkoutSessionId: string) => Promise<RetrievedCheckoutSession>;
   constructWebhookEvent: (input: { body: Buffer; signature: string }) => StripeEvent;
+};
+
+export type RetrievedCheckoutSession = {
+  id: string;
+  customerEmail: string | null;
+  paymentStatus: string | null;
+  status: string | null;
 };
 
 export type StripeEvent = {
@@ -86,6 +94,17 @@ export function createStripeService(): StripeService {
       return {
         id: session.id,
         url: session.url,
+      };
+    },
+    async retrieveCheckoutSession(checkoutSessionId) {
+      const stripe = getStripe();
+      const session = await stripe.checkout.sessions.retrieve(checkoutSessionId);
+
+      return {
+        id: session.id,
+        customerEmail: session.customer_details?.email ?? session.customer_email ?? null,
+        paymentStatus: session.payment_status ?? null,
+        status: session.status ?? null,
       };
     },
     constructWebhookEvent({ body, signature }) {
