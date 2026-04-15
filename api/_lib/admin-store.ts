@@ -61,11 +61,14 @@ function toNumber(value: unknown) {
   return 0;
 }
 
-function toRate(numerator: number, denominator: number) {
-  if (!denominator) {
+export function calculateConversionRate(numerator: number, denominator: number) {
+  if (!denominator || denominator <= 0 || numerator <= 0) {
     return 0;
   }
-  return Number((numerator / denominator).toFixed(4));
+
+  // Guard against tracking gaps (for example ad-blocked page_view events)
+  // so dashboard conversion percentages stay within 0-100%.
+  return Number(Math.min(1, numerator / denominator).toFixed(4));
 }
 
 function getSinceIso(rangeDays: number) {
@@ -331,9 +334,9 @@ export function createAdminStore(): AdminStore {
             waitlistLeads: periodLeads,
             checkoutStarted: toNumber(period?.checkout_started),
             paidMembers: periodPaid,
-            waitlistConversionRate: toRate(periodLeads, periodVisitors),
-            leadToPaidConversionRate: toRate(periodPaid, periodLeads),
-            visitorToPaidConversionRate: toRate(periodPaid, periodVisitors),
+            waitlistConversionRate: calculateConversionRate(periodLeads, periodVisitors),
+            leadToPaidConversionRate: calculateConversionRate(periodPaid, periodLeads),
+            visitorToPaidConversionRate: calculateConversionRate(periodPaid, periodVisitors),
           },
           lifetime: {
             visitors: toNumber(lifetime?.visitors),
@@ -407,9 +410,9 @@ export function createAdminStore(): AdminStore {
           waitlistLeads: periodLeads,
           checkoutStarted: periodCheckoutResult.count ?? 0,
           paidMembers: periodPaid,
-          waitlistConversionRate: toRate(periodLeads, periodVisitors),
-          leadToPaidConversionRate: toRate(periodPaid, periodLeads),
-          visitorToPaidConversionRate: toRate(periodPaid, periodVisitors),
+          waitlistConversionRate: calculateConversionRate(periodLeads, periodVisitors),
+          leadToPaidConversionRate: calculateConversionRate(periodPaid, periodLeads),
+          visitorToPaidConversionRate: calculateConversionRate(periodPaid, periodVisitors),
         },
         lifetime: {
           visitors: lifetimeVisitors,

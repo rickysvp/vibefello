@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.1] - 2026-04-15
+
+### Fixed
+- Admin dashboard conversion rates are now capped at `100%` (`1.0`) to prevent misleading values when visitor tracking undercounts.
+- Added focused unit tests for conversion-rate calculations.
+
 ## [1.5.0] - 2026-04-15
 
 ### Added
@@ -20,4 +26,3 @@ The project follows semantic versioning.
 - SEO metadata upgraded for stronger English-market discoverability.
 - Favicon and manifest icons now use `/ico.png`.
 - Admin dashboard UI now supports account/password login flow.
-
