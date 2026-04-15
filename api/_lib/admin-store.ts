@@ -90,6 +90,25 @@ function isMissingRelationError(error: unknown) {
   return code === "42P01" || message.includes("does not exist");
 }
 
+export function addSessionIdsToSet(
+  sessionIds: Set<string>,
+  rows: Array<{ session_id?: unknown }>,
+) {
+  for (const row of rows) {
+    const sessionId = row?.session_id;
+    if (typeof sessionId !== "string") {
+      continue;
+    }
+
+    const trimmedSessionId = sessionId.trim();
+    if (!trimmedSessionId) {
+      continue;
+    }
+
+    sessionIds.add(trimmedSessionId);
+  }
+}
+
 export type AnalyticsEventName =
   | "page_view"
   | "waitlist_submit"
@@ -155,7 +174,6 @@ async function countDistinctVisitorsWithSupabase(
     let query = supabase
       .from("analytics_events")
       .select("session_id")
-      .eq("event_name", "page_view")
       .range(from, from + pageSize - 1);
 
     if (sinceIso) {
@@ -170,12 +188,7 @@ async function countDistinctVisitorsWithSupabase(
       throw error;
     }
 
-    for (const row of data ?? []) {
-      const sessionId = (row as { session_id?: unknown })?.session_id;
-      if (typeof sessionId === "string" && sessionId.length > 0) {
-        sessionIds.add(sessionId);
-      }
-    }
+    addSessionIdsToSet(sessionIds, (data ?? []) as Array<{ session_id?: unknown }>);
 
     if (!data || data.length < pageSize) {
       break;
@@ -259,8 +272,7 @@ export function createAdminStore(): AdminStore {
               (
                 select count(distinct session_id)::int
                 from public.analytics_events
-                where event_name = 'page_view'
-                  and created_at >= $1
+                where created_at >= $1
               ) as visitors,
               (
                 select count(*)::int
@@ -295,7 +307,6 @@ export function createAdminStore(): AdminStore {
               (
                 select count(distinct session_id)::int
                 from public.analytics_events
-                where event_name = 'page_view'
               ) as visitors,
               (
                 select count(*)::int

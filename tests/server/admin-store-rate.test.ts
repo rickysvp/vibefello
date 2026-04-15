@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateConversionRate } from "../../api/_lib/admin-store";
+import { addSessionIdsToSet, calculateConversionRate } from "../../api/_lib/admin-store";
 
 describe("calculateConversionRate", () => {
   it("returns 0 when denominator is missing", () => {
@@ -12,5 +12,23 @@ describe("calculateConversionRate", () => {
 
   it("caps conversion rate at 1 when numerator is larger than denominator", () => {
     expect(calculateConversionRate(14, 1)).toBe(1);
+  });
+});
+
+describe("addSessionIdsToSet", () => {
+  it("adds only non-empty, trimmed session ids and deduplicates values", () => {
+    const sessionIds = new Set<string>();
+
+    addSessionIdsToSet(sessionIds, [
+      { session_id: "abc-123" },
+      { session_id: " abc-123 " },
+      { session_id: "xyz-789" },
+      { session_id: "" },
+      { session_id: "   " },
+      { session_id: null },
+      { session_id: 42 },
+    ]);
+
+    expect(Array.from(sessionIds)).toEqual(["abc-123", "xyz-789"]);
   });
 });

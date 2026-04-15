@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.2] - 2026-04-15
+
+### Fixed
+- Visitor metrics in admin dashboard now count distinct tracked sessions across all analytics events, reducing undercount when `page_view` events are missing.
+- Added a focused unit test for analytics session-id deduplication and normalization.
+
 ## [1.5.1] - 2026-04-15
 
 ### Fixed
