@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VibeFello Admin Dashboard</title>
+    <title>VibeFello 管理后台</title>
     <meta name="robots" content="noindex,nofollow" />
     <style>
       :root {
@@ -161,46 +161,62 @@
     <div class="container">
       <header class="header">
         <div>
-          <h1 class="title">VibeFello Admin</h1>
-          <p class="subtitle">Traffic, waitlist funnel, paid members, and member IDs.</p>
+          <h1 class="title">VibeFello 管理后台</h1>
+          <p class="subtitle">真实流量与转化数据（PV/UV、Waitlist 邮箱、付费与会员编号）。</p>
         </div>
       </header>
 
       <section class="panel">
         <div class="controls">
-          <input id="username" type="text" placeholder="Admin username" value="vibecoder" />
-          <input id="password" type="password" placeholder="Admin password" />
-          <input id="token" type="password" placeholder="Optional ADMIN_TOKEN" />
+          <input id="username" type="text" placeholder="后台账号" value="vibecoder" />
+          <input id="password" type="password" placeholder="后台密码" />
+          <input id="token" type="password" placeholder="可选：ADMIN_TOKEN" />
           <select id="range">
-            <option value="7">Last 7 days</option>
-            <option value="14">Last 14 days</option>
-            <option value="30" selected>Last 30 days</option>
-            <option value="60">Last 60 days</option>
-            <option value="90">Last 90 days</option>
+            <option value="7">最近 7 天</option>
+            <option value="14">最近 14 天</option>
+            <option value="30" selected>最近 30 天</option>
+            <option value="60">最近 60 天</option>
+            <option value="90">最近 90 天</option>
           </select>
-          <button id="refresh">Refresh Dashboard</button>
-          <button id="save" class="secondary">Save Credentials</button>
+          <button id="refresh">刷新数据</button>
+          <button id="save" class="secondary">保存登录信息</button>
         </div>
-        <p id="status" class="status">Ready.</p>
+        <p id="status" class="status">已就绪。</p>
       </section>
 
       <section class="panel">
-        <h2>Funnel Metrics</h2>
+        <h2>核心指标（真实数据）</h2>
         <div id="metrics" class="metrics"></div>
       </section>
 
       <section class="panel">
-        <h2>Latest Leads & Members</h2>
+        <h2>每日 PV / UV / Waitlist / 付费</h2>
         <table>
           <thead>
             <tr>
-              <th>Email</th>
-              <th>Member ID</th>
-              <th>Paid</th>
-              <th>Priority</th>
-              <th>Checkout</th>
-              <th>Created</th>
-              <th>Paid At</th>
+              <th>日期（UTC）</th>
+              <th>PV</th>
+              <th>UV</th>
+              <th>Waitlist 邮箱数</th>
+              <th>付费人数</th>
+            </tr>
+          </thead>
+          <tbody id="dailyBody"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>真实 Waitlist 邮箱与会员</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>邮箱</th>
+              <th>会员编号</th>
+              <th>付费</th>
+              <th>优先权限</th>
+              <th>支付状态</th>
+              <th>创建时间</th>
+              <th>付费时间</th>
             </tr>
           </thead>
           <tbody id="leadsBody"></tbody>
@@ -217,13 +233,14 @@
       const saveButton = document.getElementById("save");
       const statusEl = document.getElementById("status");
       const metricsEl = document.getElementById("metrics");
+      const dailyBody = document.getElementById("dailyBody");
       const leadsBody = document.getElementById("leadsBody");
       const USERNAME_STORAGE_KEY = "vibefello_admin_username";
       const PASSWORD_STORAGE_KEY = "vibefello_admin_password";
       const TOKEN_STORAGE_KEY = "vibefello_admin_token";
 
       function formatNumber(value) {
-        return new Intl.NumberFormat("en-US").format(value || 0);
+        return new Intl.NumberFormat("zh-CN").format(value || 0);
       }
 
       function formatRate(rate) {
@@ -234,7 +251,7 @@
         if (!value) return "-";
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return "-";
-        return date.toLocaleString("en-US", { hour12: false });
+        return date.toLocaleString("zh-CN", { hour12: false });
       }
 
       function getHeaders() {
@@ -277,7 +294,7 @@
       async function loadStats() {
         const headers = resolveHeaders();
         if (!headers) {
-          setStatus("Please enter admin credentials or ADMIN_TOKEN first.", true);
+          setStatus("请先输入后台账号密码或 ADMIN_TOKEN。", true);
           return null;
         }
 
@@ -285,7 +302,7 @@
         const response = await fetch(`/api/admin-stats?range_days=${range}`, { headers });
         if (!response.ok) {
           const data = await response.json().catch(() => ({}));
-          throw new Error(data.error || "Failed to load stats.");
+          throw new Error(data.error || "加载统计失败。");
         }
         return response.json();
       }
@@ -297,7 +314,7 @@
         const response = await fetch("/api/admin-leads?limit=200", { headers });
         if (!response.ok) {
           const data = await response.json().catch(() => ({}));
-          throw new Error(data.error || "Failed to load leads.");
+          throw new Error(data.error || "加载邮箱数据失败。");
         }
         return response.json();
       }
@@ -309,14 +326,15 @@
         }
 
         const cards = [
-          { label: `Tracked Visitors (${stats.rangeDays}d)`, value: formatNumber(stats.period.visitors), note: `Lifetime ${formatNumber(stats.lifetime.visitors)}` },
-          { label: `Waitlist Leads (${stats.rangeDays}d)`, value: formatNumber(stats.period.waitlistLeads), note: `Lifetime ${formatNumber(stats.lifetime.waitlistLeads)}` },
-          { label: `Checkout Started (${stats.rangeDays}d)`, value: formatNumber(stats.period.checkoutStarted), note: `Lifetime ${formatNumber(stats.lifetime.checkoutStarted)}` },
-          { label: `Paid Members (${stats.rangeDays}d)`, value: formatNumber(stats.period.paidMembers), note: `Lifetime ${formatNumber(stats.lifetime.paidMembers)}` },
-          { label: "Visitor → Waitlist", value: formatRate(stats.period.waitlistConversionRate), note: "Period conversion" },
-          { label: "Lead → Paid", value: formatRate(stats.period.leadToPaidConversionRate), note: "Period conversion" },
-          { label: "Visitor → Paid", value: formatRate(stats.period.visitorToPaidConversionRate), note: "Period conversion" },
-          { label: "Latest Member ID", value: stats.lifetime.latestMemberId || "-", note: "Numeric series 001-999" },
+          { label: `PV（最近 ${stats.rangeDays} 天）`, value: formatNumber(stats.period.pageViews), note: `累计 ${formatNumber(stats.lifetime.pageViews)}` },
+          { label: `UV（最近 ${stats.rangeDays} 天）`, value: formatNumber(stats.period.visitors), note: `累计 ${formatNumber(stats.lifetime.visitors)}` },
+          { label: `Waitlist 真实邮箱（最近 ${stats.rangeDays} 天）`, value: formatNumber(stats.period.waitlistLeads), note: `累计 ${formatNumber(stats.lifetime.waitlistLeads)}` },
+          { label: `发起支付（最近 ${stats.rangeDays} 天）`, value: formatNumber(stats.period.checkoutStarted), note: `累计 ${formatNumber(stats.lifetime.checkoutStarted)}` },
+          { label: `付费人数（最近 ${stats.rangeDays} 天）`, value: formatNumber(stats.period.paidMembers), note: `累计 ${formatNumber(stats.lifetime.paidMembers)}` },
+          { label: "UV → Waitlist 转化", value: formatRate(stats.period.waitlistConversionRate), note: "最近周期转化率" },
+          { label: "Waitlist → 付费转化", value: formatRate(stats.period.leadToPaidConversionRate), note: "最近周期转化率" },
+          { label: "UV → 付费转化", value: formatRate(stats.period.visitorToPaidConversionRate), note: "最近周期转化率" },
+          { label: "最新会员编号", value: stats.lifetime.latestMemberId || "-", note: "编号区间 001-999" },
         ];
 
         metricsEl.innerHTML = cards
@@ -330,10 +348,31 @@
           .join("");
       }
 
+      function renderDaily(stats) {
+        const daily = stats?.daily || [];
+        if (!daily.length) {
+          dailyBody.innerHTML = `<tr><td colspan="5">暂无每日统计数据。</td></tr>`;
+          return;
+        }
+
+        dailyBody.innerHTML = [...daily]
+          .reverse()
+          .map((row) => `
+            <tr>
+              <td class="code">${row.date}</td>
+              <td>${formatNumber(row.pageViews)}</td>
+              <td>${formatNumber(row.uniqueVisitors)}</td>
+              <td>${formatNumber(row.waitlistLeads)}</td>
+              <td>${formatNumber(row.paidMembers)}</td>
+            </tr>
+          `)
+          .join("");
+      }
+
       function renderLeads(result) {
         const leads = result?.leads || [];
         if (!leads.length) {
-          leadsBody.innerHTML = `<tr><td colspan="7">No leads found.</td></tr>`;
+          leadsBody.innerHTML = `<tr><td colspan="7">暂无邮箱数据。</td></tr>`;
           return;
         }
 
@@ -342,8 +381,8 @@
             <tr>
               <td class="code">${lead.email || "-"}</td>
               <td class="code">${lead.memberId || "-"}</td>
-              <td>${lead.paid ? '<span class="chip chip-paid">PAID</span>' : '<span class="chip chip-unpaid">UNPAID</span>'}</td>
-              <td>${lead.priorityAccess ? "Yes" : "No"}</td>
+              <td>${lead.paid ? '<span class="chip chip-paid">已付费</span>' : '<span class="chip chip-unpaid">未付费</span>'}</td>
+              <td>${lead.priorityAccess ? "是" : "否"}</td>
               <td class="code">${lead.checkoutStatus || "-"}</td>
               <td>${formatDate(lead.createdAt)}</td>
               <td>${formatDate(lead.paidAt)}</td>
@@ -354,14 +393,15 @@
 
       async function refreshDashboard() {
         try {
-          setStatus("Loading...");
+          setStatus("正在加载真实数据...");
           const [stats, leads] = await Promise.all([loadStats(), loadLeads()]);
           renderMetrics(stats);
+          renderDaily(stats);
           renderLeads(leads);
-          setStatus(`Updated at ${formatDate(stats?.updatedAt || new Date().toISOString())}`);
+          setStatus(`已更新：${formatDate(stats?.updatedAt || new Date().toISOString())}`);
         } catch (error) {
           console.error(error);
-          setStatus(error instanceof Error ? error.message : "Failed to refresh dashboard.", true);
+          setStatus(error instanceof Error ? error.message : "刷新后台失败。", true);
         }
       }
 
@@ -371,7 +411,7 @@
         const token = tokenInput.value.trim();
 
         if (!token && (!username || !password)) {
-          setStatus("Please enter credentials or token before saving.", true);
+          setStatus("请先输入账号密码或 token 再保存。", true);
           return;
         }
 
@@ -385,7 +425,7 @@
           localStorage.setItem(TOKEN_STORAGE_KEY, token);
         }
 
-        setStatus("Credentials saved in browser storage.");
+        setStatus("登录信息已保存到当前浏览器。");
       });
 
       refreshButton.addEventListener("click", () => {

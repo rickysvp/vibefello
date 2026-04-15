@@ -710,12 +710,6 @@ export default function App() {
       return;
     }
 
-    const key = `vibefello_page_view_${analyticsSessionId}_${window.location.pathname}`;
-    if (window.sessionStorage.getItem(key)) {
-      return;
-    }
-
-    window.sessionStorage.setItem(key, '1');
     trackEvent('page_view');
   }, [analyticsSessionId]);
 

@@ -42,6 +42,7 @@ describe("admin handlers", () => {
     vi.mocked(adminStore.getDashboard).mockResolvedValue({
       rangeDays: 30,
       period: {
+        pageViews: 300,
         visitors: 120,
         waitlistLeads: 24,
         checkoutStarted: 8,
@@ -51,12 +52,22 @@ describe("admin handlers", () => {
         visitorToPaidConversionRate: 0.0167,
       },
       lifetime: {
+        pageViews: 1200,
         visitors: 500,
         waitlistLeads: 80,
         checkoutStarted: 30,
         paidMembers: 12,
         latestMemberId: "012",
       },
+      daily: [
+        {
+          date: "2026-04-15",
+          pageViews: 12,
+          uniqueVisitors: 10,
+          waitlistLeads: 3,
+          paidMembers: 1,
+        },
+      ],
       updatedAt: "2026-04-15T00:00:00.000Z",
     });
 
@@ -99,6 +110,7 @@ describe("admin handlers", () => {
     vi.mocked(adminStore.getDashboard).mockResolvedValue({
       rangeDays: 7,
       period: {
+        pageViews: 0,
         visitors: 0,
         waitlistLeads: 0,
         checkoutStarted: 0,
@@ -108,12 +120,14 @@ describe("admin handlers", () => {
         visitorToPaidConversionRate: 0,
       },
       lifetime: {
+        pageViews: 0,
         visitors: 0,
         waitlistLeads: 0,
         checkoutStarted: 0,
         paidMembers: 0,
         latestMemberId: null,
       },
+      daily: [],
       updatedAt: "2026-04-15T00:00:00.000Z",
     });
 

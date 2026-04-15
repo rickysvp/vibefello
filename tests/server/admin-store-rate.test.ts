@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { addSessionIdsToSet, calculateConversionRate } from "../../api/_lib/admin-store";
+import {
+  addSessionIdsToSet,
+  buildDailyMetrics,
+  calculateConversionRate,
+} from "../../api/_lib/admin-store";
 
 describe("calculateConversionRate", () => {
   it("returns 0 when denominator is missing", () => {
@@ -30,5 +34,35 @@ describe("addSessionIdsToSet", () => {
     ]);
 
     expect(Array.from(sessionIds)).toEqual(["abc-123", "xyz-789"]);
+  });
+});
+
+describe("buildDailyMetrics", () => {
+  it("aggregates daily PV/UV/waitlist/paid with real-email filtering", () => {
+    const startOfToday = new Date();
+    startOfToday.setUTCHours(0, 0, 0, 0);
+    const sinceIso = startOfToday.toISOString();
+
+    const metrics = buildDailyMetrics({
+      sinceIso,
+      analyticsRows: [
+        { session_id: "s1", event_name: "page_view", created_at: sinceIso },
+        { session_id: "s1", event_name: "checkout_start", created_at: sinceIso },
+        { session_id: "s2", event_name: "page_view", created_at: sinceIso },
+      ],
+      waitlistRows: [
+        { email: "founder@example.com", created_at: sinceIso, paid: true, paid_at: sinceIso },
+        { email: "invalid-email", created_at: sinceIso, paid: true, paid_at: sinceIso },
+      ],
+    });
+
+    expect(metrics).toHaveLength(1);
+    expect(metrics[0]).toEqual({
+      date: sinceIso.slice(0, 10),
+      pageViews: 2,
+      uniqueVisitors: 2,
+      waitlistLeads: 1,
+      paidMembers: 1,
+    });
   });
 });

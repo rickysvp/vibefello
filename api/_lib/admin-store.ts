@@ -3,6 +3,7 @@ import { ensureWaitlistSchema, getPostgresPool } from "./postgres.js";
 import { getSupabaseConfig } from "./env.js";
 
 type Pool = NonNullable<ReturnType<typeof getPostgresPool>>;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ANALYTICS_BOOTSTRAP_SQL = `
 create table if not exists public.analytics_events (
@@ -139,6 +140,7 @@ export type AdminLead = {
 export type AdminDashboard = {
   rangeDays: number;
   period: {
+    pageViews: number;
     visitors: number;
     waitlistLeads: number;
     checkoutStarted: number;
@@ -148,12 +150,20 @@ export type AdminDashboard = {
     visitorToPaidConversionRate: number;
   };
   lifetime: {
+    pageViews: number;
     visitors: number;
     waitlistLeads: number;
     checkoutStarted: number;
     paidMembers: number;
     latestMemberId: string | null;
   };
+  daily: Array<{
+    date: string;
+    pageViews: number;
+    uniqueVisitors: number;
+    waitlistLeads: number;
+    paidMembers: number;
+  }>;
   updatedAt: string;
 };
 
@@ -162,6 +172,140 @@ export type AdminStore = {
   getDashboard: (input: { rangeDays: number }) => Promise<AdminDashboard>;
   listLeads: (input: { limit: number }) => Promise<AdminLead[]>;
 };
+
+function isRealEmail(value: unknown): value is string {
+  return typeof value === "string" && EMAIL_PATTERN.test(value.trim());
+}
+
+function toDateKey(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toISOString().slice(0, 10);
+}
+
+function toTimestamp(value: string | null | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.getTime();
+}
+
+function createDateRangeKeys(sinceIso: string) {
+  const startDate = new Date(sinceIso);
+  const endDate = new Date();
+  const keys: string[] = [];
+
+  startDate.setUTCHours(0, 0, 0, 0);
+  endDate.setUTCHours(0, 0, 0, 0);
+
+  while (startDate.getTime() <= endDate.getTime()) {
+    keys.push(startDate.toISOString().slice(0, 10));
+    startDate.setUTCDate(startDate.getUTCDate() + 1);
+  }
+
+  return keys;
+}
+
+type DailyMetricInput = {
+  analyticsRows: Array<{
+    session_id?: unknown;
+    event_name?: unknown;
+    created_at?: unknown;
+  }>;
+  waitlistRows: Array<{
+    email?: unknown;
+    created_at?: unknown;
+    paid?: unknown;
+    paid_at?: unknown;
+    updated_at?: unknown;
+  }>;
+  sinceIso: string;
+};
+
+export function buildDailyMetrics({
+  analyticsRows,
+  waitlistRows,
+  sinceIso,
+}: DailyMetricInput) {
+  const dayKeys = createDateRangeKeys(sinceIso);
+  const uvSets = new Map<string, Set<string>>();
+  const pageViews = new Map<string, number>();
+  const waitlistCounts = new Map<string, number>();
+  const paidCounts = new Map<string, number>();
+  const sinceTs = toTimestamp(sinceIso) ?? 0;
+
+  for (const row of analyticsRows) {
+    const eventName = typeof row.event_name === "string" ? row.event_name : "";
+    const createdAt = typeof row.created_at === "string" ? row.created_at : null;
+    const dayKey = toDateKey(createdAt);
+    const createdTs = toTimestamp(createdAt);
+    if (!dayKey || !createdTs || createdTs < sinceTs) {
+      continue;
+    }
+
+    if (eventName === "page_view") {
+      pageViews.set(dayKey, (pageViews.get(dayKey) ?? 0) + 1);
+    }
+
+    const sessionId = typeof row.session_id === "string" ? row.session_id.trim() : "";
+    if (!sessionId) {
+      continue;
+    }
+
+    const existingSet = uvSets.get(dayKey) ?? new Set<string>();
+    existingSet.add(sessionId);
+    uvSets.set(dayKey, existingSet);
+  }
+
+  for (const row of waitlistRows) {
+    if (!isRealEmail(row.email)) {
+      continue;
+    }
+
+    const createdAt = typeof row.created_at === "string" ? row.created_at : null;
+    const createdDay = toDateKey(createdAt);
+    const createdTs = toTimestamp(createdAt);
+    if (createdDay && createdTs && createdTs >= sinceTs) {
+      waitlistCounts.set(createdDay, (waitlistCounts.get(createdDay) ?? 0) + 1);
+    }
+
+    const paid = Boolean(row.paid);
+    if (!paid) {
+      continue;
+    }
+
+    const paidAt = typeof row.paid_at === "string" ? row.paid_at : null;
+    const updatedAt = typeof row.updated_at === "string" ? row.updated_at : null;
+    const paidDateSource = paidAt ?? updatedAt ?? createdAt;
+    const paidDay = toDateKey(paidDateSource);
+    const paidTs = toTimestamp(paidDateSource);
+
+    if (paidDay && paidTs && paidTs >= sinceTs) {
+      paidCounts.set(paidDay, (paidCounts.get(paidDay) ?? 0) + 1);
+    }
+  }
+
+  return dayKeys.map((date) => ({
+    date,
+    pageViews: pageViews.get(date) ?? 0,
+    uniqueVisitors: uvSets.get(date)?.size ?? 0,
+    waitlistLeads: waitlistCounts.get(date) ?? 0,
+    paidMembers: paidCounts.get(date) ?? 0,
+  }));
+}
 
 async function countDistinctVisitorsWithSupabase(
   supabase: any,
@@ -196,6 +340,82 @@ async function countDistinctVisitorsWithSupabase(
   }
 
   return sessionIds.size;
+}
+
+async function fetchAnalyticsRowsWithSupabase(
+  supabase: any,
+  sinceIso?: string,
+) {
+  const pageSize = 1000;
+  const rows: Array<{
+    session_id?: unknown;
+    event_name?: unknown;
+    created_at?: unknown;
+  }> = [];
+
+  for (let from = 0; from < 50000; from += pageSize) {
+    let query = supabase
+      .from("analytics_events")
+      .select("session_id,event_name,created_at")
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (sinceIso) {
+      query = query.gte("created_at", sinceIso);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      if (isMissingRelationError(error)) {
+        return [];
+      }
+      throw error;
+    }
+
+    rows.push(...(data ?? []));
+
+    if (!data || data.length < pageSize) {
+      break;
+    }
+  }
+
+  return rows;
+}
+
+type SupabaseWaitlistRow = {
+  email?: unknown;
+  member_id?: unknown;
+  created_at?: unknown;
+  checkout_started_at?: unknown;
+  checkout_session_id?: unknown;
+  paid?: unknown;
+  paid_at?: unknown;
+  updated_at?: unknown;
+};
+
+async function fetchWaitlistRowsWithSupabase(supabase: any) {
+  const pageSize = 1000;
+  const rows: SupabaseWaitlistRow[] = [];
+
+  for (let from = 0; from < 50000; from += pageSize) {
+    const { data, error } = await supabase
+      .from("waitlist")
+      .select("email,member_id,created_at,checkout_started_at,checkout_session_id,paid,paid_at,updated_at")
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) {
+      throw error;
+    }
+
+    rows.push(...((data ?? []) as SupabaseWaitlistRow[]));
+
+    if (!data || data.length < pageSize) {
+      break;
+    }
+  }
+
+  return rows;
 }
 
 export function createAdminStore(): AdminStore {
@@ -262,6 +482,7 @@ export function createAdminStore(): AdminStore {
         await ensureAnalyticsSchema(pool);
 
         const periodResult = await pool.query<{
+          page_views: number | string;
           visitors: number | string;
           waitlist_leads: number | string;
           checkout_started: number | string;
@@ -269,6 +490,12 @@ export function createAdminStore(): AdminStore {
         }>(
           `
             select
+              (
+                select count(*)::int
+                from public.analytics_events
+                where event_name = 'page_view'
+                  and created_at >= $1
+              ) as page_views,
               (
                 select count(distinct session_id)::int
                 from public.analytics_events
@@ -278,17 +505,20 @@ export function createAdminStore(): AdminStore {
                 select count(*)::int
                 from public.waitlist
                 where created_at >= $1
+                  and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
               ) as waitlist_leads,
               (
                 select count(*)::int
                 from public.waitlist
                 where checkout_session_id is not null
+                  and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
                   and coalesce(checkout_started_at, created_at) >= $1
               ) as checkout_started,
               (
                 select count(*)::int
                 from public.waitlist
                 where paid = true
+                  and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
                   and coalesce(paid_at, updated_at, created_at) >= $1
               ) as paid_members
           `,
@@ -296,6 +526,7 @@ export function createAdminStore(): AdminStore {
         );
 
         const lifetimeResult = await pool.query<{
+          page_views: number | string;
           visitors: number | string;
           waitlist_leads: number | string;
           checkout_started: number | string;
@@ -305,22 +536,30 @@ export function createAdminStore(): AdminStore {
           `
             select
               (
+                select count(*)::int
+                from public.analytics_events
+                where event_name = 'page_view'
+              ) as page_views,
+              (
                 select count(distinct session_id)::int
                 from public.analytics_events
               ) as visitors,
               (
                 select count(*)::int
                 from public.waitlist
+                where trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
               ) as waitlist_leads,
               (
                 select count(*)::int
                 from public.waitlist
                 where checkout_session_id is not null
+                  and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
               ) as checkout_started,
               (
                 select count(*)::int
                 from public.waitlist
                 where paid = true
+                  and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
               ) as paid_members,
               (
                 select member_id
@@ -332,6 +571,73 @@ export function createAdminStore(): AdminStore {
           `,
         );
 
+        const dailyResult = await pool.query<{
+          date: string;
+          page_views: number | string;
+          unique_visitors: number | string;
+          waitlist_leads: number | string;
+          paid_members: number | string;
+        }>(
+          `
+            with days as (
+              select generate_series(
+                date_trunc('day', $1::timestamptz)::date,
+                date_trunc('day', now())::date,
+                interval '1 day'
+              )::date as day
+            ),
+            pv as (
+              select
+                date_trunc('day', created_at)::date as day,
+                count(*)::int as count
+              from public.analytics_events
+              where event_name = 'page_view'
+                and created_at >= $1
+              group by 1
+            ),
+            uv as (
+              select
+                date_trunc('day', created_at)::date as day,
+                count(distinct session_id)::int as count
+              from public.analytics_events
+              where created_at >= $1
+              group by 1
+            ),
+            wl as (
+              select
+                date_trunc('day', created_at)::date as day,
+                count(*)::int as count
+              from public.waitlist
+              where created_at >= $1
+                and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
+              group by 1
+            ),
+            paid as (
+              select
+                date_trunc('day', coalesce(paid_at, updated_at, created_at))::date as day,
+                count(*)::int as count
+              from public.waitlist
+              where paid = true
+                and trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
+                and coalesce(paid_at, updated_at, created_at) >= $1
+              group by 1
+            )
+            select
+              to_char(days.day, 'YYYY-MM-DD') as date,
+              coalesce(pv.count, 0) as page_views,
+              coalesce(uv.count, 0) as unique_visitors,
+              coalesce(wl.count, 0) as waitlist_leads,
+              coalesce(paid.count, 0) as paid_members
+            from days
+            left join pv on pv.day = days.day
+            left join uv on uv.day = days.day
+            left join wl on wl.day = days.day
+            left join paid on paid.day = days.day
+            order by days.day asc
+          `,
+          [sinceIso],
+        );
+
         const period = periodResult.rows[0];
         const lifetime = lifetimeResult.rows[0];
         const periodVisitors = toNumber(period?.visitors);
@@ -341,6 +647,7 @@ export function createAdminStore(): AdminStore {
         return {
           rangeDays,
           period: {
+            pageViews: toNumber(period?.page_views),
             visitors: periodVisitors,
             waitlistLeads: periodLeads,
             checkoutStarted: toNumber(period?.checkout_started),
@@ -350,88 +657,133 @@ export function createAdminStore(): AdminStore {
             visitorToPaidConversionRate: calculateConversionRate(periodPaid, periodVisitors),
           },
           lifetime: {
+            pageViews: toNumber(lifetime?.page_views),
             visitors: toNumber(lifetime?.visitors),
             waitlistLeads: toNumber(lifetime?.waitlist_leads),
             checkoutStarted: toNumber(lifetime?.checkout_started),
             paidMembers: toNumber(lifetime?.paid_members),
             latestMemberId: lifetime?.latest_member_id ?? null,
           },
+          daily: dailyResult.rows.map((row) => ({
+            date: row.date,
+            pageViews: toNumber(row.page_views),
+            uniqueVisitors: toNumber(row.unique_visitors),
+            waitlistLeads: toNumber(row.waitlist_leads),
+            paidMembers: toNumber(row.paid_members),
+          })),
           updatedAt: new Date().toISOString(),
         };
       }
 
       if (!config) {
-        return {
-          rangeDays,
-          period: {
-            visitors: 0,
-            waitlistLeads: 0,
-            checkoutStarted: 0,
-            paidMembers: 0,
-            waitlistConversionRate: 0,
-            leadToPaidConversionRate: 0,
-            visitorToPaidConversionRate: 0,
-          },
-          lifetime: {
-            visitors: 0,
-            waitlistLeads: 0,
-            checkoutStarted: 0,
-            paidMembers: 0,
-            latestMemberId: null,
-          },
-          updatedAt: new Date().toISOString(),
-        };
+        throw new Error("Admin analytics data source is not configured.");
       }
 
       const supabase = createClient(config.url, config.key);
       const [
-        periodLeadsResult,
-        periodCheckoutResult,
-        periodPaidResult,
-        totalLeadsResult,
-        totalCheckoutResult,
-        totalPaidResult,
-        latestMemberIdResult,
+        lifetimePageViewResult,
+        periodAnalyticsRows,
+        lifetimeVisitors,
+        waitlistRows,
       ] = await Promise.all([
-        supabase.from("waitlist").select("email", { count: "exact", head: true }).gte("created_at", sinceIso),
-        supabase.from("waitlist").select("email", { count: "exact", head: true }).not("checkout_session_id", "is", null).gte("checkout_started_at", sinceIso),
-        supabase.from("waitlist").select("email", { count: "exact", head: true }).eq("paid", true).gte("paid_at", sinceIso),
-        supabase.from("waitlist").select("email", { count: "exact", head: true }),
-        supabase.from("waitlist").select("email", { count: "exact", head: true }).not("checkout_session_id", "is", null),
-        supabase.from("waitlist").select("email", { count: "exact", head: true }).eq("paid", true),
         supabase
-          .from("waitlist")
-          .select("member_id")
-          .not("member_id", "is", null)
-          .order("member_id", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
+          .from("analytics_events")
+          .select("id", { count: "exact", head: true })
+          .eq("event_name", "page_view"),
+        fetchAnalyticsRowsWithSupabase(supabase, sinceIso),
+        countDistinctVisitorsWithSupabase(supabase),
+        fetchWaitlistRowsWithSupabase(supabase),
       ]);
 
-      const periodVisitors = await countDistinctVisitorsWithSupabase(supabase, sinceIso);
-      const lifetimeVisitors = await countDistinctVisitorsWithSupabase(supabase);
+      const periodSessions = new Set<string>();
+      let periodPageViews = 0;
+      for (const row of periodAnalyticsRows) {
+        if (row.event_name === "page_view") {
+          periodPageViews += 1;
+        }
+        const sessionId = typeof row.session_id === "string" ? row.session_id.trim() : "";
+        if (sessionId) {
+          periodSessions.add(sessionId);
+        }
+      }
 
-      const periodLeads = periodLeadsResult.count ?? 0;
-      const periodPaid = periodPaidResult.count ?? 0;
+      const sinceTs = toTimestamp(sinceIso) ?? 0;
+      const realWaitlistRows = waitlistRows.filter((row) => isRealEmail(row.email));
+      const periodWaitlistRows = realWaitlistRows.filter((row) => {
+        const createdTs = toTimestamp(typeof row.created_at === "string" ? row.created_at : null);
+        return Boolean(createdTs && createdTs >= sinceTs);
+      });
+
+      const periodCheckoutRows = realWaitlistRows.filter((row) => {
+        const checkoutSessionId = typeof row.checkout_session_id === "string"
+          ? row.checkout_session_id.trim()
+          : "";
+        if (!checkoutSessionId) {
+          return false;
+        }
+
+        const checkoutTs = toTimestamp(
+          typeof row.checkout_started_at === "string"
+            ? row.checkout_started_at
+            : typeof row.created_at === "string"
+            ? row.created_at
+            : null,
+        );
+
+        return Boolean(checkoutTs && checkoutTs >= sinceTs);
+      });
+
+      const lifetimePaidRows = realWaitlistRows.filter((row) => Boolean(row.paid));
+      const periodPaidRows = lifetimePaidRows.filter((row) => {
+        const paidSource = typeof row.paid_at === "string"
+          ? row.paid_at
+          : typeof row.updated_at === "string"
+          ? row.updated_at
+          : typeof row.created_at === "string"
+          ? row.created_at
+          : null;
+        const paidTs = toTimestamp(paidSource);
+        return Boolean(paidTs && paidTs >= sinceTs);
+      });
+
+      const latestMemberId = realWaitlistRows
+        .map((row) => (typeof row.member_id === "string" ? row.member_id : null))
+        .filter((memberId): memberId is string => Boolean(memberId && /^\d{3}$/.test(memberId)))
+        .sort()
+        .at(-1) ?? null;
+
+      const daily = buildDailyMetrics({
+        analyticsRows: periodAnalyticsRows,
+        waitlistRows: realWaitlistRows,
+        sinceIso,
+      });
 
       return {
         rangeDays,
         period: {
-          visitors: periodVisitors,
-          waitlistLeads: periodLeads,
-          checkoutStarted: periodCheckoutResult.count ?? 0,
-          paidMembers: periodPaid,
-          waitlistConversionRate: calculateConversionRate(periodLeads, periodVisitors),
-          leadToPaidConversionRate: calculateConversionRate(periodPaid, periodLeads),
-          visitorToPaidConversionRate: calculateConversionRate(periodPaid, periodVisitors),
+          pageViews: periodPageViews,
+          visitors: periodSessions.size,
+          waitlistLeads: periodWaitlistRows.length,
+          checkoutStarted: periodCheckoutRows.length,
+          paidMembers: periodPaidRows.length,
+          waitlistConversionRate: calculateConversionRate(periodWaitlistRows.length, periodSessions.size),
+          leadToPaidConversionRate: calculateConversionRate(periodPaidRows.length, periodWaitlistRows.length),
+          visitorToPaidConversionRate: calculateConversionRate(periodPaidRows.length, periodSessions.size),
         },
         lifetime: {
+          pageViews: lifetimePageViewResult.count ?? 0,
           visitors: lifetimeVisitors,
-          waitlistLeads: totalLeadsResult.count ?? 0,
-          checkoutStarted: totalCheckoutResult.count ?? 0,
-          paidMembers: totalPaidResult.count ?? 0,
-          latestMemberId: (latestMemberIdResult.data as { member_id?: string } | null)?.member_id ?? null,
+          waitlistLeads: realWaitlistRows.length,
+          checkoutStarted: realWaitlistRows.filter((row) => {
+            const checkoutSessionId = typeof row.checkout_session_id === "string"
+              ? row.checkout_session_id.trim()
+              : "";
+            return Boolean(checkoutSessionId);
+          }).length,
+          paidMembers: lifetimePaidRows.length,
+          latestMemberId,
         },
+        daily,
         updatedAt: new Date().toISOString(),
       };
     },
@@ -459,6 +811,7 @@ export function createAdminStore(): AdminStore {
               checkout_started_at,
               paid_at
             from public.waitlist
+            where trim(email) ~* '^[^@[:space:]]+@[^@[:space:]]+\\.[^@[:space:]]+$'
             order by coalesce(paid_at, checkout_started_at, created_at) desc
             limit $1
           `,
@@ -478,7 +831,7 @@ export function createAdminStore(): AdminStore {
       }
 
       if (!config) {
-        return [];
+        throw new Error("Admin leads data source is not configured.");
       }
 
       const supabase = createClient(config.url, config.key);
@@ -492,16 +845,18 @@ export function createAdminStore(): AdminStore {
         throw error;
       }
 
-      return (data ?? []).map((row: Record<string, unknown>) => ({
-        email: String(row.email ?? ""),
-        memberId: typeof row.member_id === "string" ? row.member_id : null,
-        paid: Boolean(row.paid),
-        priorityAccess: Boolean(row.priority_access),
-        checkoutStatus: typeof row.checkout_status === "string" ? row.checkout_status : null,
-        createdAt: typeof row.created_at === "string" ? row.created_at : null,
-        checkoutStartedAt: typeof row.checkout_started_at === "string" ? row.checkout_started_at : null,
-        paidAt: typeof row.paid_at === "string" ? row.paid_at : null,
-      }));
+      return (data ?? [])
+        .filter((row: Record<string, unknown>) => isRealEmail(row.email))
+        .map((row: Record<string, unknown>) => ({
+          email: String(row.email ?? ""),
+          memberId: typeof row.member_id === "string" ? row.member_id : null,
+          paid: Boolean(row.paid),
+          priorityAccess: Boolean(row.priority_access),
+          checkoutStatus: typeof row.checkout_status === "string" ? row.checkout_status : null,
+          createdAt: typeof row.created_at === "string" ? row.created_at : null,
+          checkoutStartedAt: typeof row.checkout_started_at === "string" ? row.checkout_started_at : null,
+          paidAt: typeof row.paid_at === "string" ? row.paid_at : null,
+        }));
     },
   };
 }

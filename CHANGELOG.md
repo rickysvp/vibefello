@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.3] - 2026-04-15
+
+### Changed
+- Admin dashboard is now localized in Chinese, including credentials panel, metrics cards, daily table, and leads table labels.
+- Added daily real-data breakdown in admin stats: `PV`, `UV`, waitlist leads, and paid members.
+- Admin stats now expose both `pageViews` and `visitors` (UV) for period and lifetime windows.
+
+### Fixed
+- Waitlist and paid metrics now only count rows with valid email format to keep business statistics real and trustworthy.
+- Frontend now records `page_view` on each page load (instead of session-level dedupe) to improve daily PV authenticity.
+
 ## [1.5.2] - 2026-04-15
 
 ### Fixed
