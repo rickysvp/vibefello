@@ -168,7 +168,9 @@
 
       <section class="panel">
         <div class="controls">
-          <input id="token" type="password" placeholder="Enter ADMIN_TOKEN" />
+          <input id="username" type="text" placeholder="Admin username" value="vibecoder" />
+          <input id="password" type="password" placeholder="Admin password" />
+          <input id="token" type="password" placeholder="Optional ADMIN_TOKEN" />
           <select id="range">
             <option value="7">Last 7 days</option>
             <option value="14">Last 14 days</option>
@@ -177,7 +179,7 @@
             <option value="90">Last 90 days</option>
           </select>
           <button id="refresh">Refresh Dashboard</button>
-          <button id="save" class="secondary">Save Token</button>
+          <button id="save" class="secondary">Save Credentials</button>
         </div>
         <p id="status" class="status">Ready.</p>
       </section>
@@ -207,6 +209,8 @@
     </div>
 
     <script>
+      const usernameInput = document.getElementById("username");
+      const passwordInput = document.getElementById("password");
       const tokenInput = document.getElementById("token");
       const rangeInput = document.getElementById("range");
       const refreshButton = document.getElementById("refresh");
@@ -214,6 +218,8 @@
       const statusEl = document.getElementById("status");
       const metricsEl = document.getElementById("metrics");
       const leadsBody = document.getElementById("leadsBody");
+      const USERNAME_STORAGE_KEY = "vibefello_admin_username";
+      const PASSWORD_STORAGE_KEY = "vibefello_admin_password";
       const TOKEN_STORAGE_KEY = "vibefello_admin_token";
 
       function formatNumber(value) {
@@ -231,17 +237,36 @@
         return date.toLocaleString("en-US", { hour12: false });
       }
 
-      function getToken() {
-        return tokenInput.value.trim();
-      }
-
       function getHeaders() {
-        const token = getToken();
+        const token = tokenInput.value.trim();
         if (!token) return null;
         return {
           "x-admin-token": token,
           "Content-Type": "application/json",
         };
+      }
+
+      function getCredentialHeaders() {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+          return null;
+        }
+
+        return {
+          "Authorization": `Basic ${btoa(`${username}:${password}`)}`,
+          "Content-Type": "application/json",
+        };
+      }
+
+      function resolveHeaders() {
+        const tokenHeaders = getHeaders();
+        if (tokenHeaders) {
+          return tokenHeaders;
+        }
+
+        return getCredentialHeaders();
       }
 
       function setStatus(message, isError = false) {
@@ -250,9 +275,9 @@
       }
 
       async function loadStats() {
-        const headers = getHeaders();
+        const headers = resolveHeaders();
         if (!headers) {
-          setStatus("Please enter ADMIN_TOKEN first.", true);
+          setStatus("Please enter admin credentials or ADMIN_TOKEN first.", true);
           return null;
         }
 
@@ -266,7 +291,7 @@
       }
 
       async function loadLeads() {
-        const headers = getHeaders();
+        const headers = resolveHeaders();
         if (!headers) return null;
 
         const response = await fetch("/api/admin-leads?limit=200", { headers });
@@ -341,24 +366,46 @@
       }
 
       saveButton.addEventListener("click", () => {
-        const token = getToken();
-        if (!token) {
-          setStatus("Please enter a token before saving.", true);
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        const token = tokenInput.value.trim();
+
+        if (!token && (!username || !password)) {
+          setStatus("Please enter credentials or token before saving.", true);
           return;
         }
-        localStorage.setItem(TOKEN_STORAGE_KEY, token);
-        setStatus("Token saved in browser storage.");
+
+        if (username) {
+          localStorage.setItem(USERNAME_STORAGE_KEY, username);
+        }
+        if (password) {
+          localStorage.setItem(PASSWORD_STORAGE_KEY, password);
+        }
+        if (token) {
+          localStorage.setItem(TOKEN_STORAGE_KEY, token);
+        }
+
+        setStatus("Credentials saved in browser storage.");
       });
 
       refreshButton.addEventListener("click", () => {
         refreshDashboard();
       });
 
+      const savedUsername = localStorage.getItem(USERNAME_STORAGE_KEY);
+      const savedPassword = localStorage.getItem(PASSWORD_STORAGE_KEY);
       const savedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (savedUsername) {
+        usernameInput.value = savedUsername;
+      }
+      if (savedPassword) {
+        passwordInput.value = savedPassword;
+      }
       if (savedToken) {
         tokenInput.value = savedToken;
-        refreshDashboard();
       }
+
+      refreshDashboard();
     </script>
   </body>
 </html>

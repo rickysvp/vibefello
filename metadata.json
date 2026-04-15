@@ -1,5 +1,5 @@
 {
-  "name": "VibeFello | Launch Support for AI-Built Products",
-  "description": "VibeFello helps founders ship AI-built products with production launch support, payment setup, deployment help, and priority access.",
+  "name": "VibeFello | AI Launch Engineering Companion for Founders",
+  "description": "VibeFello helps founders ship AI-built products with production launch engineering support, Stripe checkout setup, webhook debugging, Supabase reliability, and priority access.",
   "requestFramePermissions": []
 }

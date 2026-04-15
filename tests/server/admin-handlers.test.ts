@@ -21,6 +21,8 @@ describe("admin handlers", () => {
   beforeEach(() => {
     adminStore = createAdminStoreMock();
     process.env.ADMIN_TOKEN = "admin_test_token";
+    process.env.ADMIN_USERNAME = "vibecoder";
+    process.env.ADMIN_PASSWORD = "Qq652581!";
   });
 
   it("rejects stats requests without a valid admin token", async () => {
@@ -90,6 +92,40 @@ describe("admin handlers", () => {
 
     expect(response.status).toBe(200);
     expect(adminStore.listLeads).toHaveBeenCalledWith({ limit: 50 });
+  });
+
+  it("accepts basic auth using admin username and password", async () => {
+    delete process.env.ADMIN_TOKEN;
+    vi.mocked(adminStore.getDashboard).mockResolvedValue({
+      rangeDays: 7,
+      period: {
+        visitors: 0,
+        waitlistLeads: 0,
+        checkoutStarted: 0,
+        paidMembers: 0,
+        waitlistConversionRate: 0,
+        leadToPaidConversionRate: 0,
+        visitorToPaidConversionRate: 0,
+      },
+      lifetime: {
+        visitors: 0,
+        waitlistLeads: 0,
+        checkoutStarted: 0,
+        paidMembers: 0,
+        latestMemberId: null,
+      },
+      updatedAt: "2026-04-15T00:00:00.000Z",
+    });
+
+    const basicHeader = `Basic ${Buffer.from("vibecoder:Qq652581!").toString("base64")}`;
+    const response = await handleAdminStatsRequest(
+      { range_days: "7" },
+      { authorization: basicHeader },
+      createAdminDependencies({ adminStore }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(adminStore.getDashboard).toHaveBeenCalledWith({ rangeDays: 7 });
   });
 
   it("records supported analytics events", async () => {

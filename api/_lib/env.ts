@@ -62,3 +62,11 @@ export function getStripeStatementDescriptorSuffix() {
 export function getAdminToken() {
   return process.env.ADMIN_TOKEN || process.env.VIBEFELLO_ADMIN_TOKEN || null;
 }
+
+export function getAdminUsername() {
+  return process.env.ADMIN_USERNAME || process.env.VIBEFELLO_ADMIN_USERNAME || "vibecoder";
+}
+
+export function getAdminPassword() {
+  return process.env.ADMIN_PASSWORD || process.env.VIBEFELLO_ADMIN_PASSWORD || "Qq652581!";
+}

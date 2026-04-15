@@ -43,6 +43,17 @@ npm run lint
 npm run build
 ```
 
+## Version Management
+
+Use semantic versioning on every update:
+
+```bash
+npm run release:patch
+# or release:minor / release:major
+```
+
+Then update [CHANGELOG.md](/Users/ricky/AICode/VibeFello/vibefello/CHANGELOG.md) before deployment.
+
 ## Production Environment Variables
 
 - `APP_URL`
@@ -54,7 +65,9 @@ npm run build
 - `RESEND_FROM_EMAIL`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `ADMIN_TOKEN` (for `/api/admin-stats`, `/api/admin-leads`, and `/admin.html`)
+- `ADMIN_USERNAME` (default: `vibecoder`)
+- `ADMIN_PASSWORD` (default: `Qq652581!`)
+- `ADMIN_TOKEN` (optional alternative auth for `/api/admin-stats`, `/api/admin-leads`, and `/admin.html`)
 
 ## Stripe Webhook
 

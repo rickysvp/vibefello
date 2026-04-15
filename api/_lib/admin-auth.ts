@@ -1,4 +1,4 @@
-import { getAdminToken } from "./env.js";
+import { getAdminPassword, getAdminToken, getAdminUsername } from "./env.js";
 
 type HeadersLike = Record<string, unknown> | undefined;
 
@@ -35,26 +35,74 @@ export function readAdminTokenFromHeaders(headers: HeadersLike) {
   return match?.[1]?.trim() || null;
 }
 
+type BasicAuthCredentials = {
+  username: string;
+  password: string;
+};
+
+export function readBasicAuthCredentials(
+  headers: HeadersLike,
+): BasicAuthCredentials | null {
+  const authorization = getHeader(headers, "authorization");
+  if (!authorization) {
+    return null;
+  }
+
+  const match = authorization.match(/^Basic\s+(.+)$/i);
+  if (!match?.[1]) {
+    return null;
+  }
+
+  try {
+    const decoded = Buffer.from(match[1], "base64").toString("utf8");
+    const separatorIndex = decoded.indexOf(":");
+    if (separatorIndex <= 0) {
+      return null;
+    }
+
+    return {
+      username: decoded.slice(0, separatorIndex),
+      password: decoded.slice(separatorIndex + 1),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function validateAdminToken(headers: HeadersLike) {
   const expectedToken = getAdminToken();
-  if (!expectedToken) {
+  const expectedUsername = getAdminUsername();
+  const expectedPassword = getAdminPassword();
+
+  const providedToken = readAdminTokenFromHeaders(headers);
+  if (expectedToken && providedToken === expectedToken) {
     return {
-      ok: false as const,
-      status: 503,
-      message: "ADMIN_TOKEN is not configured.",
+      ok: true as const,
     };
   }
 
-  const providedToken = readAdminTokenFromHeaders(headers);
-  if (!providedToken || providedToken !== expectedToken) {
+  const basicAuth = readBasicAuthCredentials(headers);
+  if (
+    basicAuth &&
+    basicAuth.username === expectedUsername &&
+    basicAuth.password === expectedPassword
+  ) {
+    return {
+      ok: true as const,
+    };
+  }
+
+  if (!expectedToken && (!expectedUsername || !expectedPassword)) {
     return {
       ok: false as const,
-      status: 401,
-      message: "Unauthorized",
+      status: 503,
+      message: "Admin credentials are not configured.",
     };
   }
 
   return {
-    ok: true as const,
+    ok: false as const,
+    status: 401,
+    message: "Unauthorized",
   };
 }
