@@ -41,6 +41,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.vibefello.com/guides/vibefello-vs-agency.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.vibefello.com/guides/vibefello-vs-freelancer.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.vibefello.com/terms.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

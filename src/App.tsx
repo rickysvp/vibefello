@@ -97,7 +97,10 @@ const translations = {
       title: "Stop Vibing, Start Shipping",
       subtitle: "Stop debugging alone. [VibeFello] fixes the final 10% of your AI-built app, saving you massive time and money.",
       cta: "Join Waitlist",
-      socialProof: "[2,482] founders joined the waitlist. Shipping soon."
+      socialProof: "[2,482] founders joined the waitlist. Shipping soon.",
+      compareIntro: "Compare first:",
+      compareAgency: "VibeFello vs Agency",
+      compareFreelancer: "VibeFello vs Freelancer"
     },
     problem: {
       title: "The Infinite Loop of Token Burn",
@@ -361,7 +364,10 @@ const translations = {
       title: "Stop Vibing, Start Shipping",
       subtitle: "别再一个人死磕。[VibeFello] 帮你搞定 AI 无法处理的最后 10%，省时省钱，助你快速发货。",
       cta: "立即加入候补",
-      socialProof: "已有 [2,482] 位创始人加入候补名单，即将发货。"
+      socialProof: "已有 [2,482] 位创始人加入候补名单，即将发货。",
+      compareIntro: "先看对比：",
+      compareAgency: "VibeFello 对比 Agency",
+      compareFreelancer: "VibeFello 对比 Freelancer"
     },
     problem: {
       title: "别在“死循环”里浪费生命",
@@ -1746,6 +1752,21 @@ export default function App() {
                         )}
                       </button>
                     </form>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-4 flex flex-wrap items-center gap-3 text-[11px] font-black uppercase tracking-wider text-foreground/50"
+                  >
+                    <span>{t.hero.compareIntro}</span>
+                    <a href="/guides/vibefello-vs-agency.html" className="hover:text-foreground transition-colors underline underline-offset-4">
+                      {t.hero.compareAgency}
+                    </a>
+                    <a href="/guides/vibefello-vs-freelancer.html" className="hover:text-foreground transition-colors underline underline-offset-4">
+                      {t.hero.compareFreelancer}
+                    </a>
                   </motion.div>
 
                   <motion.div 

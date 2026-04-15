@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.7] - 2026-04-15
+
+### Added
+- Added two conversion-oriented comparison pages:
+  - `vibefello-vs-agency.html`
+  - `vibefello-vs-freelancer.html`
+- Added hero-level comparison links so users can navigate directly from homepage CTA area to decision pages.
+
+### Changed
+- Updated guides index, sitemap, and `llms.txt` to include the new comparison URLs.
+
 ## [1.5.6] - 2026-04-15
 
 ### Added
