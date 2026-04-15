@@ -48,7 +48,7 @@ export function getStripeWebhookSecret() {
 }
 
 export function getStripeFoundingMemberPriceId() {
-  return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || null;
+  return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || "price_1TLPTq9cc7XZtkzuTL1NNJP6";
 }
 
 export function getStripeStatementDescriptorSuffix() {

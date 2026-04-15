@@ -67,21 +67,7 @@ export function createStripeService(): StripeService {
         payment_intent_data: {
           statement_descriptor_suffix: statementDescriptorSuffix,
         },
-        line_items: foundingMemberPriceId
-          ? [{ price: foundingMemberPriceId, quantity: 1 }]
-          : [
-              {
-                price_data: {
-                  currency: "usd",
-                  product_data: {
-                    name: "VibeFello Priority Access",
-                    description: "Priority access request for manual VibeFello follow-up.",
-                  },
-                  unit_amount: 99900,
-                },
-                quantity: 1,
-              },
-            ],
+        line_items: [{ price: foundingMemberPriceId, quantity: 1 }],
         mode: "payment",
         success_url: `${appUrl}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${appUrl}?payment=cancel`,

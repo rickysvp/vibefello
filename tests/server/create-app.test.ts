@@ -95,7 +95,7 @@ describe("server handlers", () => {
   it("preserves paid and priority flags on repeat submission", async () => {
     vi.mocked(leadStore.upsertLead).mockResolvedValue({
       email: "founder@example.com",
-      memberId: "VF-2026-AB12CD34",
+      memberId: "001",
       paid: true,
       priorityAccess: true,
     });
@@ -110,7 +110,7 @@ describe("server handlers", () => {
       json: {
         success: true,
         email: "founder@example.com",
-        memberId: "VF-2026-AB12CD34",
+        memberId: "001",
         paid: true,
         priorityAccess: true,
         message: "Lead captured",
@@ -209,7 +209,7 @@ describe("server handlers", () => {
   it("returns persisted member status for a completed checkout session", async () => {
     vi.mocked(leadStore.getLeadByCheckoutSession).mockResolvedValue({
       email: "founder@example.com",
-      memberId: "VF-2026-AB12CD34",
+      memberId: "001",
       paid: true,
       priorityAccess: true,
     } satisfies StoredLead);
@@ -223,7 +223,7 @@ describe("server handlers", () => {
       status: 200,
       json: {
         email: "founder@example.com",
-        memberId: "VF-2026-AB12CD34",
+        memberId: "001",
         paid: true,
         priorityAccess: true,
       },
@@ -241,7 +241,7 @@ describe("server handlers", () => {
       } satisfies StoredLead)
       .mockResolvedValueOnce({
         email: "founder@example.com",
-        memberId: "VF-2026-AB12CD34",
+        memberId: "001",
         paid: true,
         priorityAccess: true,
       } satisfies StoredLead);
@@ -270,7 +270,7 @@ describe("server handlers", () => {
       status: 200,
       json: {
         email: "founder@example.com",
-        memberId: "VF-2026-AB12CD34",
+        memberId: "001",
         paid: true,
         priorityAccess: true,
       },

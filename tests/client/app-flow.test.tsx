@@ -71,7 +71,7 @@ describe("App waitlist flow", () => {
       json: async () => ({
         success: true,
         email: "founder@example.com",
-        memberId: "VF-2026-AB12CD34",
+        memberId: "001",
         paid: true,
         priorityAccess: true,
         message: "Lead captured",
@@ -89,11 +89,11 @@ describe("App waitlist flow", () => {
     await waitFor(() => {
       expect(localStorage.getItem("vibefello_email")).toBe("founder@example.com");
       expect(localStorage.getItem("vibefello_member")).toBe("true");
-      expect(localStorage.getItem("vibefello_member_id")).toBe("VF-2026-AB12CD34");
+      expect(localStorage.getItem("vibefello_member_id")).toBe("001");
     });
 
     expect(await screen.findByText(/MEMBERSHIP ACTIVE/i)).toBeInTheDocument();
-    expect(screen.getByText("VF-2026-AB12CD34")).toBeInTheDocument();
+    expect(screen.getByText("001")).toBeInTheDocument();
   });
 
   it("loads the persisted member id after Stripe redirects back with a checkout session id", async () => {
@@ -105,7 +105,7 @@ describe("App waitlist flow", () => {
       ok: true,
       json: async () => ({
         email: "founder@example.com",
-        memberId: "VF-2026-AB12CD34",
+        memberId: "001",
         paid: true,
         priorityAccess: true,
       }),
@@ -116,6 +116,6 @@ describe("App waitlist flow", () => {
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith("/api/member-status?session_id=cs_live_member_123");
     });
-    expect((await screen.findAllByText("VF-2026-AB12CD34")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText("001")).length).toBeGreaterThan(0);
   });
 });

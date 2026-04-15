@@ -65,6 +65,8 @@ describe("lead store postgres fallback", () => {
 
     poolMock.query
       .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [{ member_id: null }] })
+      .mockResolvedValueOnce({ rows: [] })
       .mockResolvedValueOnce({ rows: [] });
 
     const { createLeadStore } = await import("../../src/server/lead-store");
@@ -78,19 +80,19 @@ describe("lead store postgres fallback", () => {
       checkoutSessionId: "cs_live_member_12345678",
     });
 
-    expect(poolMock.query).toHaveBeenCalledTimes(2);
-    expect(poolMock.query.mock.calls[1]?.[0]).toContain("member_id");
-    expect(poolMock.query.mock.calls[1]?.[1]).toEqual([
+    expect(poolMock.query).toHaveBeenCalledTimes(4);
+    expect(poolMock.query.mock.calls[3]?.[0]).toContain("member_id");
+    expect(poolMock.query.mock.calls[3]?.[1]).toEqual([
       "founder@example.com",
       "2026-04-14T12:00:00.000Z",
       "stripe_checkout",
       "completed",
       "cs_live_member_12345678",
-      "VF-2026-12345678",
+      "001",
     ]);
   });
 
-  it("backfills a missing member id for an already-paid postgres lead", async () => {
+  it("backfills a non-numeric member id for an already-paid postgres lead", async () => {
     process.env.DATABASE_URL = "postgres://launch:test@localhost:5432/vibefello";
 
     poolMock.query
@@ -99,7 +101,7 @@ describe("lead store postgres fallback", () => {
         rows: [
           {
             email: "founder@example.com",
-            member_id: null,
+            member_id: "VF-2026-ABC12345",
             paid: true,
             paid_at: "2026-04-14T12:00:00.000Z",
             priority_access: true,
@@ -107,6 +109,7 @@ describe("lead store postgres fallback", () => {
           },
         ],
       })
+      .mockResolvedValueOnce({ rows: [] })
       .mockResolvedValueOnce({ rows: [] });
 
     const { createLeadStore } = await import("../../src/server/lead-store");
@@ -115,15 +118,15 @@ describe("lead store postgres fallback", () => {
 
     expect(lead).toEqual({
       email: "founder@example.com",
-      memberId: "VF-2026-12345678",
+      memberId: "001",
       paid: true,
       priorityAccess: true,
     });
-    expect(poolMock.query).toHaveBeenCalledTimes(3);
-    expect(poolMock.query.mock.calls[2]?.[0]).toContain("set member_id = $2");
-    expect(poolMock.query.mock.calls[2]?.[1]).toEqual([
+    expect(poolMock.query).toHaveBeenCalledTimes(4);
+    expect(poolMock.query.mock.calls[3]?.[0]).toContain("set member_id = $2");
+    expect(poolMock.query.mock.calls[3]?.[1]).toEqual([
       "founder@example.com",
-      "VF-2026-12345678",
+      "001",
     ]);
   });
 });

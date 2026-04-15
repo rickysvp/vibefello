@@ -2278,7 +2278,7 @@ export default function App() {
                   setPaymentStatus('success');
                   setShowConversion(true);
                   setSubmittedEmail(heroEmail || 'rickysvp@gmail.com');
-                  setMemberId(localStorage.getItem('vibefello_member_id') || 'VF-2026-DEMO');
+                  setMemberId(localStorage.getItem('vibefello_member_id') || '001');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 className="px-3 py-2 bg-muted border border-foreground/10 rounded-lg text-[10px] font-black uppercase tracking-tighter text-foreground/60 hover:text-accent hover:border-accent transition-all text-left flex items-center justify-between"

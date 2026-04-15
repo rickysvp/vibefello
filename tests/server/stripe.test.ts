@@ -56,7 +56,7 @@ describe("createStripeService", () => {
     );
   });
 
-  it("falls back to the inline default price data when no price id is configured", async () => {
+  it("uses the default production price id when no env override is configured", async () => {
     createCheckoutSession.mockResolvedValue({
       id: "cs_test_inline_price",
       url: "https://checkout.stripe.com/c/pay/cs_test_inline_price",
@@ -72,15 +72,7 @@ describe("createStripeService", () => {
 
     expect(createCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
-        line_items: [
-          {
-            price_data: expect.objectContaining({
-              currency: "usd",
-              unit_amount: 99900,
-            }),
-            quantity: 1,
-          },
-        ],
+        line_items: [{ price: "price_1TLPTq9cc7XZtkzuTL1NNJP6", quantity: 1 }],
       }),
     );
   });

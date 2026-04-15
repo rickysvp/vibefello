@@ -44,18 +44,63 @@ type WaitlistRow = {
   checkout_session_id?: string | null;
 };
 
-export function buildMemberId(input: {
-  paidAt: string;
-  checkoutSessionId: string;
-}) {
-  const year = new Date(input.paidAt).getUTCFullYear();
-  const rawSuffix = input.checkoutSessionId
-    .replace(/^cs_(live|test)_/i, "")
-    .replace(/[^a-z0-9]/gi, "")
-    .toUpperCase();
-  const suffix = rawSuffix.slice(-8).padStart(8, "0");
+const NUMERIC_MEMBER_ID_PATTERN = /^\d{3}$/;
 
-  return `VF-${year}-${suffix}`;
+function isNumericMemberId(memberId: string | null | undefined): memberId is string {
+  return typeof memberId === "string" && NUMERIC_MEMBER_ID_PATTERN.test(memberId);
+}
+
+function parseNumericMemberId(memberId: string | null | undefined) {
+  if (!isNumericMemberId(memberId)) {
+    return null;
+  }
+  return Number(memberId);
+}
+
+export function buildMemberId(index: number) {
+  return String(index).padStart(3, "0");
+}
+
+function getNextMemberIdFromRows(rows: Array<{ member_id?: string | null }>) {
+  const maxNumericId = rows.reduce((max, row) => {
+    const numericId = parseNumericMemberId(row.member_id);
+    return numericId && numericId > max ? numericId : max;
+  }, 0);
+  const nextMemberId = maxNumericId + 1;
+
+  if (nextMemberId > 999) {
+    throw new Error("Member ID capacity reached (999).");
+  }
+
+  return buildMemberId(nextMemberId);
+}
+
+async function allocateNextMemberIdWithPool(
+  pool: ReturnType<typeof getPostgresPool>,
+) {
+  const result = await pool.query<{ member_id: string | null }>(
+    `
+      select member_id
+      from public.waitlist
+      where member_id is not null
+    `,
+  );
+
+  return getNextMemberIdFromRows(result.rows);
+}
+
+async function allocateNextMemberIdWithSupabase(supabase: any) {
+  const { data, error } = await supabase
+    .from("waitlist")
+    .select("member_id")
+    .not("member_id", "is", null)
+    .limit(1000);
+
+  if (error) {
+    throw error;
+  }
+
+  return getNextMemberIdFromRows(data ?? []);
 }
 
 function normalizeLead(row: WaitlistRow): StoredLead {
@@ -76,7 +121,6 @@ async function maybeBackfillMemberId(
 ) {
   if (
     !row.email ||
-    row.member_id ||
     !row.paid ||
     !row.paid_at ||
     !row.checkout_session_id
@@ -84,10 +128,19 @@ async function maybeBackfillMemberId(
     return row.member_id ?? null;
   }
 
-  const memberId = buildMemberId({
-    paidAt: row.paid_at,
-    checkoutSessionId: row.checkout_session_id,
-  });
+  if (isNumericMemberId(row.member_id)) {
+    return row.member_id;
+  }
+
+  const memberId = options.pool
+    ? await allocateNextMemberIdWithPool(options.pool)
+    : options.supabase
+    ? await allocateNextMemberIdWithSupabase(options.supabase)
+    : null;
+
+  if (!memberId) {
+    return row.member_id ?? null;
+  }
 
   if (options.pool) {
     await options.pool.query(
@@ -96,7 +149,10 @@ async function maybeBackfillMemberId(
         set member_id = $2,
             updated_at = now()
         where email = $1
-          and member_id is null
+          and (
+            member_id is null
+            or member_id !~ '^[0-9]{3}$'
+          )
       `,
       [row.email, memberId],
     );
@@ -110,8 +166,7 @@ async function maybeBackfillMemberId(
         member_id: memberId,
         updated_at: new Date().toISOString(),
       } as never)
-      .eq("email", row.email)
-      .is("member_id", null);
+      .eq("email", row.email);
 
     if (error) {
       throw error;
@@ -433,13 +488,22 @@ export function createLeadStore(): LeadStore {
       return data?.email ? normalizeStoredLead(data, { supabase }) : null;
     },
     async markLeadPaid(input) {
-      const memberId = buildMemberId({
-        paidAt: input.paidAt,
-        checkoutSessionId: input.checkoutSessionId,
-      });
-
       if (pool) {
         await ensureWaitlistSchema(pool);
+        const existingResult = await pool.query<{ member_id: string | null }>(
+          `
+            select member_id
+            from public.waitlist
+            where email = $1
+            limit 1
+          `,
+          [input.email],
+        );
+        const existingMemberId = existingResult.rows[0]?.member_id ?? null;
+        const memberId = isNumericMemberId(existingMemberId)
+          ? existingMemberId
+          : await allocateNextMemberIdWithPool(pool);
+
         await pool.query(
           `
             insert into public.waitlist (
@@ -456,7 +520,10 @@ export function createLeadStore(): LeadStore {
             values ($1, $6, true, $2, true, $3, $4, $5, $2)
             on conflict (email) do update
               set paid = true,
-                  member_id = coalesce(public.waitlist.member_id, excluded.member_id),
+                  member_id = case
+                    when public.waitlist.member_id ~ '^[0-9]{3}$' then public.waitlist.member_id
+                    else excluded.member_id
+                  end,
                   paid_at = excluded.paid_at,
                   priority_access = true,
                   priority_source = excluded.priority_source,
@@ -481,6 +548,20 @@ export function createLeadStore(): LeadStore {
       }
 
       const supabase = createClient(config.url, config.key);
+      const { data: existing, error: existingError } = await supabase
+        .from("waitlist")
+        .select("member_id")
+        .eq("email", input.email)
+        .maybeSingle<{ member_id?: string | null }>();
+
+      if (existingError) {
+        throw existingError;
+      }
+
+      const memberId = isNumericMemberId(existing?.member_id)
+        ? existing.member_id
+        : await allocateNextMemberIdWithSupabase(supabase);
+
       const { error } = await supabase
         .from("waitlist")
         .upsert(
