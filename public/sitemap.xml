@@ -26,6 +26,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.vibefello.com/guides/vercel-env-mismatch-fix.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.vibefello.com/guides/oauth-callback-404-fix.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.vibefello.com/guides/ai-mvp-go-to-market-checklist.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.vibefello.com/terms.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

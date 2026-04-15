@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vercel Environment Variables Not Working? Fix Production Mismatch Fast | VibeFello</title>
+    <meta
+      name="description"
+      content="A practical fix guide for Vercel environment variable mismatch issues causing production payment, webhook, and API failures."
+    />
+    <link rel="canonical" href="https://www.vibefello.com/guides/vercel-env-mismatch-fix.html" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <style>
+      body { font-family: Inter, Arial, sans-serif; margin: 0; background: #070f0a; color: #effff4; }
+      article { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; line-height: 1.7; }
+      h1, h2 { line-height: 1.3; }
+      p, li { color: #c4dccf; }
+      a { color: #47f39b; }
+      code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #9af7c6; }
+    </style>
+  </head>
+  <body>
+    <article>
+      <h1>Vercel Environment Variables Not Working? Fix Production Mismatch Fast</h1>
+      <p>
+        If your app works locally but fails in production, environment drift is often the real blocker.
+        This checklist helps you close that gap quickly.
+      </p>
+
+      <h2>Step 1: Confirm variable scope by environment</h2>
+      <ul>
+        <li>Check that secrets exist in the correct Vercel environment: <code>Production</code>, <code>Preview</code>, and <code>Development</code>.</li>
+        <li>Do not assume preview values are available in production.</li>
+      </ul>
+
+      <h2>Step 2: Validate variable names exactly</h2>
+      <ul>
+        <li>Case and prefix mismatches silently break runtime behavior.</li>
+        <li>For client values, ensure the expected public prefix is used consistently in code and dashboard settings.</li>
+      </ul>
+
+      <h2>Step 3: Redeploy after env changes</h2>
+      <ul>
+        <li>Runtime env updates require a new deployment to become effective.</li>
+        <li>After redeploy, verify runtime logs for missing-key errors.</li>
+      </ul>
+
+      <h2>Step 4: Test critical flows end-to-end</h2>
+      <ul>
+        <li>Run the exact production path: waitlist submission, checkout session creation, webhook callback, and paid status update.</li>
+        <li>Capture one request ID and trace it through logs and database state.</li>
+      </ul>
+
+      <h2>Step 5: Lock a launch-ready env checklist</h2>
+      <ul>
+        <li>Keep a single source of truth for required keys by flow (payments, email, database, webhook).</li>
+        <li>Require env verification before each production release.</li>
+      </ul>
+
+      <p>
+        Need help fixing launch blockers across Vercel, Stripe, and Supabase?
+        <a href="https://www.vibefello.com/">Join VibeFello</a>.
+      </p>
+    </article>
+  </body>
+</html>

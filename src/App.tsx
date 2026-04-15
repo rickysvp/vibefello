@@ -89,6 +89,7 @@ const translations = {
       problem: "The Gap",
       solution: "Companionship",
       howItWorks: "Process",
+      guides: "Guides",
       joinWaitlist: "Get Early Access"
     },
     hero: {
@@ -352,6 +353,7 @@ const translations = {
       problem: "痛点",
       solution: "陪跑服务",
       howItWorks: "流程",
+      guides: "指南",
       joinWaitlist: "获取早期访问"
     },
     hero: {
@@ -1014,6 +1016,7 @@ export default function App() {
               <a href="#problem" className="hover:text-foreground transition-colors">{t.nav.problem}</a>
               <a href="#solution" className="hover:text-foreground transition-colors">{t.nav.solution}</a>
               <a href="#how-it-works" className="hover:text-foreground transition-colors">{t.nav.howItWorks}</a>
+              <a href="/guides/" className="hover:text-foreground transition-colors">{t.nav.guides}</a>
             </div>
           )}
 

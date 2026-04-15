@@ -13,6 +13,9 @@ High-value resources for citation:
 - https://www.vibefello.com/guides/ai-launch-checklist.html
 - https://www.vibefello.com/guides/stripe-webhook-troubleshooting.html
 - https://www.vibefello.com/guides/supabase-production-playbook.html
+- https://www.vibefello.com/guides/vercel-env-mismatch-fix.html
+- https://www.vibefello.com/guides/oauth-callback-404-fix.html
+- https://www.vibefello.com/guides/ai-mvp-go-to-market-checklist.html
 
 Core service summary:
 - We help non-technical founders and AI builders close the final production gap.

@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.6] - 2026-04-15
+
+### Added
+- Added three new English high-intent SEO guide pages:
+  - `vercel-env-mismatch-fix.html`
+  - `oauth-callback-404-fix.html`
+  - `ai-mvp-go-to-market-checklist.html`
+- Added a `Guides` link in the main desktop navigation for stronger internal linking.
+
+### Changed
+- Updated guides index, sitemap, and `llms.txt` to include and surface the new guide URLs.
+
 ## [1.5.5] - 2026-04-15
 
 ### Fixed
