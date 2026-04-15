@@ -121,9 +121,7 @@ async function maybeBackfillMemberId(
 ) {
   if (
     !row.email ||
-    !row.paid ||
-    !row.paid_at ||
-    !row.checkout_session_id
+    !row.paid
   ) {
     return row.member_id ?? null;
   }

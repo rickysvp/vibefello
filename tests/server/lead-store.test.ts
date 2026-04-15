@@ -129,4 +129,42 @@ describe("lead store postgres fallback", () => {
       "001",
     ]);
   });
+
+  it("backfills a non-numeric member id for paid leads even without paid_at/session fields", async () => {
+    process.env.DATABASE_URL = "postgres://launch:test@localhost:5432/vibefello";
+
+    poolMock.query
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            email: "legacy@example.com",
+            member_id: "VF-2026-LEGACY001",
+            paid: true,
+            paid_at: null,
+            priority_access: true,
+            checkout_session_id: null,
+          },
+        ],
+      })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [] });
+
+    const { createLeadStore } = await import("../../src/server/lead-store");
+    const store = createLeadStore();
+    const lead = await store.getLeadByEmail("legacy@example.com");
+
+    expect(lead).toEqual({
+      email: "legacy@example.com",
+      memberId: "001",
+      paid: true,
+      priorityAccess: true,
+    });
+    expect(poolMock.query).toHaveBeenCalledTimes(4);
+    expect(poolMock.query.mock.calls[3]?.[0]).toContain("set member_id = $2");
+    expect(poolMock.query.mock.calls[3]?.[1]).toEqual([
+      "legacy@example.com",
+      "001",
+    ]);
+  });
 });

@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.4] - 2026-04-15
+
+### Fixed
+- Paid legacy members with non-numeric IDs (for example `VF-...`) are now backfilled to numeric `001-999` IDs even if `paid_at` or `checkout_session_id` is missing.
+- Added a database migration to normalize existing paid legacy member IDs to numeric format in a deterministic order.
+
 ## [1.5.3] - 2026-04-15
 
 ### Changed
