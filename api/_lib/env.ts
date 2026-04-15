@@ -48,7 +48,11 @@ export function getStripeWebhookSecret() {
 }
 
 export function getStripeFoundingMemberPriceId() {
-  return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || "price_1TLPTq9cc7XZtkzuTL1NNJP6";
+  const launchPriceId = "price_1TLPTq9cc7XZtkzuTL1NNJP6";
+  if (process.env.VERCEL_ENV === "production") {
+    return launchPriceId;
+  }
+  return process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID || launchPriceId;
 }
 
 export function getStripeStatementDescriptorSuffix() {

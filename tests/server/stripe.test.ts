@@ -23,6 +23,7 @@ describe("createStripeService", () => {
     vi.clearAllMocks();
     process.env.STRIPE_SECRET_KEY = "sk_test_example";
     process.env.APP_URL = "https://www.vibefello.com";
+    delete process.env.VERCEL_ENV;
     delete process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID;
     delete process.env.STRIPE_STATEMENT_DESCRIPTOR_SUFFIX;
   });
@@ -60,6 +61,29 @@ describe("createStripeService", () => {
     createCheckoutSession.mockResolvedValue({
       id: "cs_test_inline_price",
       url: "https://checkout.stripe.com/c/pay/cs_test_inline_price",
+    });
+
+    const { createStripeService } = await import("../../src/server/stripe");
+    const stripeService = createStripeService();
+
+    await stripeService.createCheckoutSession({
+      email: "founder@example.com",
+      port: 3000,
+    });
+
+    expect(createCheckoutSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        line_items: [{ price: "price_1TLPTq9cc7XZtkzuTL1NNJP6", quantity: 1 }],
+      }),
+    );
+  });
+
+  it("forces the launch price id in Vercel production", async () => {
+    process.env.VERCEL_ENV = "production";
+    process.env.STRIPE_FOUNDING_MEMBER_PRICE_ID = "price_1TLYEN9cc7XZtkzuAD617ccC";
+    createCheckoutSession.mockResolvedValue({
+      id: "cs_test_launch_price",
+      url: "https://checkout.stripe.com/c/pay/cs_test_launch_price",
     });
 
     const { createStripeService } = await import("../../src/server/stripe");
