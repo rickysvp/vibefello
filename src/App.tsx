@@ -60,6 +60,28 @@ const CHAT_SCENARIOS = [
 
 type Language = 'en' | 'cn';
 type Theme = 'dark' | 'light';
+type AnalyticsEventName = 'page_view' | 'waitlist_submit' | 'checkout_start' | 'payment_success';
+
+const ANALYTICS_SESSION_KEY = 'vibefello_session_id';
+const analyticsEnabled = import.meta.env.MODE !== 'test';
+
+function getAnalyticsSessionId() {
+  if (typeof window === 'undefined') {
+    return 'server';
+  }
+
+  const existing = window.localStorage.getItem(ANALYTICS_SESSION_KEY);
+  if (existing) {
+    return existing;
+  }
+
+  const newSessionId = typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+  window.localStorage.setItem(ANALYTICS_SESSION_KEY, newSessionId);
+  return newSessionId;
+}
 
 const translations = {
   en: {
@@ -633,6 +655,7 @@ export default function App() {
   const [emailStatus, setEmailStatus] = useState<{type: 'success' | 'error' | 'loading', message: string} | null>(null);
   const [memberId, setMemberId] = useState<string | null>(null);
   const [waitlistCount, setWaitlistCount] = useState(6);
+  const [analyticsSessionId] = useState(getAnalyticsSessionId);
 
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -641,6 +664,39 @@ export default function App() {
 
   const t = translations[lang];
 
+  const trackEvent = (
+    event: AnalyticsEventName,
+    payload: Record<string, unknown> = {},
+    useBeacon = false,
+  ) => {
+    if (!analyticsEnabled || typeof window === 'undefined') {
+      return;
+    }
+
+    const body = {
+      event,
+      sessionId: analyticsSessionId,
+      path: window.location.pathname,
+      referrer: document.referrer || null,
+      userAgent: navigator.userAgent,
+      ...payload,
+    };
+
+    if (useBeacon && typeof navigator.sendBeacon === 'function') {
+      const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+      navigator.sendBeacon('/api/track-event', blob);
+      return;
+    }
+
+    void fetch('/api/track-event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }).catch((err) => {
+      console.error('Failed to track analytics event:', err);
+    });
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveScenario((prev) => (prev + 1) % CHAT_SCENARIOS.length);
@@ -648,6 +704,20 @@ export default function App() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!analyticsEnabled) {
+      return;
+    }
+
+    const key = `vibefello_page_view_${analyticsSessionId}_${window.location.pathname}`;
+    if (window.sessionStorage.getItem(key)) {
+      return;
+    }
+
+    window.sessionStorage.setItem(key, '1');
+    trackEvent('page_view');
+  }, [analyticsSessionId]);
 
   // Fetch waitlist count from server on mount
   useEffect(() => {
@@ -737,6 +807,12 @@ export default function App() {
       return;
     }
 
+    const paymentEventKey = `vibefello_payment_success_${checkoutSessionId}`;
+    if (!window.sessionStorage.getItem(paymentEventKey)) {
+      window.sessionStorage.setItem(paymentEventKey, '1');
+      trackEvent('payment_success', { checkoutSessionId }, true);
+    }
+
     let cancelled = false;
 
     const syncMemberStatus = async () => {
@@ -802,6 +878,7 @@ export default function App() {
         console.log("Checkout session URL created:", url);
         
         if (url) {
+          trackEvent('checkout_start', { email: submittedEmail, plan: selectedPlan }, true);
           window.location.href = url;
           return;
         }
@@ -865,6 +942,11 @@ export default function App() {
       
       const data = await response.json();
       const hasPriorityAccess = Boolean(data.paid || data.priorityAccess);
+      trackEvent('waitlist_submit', {
+        email: currentEmail,
+        source,
+        hasPriorityAccess,
+      });
       localStorage.setItem('vibefello_email', currentEmail);
       if (hasPriorityAccess) {
         setIsMember(true);

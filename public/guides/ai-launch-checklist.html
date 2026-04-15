@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Launch Checklist for Founders | VibeFello</title>
+    <meta
+      name="description"
+      content="A production launch checklist for founders shipping AI-built products with Stripe, Supabase, Vercel, and webhook-driven workflows."
+    />
+    <link rel="canonical" href="https://www.vibefello.com/guides/ai-launch-checklist.html" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <style>
+      body { font-family: Inter, Arial, sans-serif; margin: 0; background: #070f0a; color: #effff4; }
+      article { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; line-height: 1.7; }
+      h1, h2 { line-height: 1.3; }
+      p, li { color: #c4dccf; }
+      a { color: #47f39b; }
+      .cta { border: 1px solid #1f3128; background: #0f1813; border-radius: 14px; padding: 16px; margin-top: 24px; }
+    </style>
+  </head>
+  <body>
+    <article>
+      <h1>AI Launch Checklist for Founders (2026)</h1>
+      <p>
+        Most AI-built apps fail in the last mile: production config, payment workflows,
+        and data consistency. This checklist focuses on shipping with fewer surprises.
+      </p>
+
+      <h2>1. Payments and checkout reliability</h2>
+      <ul>
+        <li>Use one live Stripe price ID per launch offer and verify it in production session line items.</li>
+        <li>Ensure webhook endpoint is live and signature verification uses the correct secret.</li>
+        <li>Make fulfillment idempotent so repeated webhook events never duplicate membership access.</li>
+      </ul>
+
+      <h2>2. Database and member-state integrity</h2>
+      <ul>
+        <li>Store waitlist, checkout, and paid states in one table with clear timestamps.</li>
+        <li>Backfill paid state from checkout session when webhook arrives late.</li>
+        <li>Use deterministic member IDs (for example 001-999) to keep operations simple.</li>
+      </ul>
+
+      <h2>3. Deployment hardening</h2>
+      <ul>
+        <li>Lock required production env vars and verify them after each deployment.</li>
+        <li>Set security headers and keep robots/sitemap/canonical tags consistent.</li>
+        <li>Run one full end-to-end path: waitlist → checkout → payment success → database update → email.</li>
+      </ul>
+
+      <h2>4. Growth instrumentation from day one</h2>
+      <ul>
+        <li>Track page views, waitlist submissions, checkout starts, and payment success events.</li>
+        <li>Monitor visitor-to-waitlist and lead-to-paid conversion in one admin dashboard.</li>
+        <li>Keep weekly content publishing tied to real launch blockers your users search for.</li>
+      </ul>
+
+      <div class="cta">
+        <p>
+          Need help shipping without launch chaos?
+          <a href="https://www.vibefello.com/">Join the VibeFello waitlist</a>.
+        </p>
+      </div>
+    </article>
+  </body>
+</html>

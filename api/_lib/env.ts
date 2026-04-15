@@ -58,3 +58,7 @@ export function getStripeFoundingMemberPriceId() {
 export function getStripeStatementDescriptorSuffix() {
   return process.env.STRIPE_STATEMENT_DESCRIPTOR_SUFFIX || "VIBEFELLO";
 }
+
+export function getAdminToken() {
+  return process.env.ADMIN_TOKEN || process.env.VIBEFELLO_ADMIN_TOKEN || null;
+}

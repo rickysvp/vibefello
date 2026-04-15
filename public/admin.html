@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VibeFello Admin Dashboard</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #060b07;
+        --card: #101813;
+        --card-soft: #132019;
+        --text: #f4fff7;
+        --muted: #96b39f;
+        --accent: #34ef8d;
+        --border: #1f3128;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        background: radial-gradient(circle at 10% 0%, #183223 0%, var(--bg) 45%);
+        color: var(--text);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 20px 40px;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      .title {
+        margin: 0;
+        font-size: 28px;
+      }
+      .subtitle {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .panel {
+        background: linear-gradient(180deg, var(--card) 0%, #0c140f 100%);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      input, select, button {
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--card-soft);
+        color: var(--text);
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      input {
+        min-width: 280px;
+      }
+      button {
+        cursor: pointer;
+        background: linear-gradient(180deg, #38f795 0%, #2fdd84 100%);
+        color: #032111;
+        border: none;
+        font-weight: 700;
+      }
+      button.secondary {
+        background: var(--card-soft);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .metric {
+        background: #0f1813;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .metric-label {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+      .metric-value {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+      }
+      .metric-note {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+      .status {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+        font-size: 13px;
+      }
+      th, td {
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        padding: 10px 8px;
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .chip {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .chip-paid {
+        background: rgba(52, 239, 141, 0.18);
+        color: #7ff9b4;
+      }
+      .chip-unpaid {
+        background: rgba(188, 200, 192, 0.16);
+        color: #c7d7cd;
+      }
+      .code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      @media (max-width: 700px) {
+        .title {
+          font-size: 22px;
+        }
+        input {
+          min-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div>
+          <h1 class="title">VibeFello Admin</h1>
+          <p class="subtitle">Traffic, waitlist funnel, paid members, and member IDs.</p>
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="controls">
+          <input id="token" type="password" placeholder="Enter ADMIN_TOKEN" />
+          <select id="range">
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="60">Last 60 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+          <button id="refresh">Refresh Dashboard</button>
+          <button id="save" class="secondary">Save Token</button>
+        </div>
+        <p id="status" class="status">Ready.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Funnel Metrics</h2>
+        <div id="metrics" class="metrics"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Latest Leads & Members</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Member ID</th>
+              <th>Paid</th>
+              <th>Priority</th>
+              <th>Checkout</th>
+              <th>Created</th>
+              <th>Paid At</th>
+            </tr>
+          </thead>
+          <tbody id="leadsBody"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <script>
+      const tokenInput = document.getElementById("token");
+      const rangeInput = document.getElementById("range");
+      const refreshButton = document.getElementById("refresh");
+      const saveButton = document.getElementById("save");
+      const statusEl = document.getElementById("status");
+      const metricsEl = document.getElementById("metrics");
+      const leadsBody = document.getElementById("leadsBody");
+      const TOKEN_STORAGE_KEY = "vibefello_admin_token";
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat("en-US").format(value || 0);
+      }
+
+      function formatRate(rate) {
+        return `${(Number(rate || 0) * 100).toFixed(2)}%`;
+      }
+
+      function formatDate(value) {
+        if (!value) return "-";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "-";
+        return date.toLocaleString("en-US", { hour12: false });
+      }
+
+      function getToken() {
+        return tokenInput.value.trim();
+      }
+
+      function getHeaders() {
+        const token = getToken();
+        if (!token) return null;
+        return {
+          "x-admin-token": token,
+          "Content-Type": "application/json",
+        };
+      }
+
+      function setStatus(message, isError = false) {
+        statusEl.textContent = message;
+        statusEl.style.color = isError ? "#ff9f9f" : "var(--muted)";
+      }
+
+      async function loadStats() {
+        const headers = getHeaders();
+        if (!headers) {
+          setStatus("Please enter ADMIN_TOKEN first.", true);
+          return null;
+        }
+
+        const range = Number(rangeInput.value || 30);
+        const response = await fetch(`/api/admin-stats?range_days=${range}`, { headers });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || "Failed to load stats.");
+        }
+        return response.json();
+      }
+
+      async function loadLeads() {
+        const headers = getHeaders();
+        if (!headers) return null;
+
+        const response = await fetch("/api/admin-leads?limit=200", { headers });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || "Failed to load leads.");
+        }
+        return response.json();
+      }
+
+      function renderMetrics(stats) {
+        if (!stats) {
+          metricsEl.innerHTML = "";
+          return;
+        }
+
+        const cards = [
+          { label: `Visitors (${stats.rangeDays}d)`, value: formatNumber(stats.period.visitors), note: `Lifetime ${formatNumber(stats.lifetime.visitors)}` },
+          { label: `Waitlist Leads (${stats.rangeDays}d)`, value: formatNumber(stats.period.waitlistLeads), note: `Lifetime ${formatNumber(stats.lifetime.waitlistLeads)}` },
+          { label: `Checkout Started (${stats.rangeDays}d)`, value: formatNumber(stats.period.checkoutStarted), note: `Lifetime ${formatNumber(stats.lifetime.checkoutStarted)}` },
+          { label: `Paid Members (${stats.rangeDays}d)`, value: formatNumber(stats.period.paidMembers), note: `Lifetime ${formatNumber(stats.lifetime.paidMembers)}` },
+          { label: "Visitor → Waitlist", value: formatRate(stats.period.waitlistConversionRate), note: "Period conversion" },
+          { label: "Lead → Paid", value: formatRate(stats.period.leadToPaidConversionRate), note: "Period conversion" },
+          { label: "Visitor → Paid", value: formatRate(stats.period.visitorToPaidConversionRate), note: "Period conversion" },
+          { label: "Latest Member ID", value: stats.lifetime.latestMemberId || "-", note: "Numeric series 001-999" },
+        ];
+
+        metricsEl.innerHTML = cards
+          .map((card) => `
+            <article class="metric">
+              <div class="metric-label">${card.label}</div>
+              <div class="metric-value">${card.value}</div>
+              <div class="metric-note">${card.note}</div>
+            </article>
+          `)
+          .join("");
+      }
+
+      function renderLeads(result) {
+        const leads = result?.leads || [];
+        if (!leads.length) {
+          leadsBody.innerHTML = `<tr><td colspan="7">No leads found.</td></tr>`;
+          return;
+        }
+
+        leadsBody.innerHTML = leads
+          .map((lead) => `
+            <tr>
+              <td class="code">${lead.email || "-"}</td>
+              <td class="code">${lead.memberId || "-"}</td>
+              <td>${lead.paid ? '<span class="chip chip-paid">PAID</span>' : '<span class="chip chip-unpaid">UNPAID</span>'}</td>
+              <td>${lead.priorityAccess ? "Yes" : "No"}</td>
+              <td class="code">${lead.checkoutStatus || "-"}</td>
+              <td>${formatDate(lead.createdAt)}</td>
+              <td>${formatDate(lead.paidAt)}</td>
+            </tr>
+          `)
+          .join("");
+      }
+
+      async function refreshDashboard() {
+        try {
+          setStatus("Loading...");
+          const [stats, leads] = await Promise.all([loadStats(), loadLeads()]);
+          renderMetrics(stats);
+          renderLeads(leads);
+          setStatus(`Updated at ${formatDate(stats?.updatedAt || new Date().toISOString())}`);
+        } catch (error) {
+          console.error(error);
+          setStatus(error instanceof Error ? error.message : "Failed to refresh dashboard.", true);
+        }
+      }
+
+      saveButton.addEventListener("click", () => {
+        const token = getToken();
+        if (!token) {
+          setStatus("Please enter a token before saving.", true);
+          return;
+        }
+        localStorage.setItem(TOKEN_STORAGE_KEY, token);
+        setStatus("Token saved in browser storage.");
+      });
+
+      refreshButton.addEventListener("click", () => {
+        refreshDashboard();
+      });
+
+      const savedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (savedToken) {
+        tokenInput.value = savedToken;
+        refreshDashboard();
+      }
+    </script>
+  </body>
+</html>

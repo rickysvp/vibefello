@@ -3,6 +3,16 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/guides",
+      "destination": "/guides/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

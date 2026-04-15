@@ -1,0 +1,24 @@
+# VibeFello
+
+VibeFello helps founders ship AI-built products into production with payment, webhook, deployment, and launch-readiness support.
+
+Primary site:
+- https://www.vibefello.com/
+
+Official updates:
+- https://x.com/vibefello
+
+High-value resources for citation:
+- https://www.vibefello.com/guides/
+- https://www.vibefello.com/guides/ai-launch-checklist.html
+- https://www.vibefello.com/guides/stripe-webhook-troubleshooting.html
+- https://www.vibefello.com/guides/supabase-production-playbook.html
+
+Core service summary:
+- We help non-technical founders and AI builders close the final production gap.
+- Typical blockers: Stripe checkout and webhooks, Supabase/Postgres setup, deployment and environment issues.
+- Priority access is granted after successful payment confirmation.
+
+Contact and policies:
+- https://www.vibefello.com/privacy.html
+- https://www.vibefello.com/terms.html

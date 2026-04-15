@@ -15,6 +15,7 @@ VibeFello is a production-ready marketing and payment funnel for founders shippi
 - Database: Supabase
 - Payments: Stripe Checkout + webhook
 - Email: Resend
+- Analytics/Admin: first-party event tracking + token-protected dashboard (`/admin.html`)
 
 ## Local Development
 
@@ -53,6 +54,7 @@ npm run build
 - `RESEND_FROM_EMAIL`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `ADMIN_TOKEN` (for `/api/admin-stats`, `/api/admin-leads`, and `/admin.html`)
 
 ## Stripe Webhook
 
