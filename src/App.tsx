@@ -654,7 +654,7 @@ export default function App() {
   const [isMember, setIsMember] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{type: 'success' | 'error' | 'loading', message: string} | null>(null);
   const [memberId, setMemberId] = useState<string | null>(null);
-  const [waitlistCount, setWaitlistCount] = useState(6);
+  const [waitlistCount, setWaitlistCount] = useState(0);
   const [analyticsSessionId] = useState(getAnalyticsSessionId);
 
   const [error, setError] = useState<string | null>(null);
@@ -729,11 +729,11 @@ export default function App() {
     fetchCount();
   }, []);
 
-  // Update waitlist count every 20 minutes via server
+  // Refresh real waitlist count every 20 minutes
   useEffect(() => {
     const updateWaitlistCount = async () => {
       try {
-        const response = await fetch('/api/waitlist-count', { method: 'POST' });
+        const response = await fetch('/api/waitlist-count');
         if (response.ok) {
           const data = await response.json();
           setWaitlistCount(data.count);

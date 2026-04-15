@@ -43,22 +43,59 @@ describe("waitlist-count handler", () => {
     vi.restoreAllMocks();
   });
 
-  it("bootstraps the counter table on GET before reading the count", async () => {
+  it("returns real total and 24h waitlist counts from the waitlist table", async () => {
     poolMock.query
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({ rows: [{ count: 8 }] });
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            total_count: 8,
+            recent_24h_count: 2,
+          },
+        ],
+      });
 
     const { default: handler } = await import("../../api/waitlist-count");
     const res = createResponse();
 
     await handler({ method: "GET" }, res);
 
-    expect(poolMock.query).toHaveBeenCalledTimes(3);
-    expect(poolMock.query.mock.calls[0]?.[0]).toContain("CREATE TABLE IF NOT EXISTS public.waitlist_counter");
-    expect(poolMock.query.mock.calls[1]?.[0]).toContain("INSERT INTO public.waitlist_counter");
-    expect(poolMock.query.mock.calls[2]?.[0]).toContain("SELECT count FROM public.waitlist_counter");
+    expect(poolMock.query).toHaveBeenCalledTimes(1);
+    expect(poolMock.query.mock.calls[0]?.[0]).toContain("from public.waitlist");
+    expect(poolMock.query.mock.calls[0]?.[0]).toContain("recent_24h_count");
     expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({ count: 8 });
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        count: 8,
+        recent24h: 2,
+        source: "real",
+      }),
+    );
+  });
+
+  it("accepts POST but only returns real counts (no synthetic increment)", async () => {
+    poolMock.query
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            total_count: 9,
+            recent_24h_count: 1,
+          },
+        ],
+      });
+
+    const { default: handler } = await import("../../api/waitlist-count");
+    const res = createResponse();
+
+    await handler({ method: "POST" }, res);
+
+    expect(poolMock.query).toHaveBeenCalledTimes(1);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        count: 9,
+        recent24h: 1,
+        source: "real",
+      }),
+    );
   });
 });

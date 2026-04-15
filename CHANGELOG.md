@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The project follows semantic versioning.
 
+## [1.5.5] - 2026-04-15
+
+### Fixed
+- Removed synthetic waitlist growth logic (`+1~3` increments) from `/api/waitlist-count`; the endpoint now returns real counts from the `waitlist` table.
+- Added real `recent24h` waitlist metric to the API response for transparent social-proof display.
+- Updated frontend waitlist counter refresh to read real counts via `GET` every 20 minutes instead of mutating data via `POST`.
+- Added focused server tests to assert no synthetic increments and real-count responses.
+
 ## [1.5.4] - 2026-04-15
 
 ### Fixed
